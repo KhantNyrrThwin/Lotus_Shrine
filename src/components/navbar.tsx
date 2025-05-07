@@ -2,20 +2,17 @@ import React, { useState } from "react";
 import applogo1 from "../assets/logo1.png"
 import profile from "../assets/profile.png";
 import link_logo from "../assets/link_lotus.png"
+import {motion, AnimatePresence} from "framer-motion"
 import "../App.css";
-import {motion} from "framer-motion"
+
 import { Link } from "react-router-dom";
 export default function Navbar() {
 
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
+  const [isAboutOpen, setAboutOpen] = useState(false);
   return (
     <>
-    <motion.div
-      initial={{ opacity: 0.5}}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 2}}
-    >
+  
       <nav className={`flex bg-[#4f3016]  text-white font-bold h-[58px] items-center  transition-all duration-1000 ${isFeaturesOpen ? 'h-[140px] ' : 'h-[ 58px]'}`}>
       <div className="absolute top-0 left-0 right-0 h-[58px] flex items-center">
        <Link to="/">
@@ -32,23 +29,34 @@ export default function Navbar() {
                         onMouseEnter={() => setIsFeaturesOpen(true)}
                        
                     >
-                        <p className={'text-white cursor-pointer '}>Features</p>
-                        {isFeaturesOpen && (
-                            <div className="absolute left-0 mt-0 py-2 w-screen transition-all duration-2000"  onMouseEnter={() => setIsFeaturesOpen(true)}  onMouseLeave={() => setIsFeaturesOpen(false)}>
-                              
-                                <Link to="/pagodas" className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold t">
-                                <img src={link_logo} alt="LOGO" className=" size-[28px]" />&nbsp; Pagodas
-                                </Link>
-                                <Link to="/meditation" className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold">
-                                <img src={link_logo} alt="LOGO" className=" size-[28px]" />&nbsp; Meditation
-                                </Link>
-                            </div>
-                        )}
-                    </div>
 
-          <a href="">
+                        <p className={'text-white cursor-pointer '}>Features</p>
+                       <AnimatePresence>
+  {isFeaturesOpen && (
+    <motion.div
+      initial={{ opacity: 0, y: 0}}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 0 }}
+      transition={{ duration: 1.5 }}
+      className="absolute left-0 mt-0 py-2 w-screen"
+      onMouseEnter={() => setIsFeaturesOpen(true)}
+      onMouseLeave={() => setIsFeaturesOpen(false)}
+    >
+      <Link to="/pagodas" className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold">
+        <img src={link_logo} alt="LOGO" className="size-[28px]" />&nbsp; Pagodas
+      </Link>
+      <Link to="/meditation" className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold">
+        <img src={link_logo} alt="LOGO" className="size-[28px]" />&nbsp; Meditation
+      </Link>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+                    </div>
+                    <Link to="/aboutus">
             <p className="text-[16.2px] font-bold text-white">Koe Na Win</p>
-          </a>
+         </Link>
+                  
           <Link to="/aboutus">
             <p className="text-[16.2px] font-bold text-white">About Us</p>
          </Link>
@@ -65,7 +73,7 @@ export default function Navbar() {
         </div>
         </div>
       </nav>
-      </motion.div>
+   
     </>
   );
 }
