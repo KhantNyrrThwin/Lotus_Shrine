@@ -4,6 +4,8 @@ import AboutUs from "./pages/aboutus";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import "./App.css";
+import Grid_Features from "./components/features";
+
 function App() {
   return (
     <>
@@ -11,7 +13,9 @@ function App() {
         <Router>
           <Navbar />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage />}>
+              <Route path="/features" element={<Grid_Features />} />
+            </Route>
             <Route path="/aboutus" element={<AboutUs />} />
           </Routes>
         </Router>

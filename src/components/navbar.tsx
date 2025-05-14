@@ -7,12 +7,15 @@ import "../App.css";
 
 import { Link } from "react-router-dom";
 export default function Navbar() {
+  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState("Pai Min Thway");
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isAboutOpen, setAboutOpen] = useState(false);
   return (
     <>
-      <nav
-        className={`flex bg-[#4f3016]  text-white font-bold h-[58px] items-center  transition-all duration-1000 ${isFeaturesOpen || isAboutOpen ? "h-[140px] " : "h-[ 58px]"}`}>
+
+      <nav 
+        className={`flex fixed top-0 left-0 right-0 z-50 bg-[#4f3016] text-white font-bold h-[58px] items-center transition-all duration-1000 ${isFeaturesOpen || isAboutOpen ? "h-[140px] " : "h-[58px]"}`}>
           {/* Features Navbar */}
         <div className="absolute top-0 left-0 right-0 h-[58px] flex items-center">
           <Link to="/">
@@ -25,9 +28,9 @@ export default function Navbar() {
           </Link>
 
             {/* Features Navbar */}
-          <div className="flex text-[16.2px] font-bold space-x-[50px] ml-[191px]">
+          <div className="flex text-[16.2px] font-bold space-x-[40px] ml-[191px]">
             <div className="ml-0" onMouseEnter={() => setIsFeaturesOpen(true)}   onMouseLeave={() => setIsFeaturesOpen(false)}>
-              <p className={"text-white cursor-pointer "}>Features</p>
+              <p className={`text-white cursor-pointer ${isFeaturesOpen ? "text-green-400" : "text-green-400"}`}>ဝန်ဆောင်မှုများ</p>
               <AnimatePresence>
                 {isFeaturesOpen && (
                   <motion.div
@@ -58,12 +61,12 @@ export default function Navbar() {
             </div>
 
             <Link to="/aboutus">
-              <p className="text-[16.2px] font-bold text-white">Koe Na Win</p>
+              <p className="text-[16.2px] font-bold text-white">ကိုးနဝင်း</p>
             </Link>
 
               {/* About Us Navbar */}
             <div className="ml-0" onMouseEnter={() => setAboutOpen(true)}   onMouseLeave={() => setAboutOpen(false)}>
-              <p className={"text-white cursor-pointer "}>About Us</p>
+              <p className={"text-white cursor-pointer "}>ကျွန်ုပ်တို့အကြောင်း</p>
               <AnimatePresence>
                 {isAboutOpen && (
                   <motion.div
@@ -101,7 +104,7 @@ export default function Navbar() {
           <div className="flex bg-[#76403b00] w-[307px] ml-[70px] h-[54px] bg-opacity-58 rounded-[19px] items-center">
             <img src={profile} alt="Profile_Picture" className="size-[40px] " />
             <div className="flex bg-[#76403b8c] w-[250px] ml-[6px] h-[38px] bg-opacity-58 rounded-[13px] items-center justify-center">
-              Khant Nyar Thwin
+              {isLogin ? user : "Guest"}
             </div>
           </div>
         </div>
