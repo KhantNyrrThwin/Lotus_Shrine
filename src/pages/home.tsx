@@ -26,7 +26,7 @@ function HomePage() {
             (ဒေါက်တာ နန္ဒမာလာဘိဝံသ)
             </p>
             <a href="/aboutus">
-            <button className="bg-[#4f3016] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
+            <button className="bg-[#4f3016] text-[16.2px] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
               ဝင်ရောက်မည်
             </button>
             </a>
