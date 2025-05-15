@@ -10,9 +10,9 @@ function HomePage() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 1 }}
     >
-      <div className="bg-[#4f3016] ">
+      <div className="bg-[#4f3016] mt-[58px] ">
         <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl ">
-          <div className="flex flex-col mr-[100px] mt-[70px] items-center">
+          <div className="flex flex-col mr-[100px] mt-[70px] gap-2 items-center">
             <img
               src={things}
               alt="Profile_Picture"
@@ -20,14 +20,16 @@ function HomePage() {
             />
             <br />
             <p className="text-[27px] font-bold text-[#402916]">
-              "Quiet the mind and the soul will speak"
+            “ရင်ထဲမာ အစဉ်အမြဲထိန်းသိမ်းရမှာက သဒ္ဒါဖြစ်သည်”
             </p>
             <p className="text-[22px] font-bold text-[#402916]">
-              (Dr. Nanda Mala Bhivamsa)
+            (ဒေါက်တာ နန္ဒမာလာဘိဝံသ)
             </p>
-            <button className="bg-[#4f3016] w-[200px] h-[50px] text-white rounded-md my-[25px]">
-              Visit
+            <a href="/aboutus">
+            <button className="bg-[#4f3016] text-[16.2px] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
+              ဝင်ရောက်မည်
             </button>
+            </a>
           </div>
         </div>
       </div>
