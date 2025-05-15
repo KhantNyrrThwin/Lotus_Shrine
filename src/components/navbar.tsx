@@ -3,8 +3,7 @@ import applogo from "../assets/logo1.png";
 import profile from "../assets/profile.png";
 import link_logo from "../assets/link_lotus.png";
 import { motion, AnimatePresence } from "framer-motion";
-import "../App.css";
-
+import "../App.css";  
 import { Link } from "react-router-dom";
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,7 +24,7 @@ export default function Navbar() {
             <img src={applogo} alt="LOGO" className=" size-[47px] ml-[35px]" />
           </Link>
           <Link to="/">
-          <a href="index.html" className="flex text-[21.2px] ml-[21px]">
+          <a href="index.html" className="flex text-[21.2px] ml-[21px] lg:text-[23px] lg:ml-[23px]">
             <p className=" text-white font-bold">Lotus Shrine</p>
           </a>
           </Link>
