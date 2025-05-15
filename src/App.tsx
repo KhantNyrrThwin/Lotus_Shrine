@@ -13,7 +13,7 @@ function App() {
         <Router>
           <Navbar />
           <Routes>
-            <Route path="/" element={<HomePage />}>
+            <Route path="/" element={<HomePage  />}>
               <Route path="/features" element={<Grid_Features />} />
             </Route>
             <Route path="/aboutus" element={<AboutUs />} />
