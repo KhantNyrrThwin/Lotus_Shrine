@@ -2,10 +2,25 @@ import things from "../assets/24_things.png";
 import Features from "../components/features";
 import "../App.css";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { useState } from "react";
 function HomePage() {
-  const [quoto, setQuoto] = useState("ရင်ထဲမာ အစဉ်အမြဲထိန်းသိမ်းရမှာက သဒ္ဒါဖြစ်သည်");
-  const [auth, setAuth] = useState("ဒေါက်တာ နန္ဒမာလာဘိဝံသ");
+  const [quoto, setQuoto] = useState("Loading");
+  const [auth, setAuth] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost/lotus_shrine/fetchQuotes.php") // adjust the path
+      .then((res) => res.json())
+      .then((data) => {
+        setQuoto(data.quote);
+        setAuth(data.author);
+      })
+      .catch((err) => {
+        setQuoto("ဖတ်ရန်မအောင်မြင်ပါ");
+        setAuth("အမည်မသိ");
+        console.error(err);
+      });
+  }, []);
   return (
     <>    <motion.div
       initial={{ opacity: 0 }}
