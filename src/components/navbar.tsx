@@ -30,7 +30,7 @@ export default function Navbar() {
           </Link>
 
             {/* Features Navbar */}
-          <div className="flex text-[16.2px] font-bold space-x-[40px] ml-[191px]">
+          <div className="flex text-[15px] font-bold space-x-[40px] ml-[191px]">
             <div className="ml-0" onMouseEnter={() => setIsFeaturesOpen(true)}   onMouseLeave={() => setIsFeaturesOpen(false)}>
               <p className={`text-white cursor-pointer ${isFeaturesOpen ? "text-green-400" : "text-green-400"}`}>ဝန်ဆောင်မှုများ</p>
               <AnimatePresence>
