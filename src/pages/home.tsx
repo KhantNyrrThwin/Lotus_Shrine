@@ -12,8 +12,8 @@ function HomePage() {
     fetch("http://localhost/lotus_shrine/fetchQuotes.php") // adjust the path
       .then((res) => res.json())
       .then((data) => {
-        setQuoto(data.quote);
-        setAuth(data.author);
+        setQuoto(data.quote_name);
+        setAuth(data.quote_author);
       })
       .catch((err) => {
         setQuoto("ဖတ်ရန်မအောင်မြင်ပါ");
@@ -30,7 +30,7 @@ function HomePage() {
     >
       <div className="bg-[#4f3016] mt-[58px] ">
         <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl ">
-          <div className="flex flex-col mr-[100px] mt-[70px] gap-2 items-center">
+          <div className="flex flex-col w-[640px] mr-[50px] mt-[70px] gap-2 items-center">
             <img
               src={things}
               alt="Profile_Picture"
