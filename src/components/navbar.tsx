@@ -7,7 +7,7 @@ import "../App.css";
 import { Link } from "react-router-dom";
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(true);
-  const [user, setUser] = useState("ခန့်ညားသွင်");
+  const [user, setUser] = useState("မြတ်မွန်မွန်ဇော်");
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isAboutOpen, setAboutOpen] = useState(false);
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);

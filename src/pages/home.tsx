@@ -9,7 +9,7 @@ function HomePage() {
   const [auth, setAuth] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost/lotus_shrine/fetchQuotes.php") // adjust the path
+    fetch("http://localhost/lotus_shrine/fetchQuotes.php") 
       .then((res) => res.json())
       .then((data) => {
         setQuoto(data.quote_name);
@@ -17,7 +17,7 @@ function HomePage() {
       })
       .catch((err) => {
         setQuoto("ဖတ်ရန်မအောင်မြင်ပါ");
-        setAuth("အမည်မသိ");
+        setAuth("ဖတ်ရန်မအောင်မြင်ပါ");
         console.error(err);
       });
   }, []);
