@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import "./App.css";
 import Grid_Features from "./components/features";
+import Footer from "./components/footer";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             </Route>
             <Route path="/aboutus" element={<AboutUs />} />
           </Routes>
+          <Footer />
         </Router>
       </AnimatePresence>
     </>
