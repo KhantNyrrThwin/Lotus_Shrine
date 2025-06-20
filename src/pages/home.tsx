@@ -4,6 +4,8 @@ import "../App.css";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useState } from "react";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
 function HomePage() {
   const [quoto, setQuoto] = useState("Loading");
   const [auth, setAuth] = useState("");
@@ -28,6 +30,7 @@ function HomePage() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 1 }}
     >
+      <Navbar />
       <div className="bg-[#4f3016] mt-[58px] ">
         <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl ">
           <div className="flex flex-col w-[640px] mr-[50px] mt-[70px] gap-2 items-center">
@@ -54,6 +57,7 @@ function HomePage() {
     </motion.div>
 
     <Features  />
+    <Footer />
     </>
 
   );
