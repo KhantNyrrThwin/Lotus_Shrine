@@ -8,25 +8,25 @@ function Grid_Features() {
         <h1 className="text-4xl font-bold text-center mt-10">ဝန်ဆောင်မှုများ</h1>
         <div className="grid grid-cols-3 gap-4 p-4 max-w-[1000px] mx-auto mt-5">
       {/* Feature 1: Hover Effect */}
-      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/Pagodas.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/PagodasHover.jpg')]">
+      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/PagodasHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Pagodas.jpg')]">
         <h3 className="text-lg font-bold">ဘုရားများ</h3>
         <p>ဘုရားများကို ကြည့်ရှုရန်</p>
       </div>
 
       {/* Feature 2: Hover Effect */}
-      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/Dhamma.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/DhammaHover.jpg')]">
+      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/DhammaHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Dhamma.jpg')]">
         <h3 className="text-lg font-bold">ဓမ္မတရားတော်များ</h3>
         <p>တရားတော်များကို နားထောင်ရန်</p>
       </div>
 
       {/* Feature 3: Hover Effect */}
-      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/Monk.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/MonkHover.jpg')]">
+      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/MonkHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Monk.jpg')]">
         <h3 className="text-lg font-bold">ဆရာတော်များ</h3>
         <p>ဆရာတော်များ၏ တရားတော်များ</p>
       </div>
 
       {/* Feature 4: Hover Effect */}
-      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/Meditate.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/MeditateHover.jpg')]">
+      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/MeditateHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Meditate.jpg')]">
         <h3 className="text-lg font-bold">တရားထိုင်ရန်</h3>
         <p>တရားထိုင်ရန်</p>
       </div>
@@ -38,7 +38,7 @@ function Grid_Features() {
       </div>
 
       {/* Feature 6: Hover Effect */}
-      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/Nine.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/NineHover.jpg')]">
+      <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/NineHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Nine.jpg')]">
         <h3 className="text-lg font-bold">ဂုဏ်တော် (၉) ပါး</h3>
         <p>ဂုဏ်တော် (၉) ပါး အကြောင်း</p>
       </div>

@@ -1,7 +1,7 @@
 import {useForm} from 'react-hook-form'
 import {DevTool} from '@hookform/devtools'
 
-const loginform = () => {
+const signinform = () => {
     const form = useForm();
     const {register, control} = form;
     
@@ -32,4 +32,4 @@ const loginform = () => {
   )
 }
 
-export default loginform
+export default signinform
