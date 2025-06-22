@@ -8,6 +8,7 @@ import LoginPage from "./pages/login";
 import SigninPage from "./pages/signin";
 import First from "./koe_na_win_grades/first";
 import KoeNaWinGrades from "./pages/KoeNaWinGrades";
+import Mission from "./pages/mission";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       
           <Routes>
             <Route path="/koe_na_win_grades" element={<KoeNaWinGrades />} />
+            <Route path="/mission" element={<Mission />} />
             <Route path="/first" element={<First  />} />
             <Route path="/login" element={<LoginPage  />} />
             <Route path="/signin" element={<SigninPage  />} />
