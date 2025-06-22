@@ -7,6 +7,7 @@ import Grid_Features from "./components/features";
 import LoginPage from "./pages/login";
 import SigninPage from "./pages/signin";
 import First from "./koe_na_win_grades/first";
+import KoeNaWinGrades from "./pages/KoeNaWinGrades";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Router>
       
           <Routes>
+            <Route path="/koe_na_win_grades" element={<KoeNaWinGrades />} />
             <Route path="/first" element={<First  />} />
             <Route path="/login" element={<LoginPage  />} />
             <Route path="/signin" element={<SigninPage  />} />

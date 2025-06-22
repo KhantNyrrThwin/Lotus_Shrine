@@ -3,59 +3,59 @@ function First() {
   return (
        
     
-  <div className="bg-[#f8eae0] w-full h-screen" >
-    <div className="w-[865px] h-[508px]  bg-[#8d6243] p-4 rounded-2xl shadow-md text-orange-950">
+  
+    <div className="w-[865px] h-[508px]  bg-[#76403b] p-4 rounded-2xl shadow-md text-orange-950">
       <div className=" flex items-center justify-center ">
-        <table className=" bg-white rounded-xl overflow- w-[840px] h-[475px] ">
-        <tr className=" fy-between px-4 py-2 border-b border-[#D2B48C]">
-          <td>တနင်္လာ</td>
-          <td>သမ္မာသမ္ဗုဒ္ဓေါ </td>
-          <td>2 ပတ် </td>
+        <table className=" bg-[#ffffff] rounded-xl overflow- w-[840px] h-[475px] ">
+        <tr className=" fy-between px-4 py-2 border-b border-[#D2B48C] ml-[10px]">
+       
+          <td className="px-13">တနင်္လာ</td>
+          <td className="">သမ္မာသမ္ဗုဒ္ဓေါ </td>
+          <td className="px-2">2 ပတ် </td>
         </tr>
         <tr className="  fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>အင်္ဂါ</td>
+          <td className="px-13">အင်္ဂါ</td>
           <td>ဘဂဝါ </td>
-          <td>9 ပတ်</td>
+          <td className="px-2">9 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>ဗုဒ္ဓဟူး</td>
+          <td className="px-13">ဗုဒ္ဓဟူး</td>
           <td>သုဂတော</td>
-          <td>4 ပတ်</td>
+          <td className="px-2">4 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>ကြာသပတေး</td>
+          <td className="px-13">ကြာသပတေး</td>
           <td>သတ္တာဒေဝမနုဿာနံ </td>
-          <td>7 ပတ်</td>
+          <td className="px-2">7 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>သောကြာ</td>
+          <td className="px-13">သောကြာ</td>
           <td>လောကဝိဒူ </td>
-          <td>5 ပတ်</td>
+          <td className="px-2">5 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>စနေ</td>
+          <td className="px-13">စနေ</td>
           <td>ဝိဇ္ဇာစရဏသမ္ပန္နော </td>
-          <td>3 ပတ်</td>
+          <td className="px-2">3 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>တနင်္ဂနွေ </td>
+          <td className="px-13">တနင်္ဂနွေ </td>
           <td>အနုတ္တရောပုရိသ ဓမ္မသာရိထိ</td>
-          <td>6 ပတ် </td>
+          <td className="px-2">6 ပတ် </td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C] ">
-          <td>တနင်္လာ</td>
+          <td className="px-13">တနင်္လာ</td>
           <td>အရဟံ </td>
-          <td>1 ပတ်</td>
+          <td className="px-2">1 ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 ">
-          <td>အင်္ဂါ</td>
-          <td>ဗုဒ္ဓေါ </td>
-          <td>8 ပတ်</td>
+          <td className="px-13">အင်္ဂါ</td>
+          <td className="">ဗုဒ္ဓေါ </td>
+          <td className="px-2">8 ပတ်</td>
         </tr>
       </table>
     </div>
     </div>
-</div>
   );
   
 }
