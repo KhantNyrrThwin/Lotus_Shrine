@@ -20,6 +20,7 @@ export default function SigninPage() {
                 <div className="flex flex-rol mt-[44px] ml-[44px] items-center">
                   <h1 className="text-[27px] font-extrabold text-[#40320D]">LotusShrine </h1>
                   <h2 className="text-[21px] ">&nbsp; မှကြိုဆိုပါသည်</h2>
+                  
                 </div>
                 <h1 className="text-[40px] ml-[44px] mt-[10px] font-extrabold">အကောင့်ဖွင့်ရန်</h1>
                 <SigninForm />
