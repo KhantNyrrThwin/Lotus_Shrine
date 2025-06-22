@@ -30,7 +30,9 @@ export default function Navbar() {
           </Link>
 
             {/* Features Navbar */}
-          <div className="flex text-[15px]  2xl:w-[1100px]  font-bold space-x-[40px] ml-[191px]  2xl:ml-[161px]">
+
+          <div className="flex text-[15px] 2xl:text-[17px]  2xl:w-[1100px]  font-bold space-x-[40px] ml-[191px]  2xl:ml-[161px]">
+
             <div className="ml-0" onMouseEnter={() => setIsFeaturesOpen(true)}   onMouseLeave={() => setIsFeaturesOpen(false)}>
               <p className={`text-white  cursor-pointer ${isFeaturesOpen ? "text-green-400" : "text-green-400"}`}>ဝန်ဆောင်မှုများ</p>
               <AnimatePresence>
@@ -77,7 +79,7 @@ export default function Navbar() {
             </div>
 
            <div className="ml-0" onMouseEnter={() => setKoeNaWinOpen(true)}   onMouseLeave={() => setKoeNaWinOpen(false)}>
-            <p className={`text-white 2xl:ml-[100px] cursor-pointer ${isKoeNaWinOpen ? "text-green-400" : "text-green-400"}`}>ကိုးနဝင်း</p>
+            <p className={`text-white 2xl:ml-[80px] cursor-pointer ${isKoeNaWinOpen ? "text-green-400" : "text-green-400"}`}>ကိုးနဝင်း</p>
             <AnimatePresence>
               {isKoeNaWinOpen && (
                 <motion.div
@@ -123,7 +125,7 @@ export default function Navbar() {
 
               {/* About Us Navbar */}
             <div className="ml-0" onMouseEnter={() => setAboutOpen(true)}   onMouseLeave={() => setAboutOpen(false)}>
-              <p className={"text-white 2xl:ml-[100px] cursor-pointer "}>ကျွန်ုပ်တို့အကြောင်း</p>
+              <p className={"text-white 2xl:ml-[80px] cursor-pointer "}>ကျွန်ုပ်တို့အကြောင်း</p>
               <AnimatePresence>
                 {isAboutOpen && (
                   <motion.div
@@ -161,7 +163,7 @@ export default function Navbar() {
             </div>
 
            <div className="ml-0" onMouseEnter={() => setAccountOpen(true)}   onMouseLeave={() => setAccountOpen(false)}>
-            <p className={`text-white 2xl:ml-[100px] cursor-pointer ${isAccountOpen ? "text-green-400" : "text-green-400"}`}>အကောင့်</p>
+            <p className={`text-white 2xl:ml-[80px] cursor-pointer ${isAccountOpen ? "text-green-400" : "text-green-400"}`}>အကောင့်</p>
             <AnimatePresence>
               {isAccountOpen && isLogin && (
                 <motion.div
@@ -224,7 +226,10 @@ export default function Navbar() {
            </div>
           </div>
 
-          <div className="flex bg-[#76403b00] w-[307px] ml-[60px] h-[54px] bg-opacity-58 rounded-[19px] items-center 2xl:mr-[40px]">
+
+        
+          <div className="flex bg-[#76403b00] w-[307px] ml-[40px] h-[54px] bg-opacity-58 rounded-[19px] items-center 2xl:mr-[40px]">
+
             <img src={profile} alt="Profile_Picture" className="size-[40px] " />
             <div className="flex bg-[#76403b8c] text-[16.2px] w-[250px] ml-[6px] h-[38px] bg-opacity-58 rounded-[13px] items-center justify-center">
               {isLogin ? user : "ဧည့်သည်"}
