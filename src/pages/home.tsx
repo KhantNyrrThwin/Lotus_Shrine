@@ -32,7 +32,7 @@ function HomePage() {
     >
       <Navbar />
       <div className="bg-[#4f3016] mt-[58px] ">
-        <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl ">
+        <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl 2xl:h-[800px]">
           <div className="flex flex-col w-[640px] mr-[50px] mt-[70px] gap-2 items-center">
             <img
               src={things}
