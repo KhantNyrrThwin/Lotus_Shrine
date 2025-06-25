@@ -26,15 +26,13 @@ class MySQL{
 
     public function connect(){
         try{
-            $this-> db = new PDO("mysql:host=$this->dbhost;dbname=$this->dbname;charset=utf8mb4",
+            $this-> db = new PDO("mysql:host = $this->dbhost; dbname=$this->dbname",
              $this->dbuser,
               $this->dbpass,
               [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
               ]);
-
-              $this->db->exec("SET NAMES utf8mb4");
             return $this->db;
         }
         catch(PDOException $e){
