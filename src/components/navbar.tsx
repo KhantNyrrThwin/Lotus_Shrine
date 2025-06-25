@@ -1,17 +1,26 @@
-import { useState } from "react";
 import applogo from "../assets/logo1.png";
 import profile from "../assets/profile.png";
 import link_logo from "../assets/link_lotus.png";
 import { motion, AnimatePresence } from "framer-motion";
 import "../App.css";  
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 export default function Navbar() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [user, setUser] = useState("ပိုင်မင်းသွေး");
+  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState("");
+  
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isAboutOpen, setAboutOpen] = useState(false);
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);
   const [isAccountOpen, setAccountOpen] = useState(false);
+
+   useEffect(() => {
+    const isAu = localStorage.getItem('isAuthenticated') === 'true';
+    const storedName = localStorage.getItem('userName') || "ဧည့်သည်";
+    
+    setIsLogin(isAu);
+    setUser(isAu ? storedName : "ဧည့်သည်");
+  }, []);
   return (
     <>
 
@@ -187,7 +196,7 @@ export default function Navbar() {
                     &nbsp; ပြင်ဆင်ရန်
                   </Link>
                   <Link
-                    to="/login"
+                    to="/"
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
@@ -205,7 +214,7 @@ export default function Navbar() {
                 onMouseLeave={() => setAccountOpen(false)}
                 >
                   <Link
-                    to="/aboutus"
+                      to="/login"
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
