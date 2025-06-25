@@ -100,14 +100,14 @@ export default function Navbar() {
                 onMouseLeave={() => setKoeNaWinOpen(false)}
                 >
                   <Link
-                    to="/aboutus"
+                    to="/koenawin"
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
                     &nbsp; ကိုးနဝင်းအကြောင်း
                   </Link>
                   <Link
-                    to="/aboutus"
+                    to="/koe_na_win"
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />

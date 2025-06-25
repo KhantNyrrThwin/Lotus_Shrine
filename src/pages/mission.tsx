@@ -2,7 +2,7 @@ import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { motion } from "framer-motion";
-import { FaHeart, FaLightbulb, FaLeaf, FaPeace } from "react-icons/fa";
+import { FaLightbulb, FaLeaf, FaPeace, FaBrain, FaHandHoldingHeart, FaPray, FaBalanceScale, FaHandshake } from "react-icons/fa";
 import MissionPagoda from "../assets/mission.png";
 
 function Mission() {
@@ -61,13 +61,14 @@ function Mission() {
               <div className="w-78 h-1 bg-[#4f3016] mx-auto mt-4"></div>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <ValueCard icon={<FaLeaf className="text-white" size={30} />} title="သတိပြူမှု (Mindfulness)" description="မိမိစိတ်ကို တည်ကြည်အေးချမ်းစွာ ထိန်းသိမ်းနိုင်ရန်" />
-              <ValueCard icon={<FaHeart className="text-white" size={30} />} title="ငြိမ်းချမ်းရေး (Peace)" description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။" />
-              <ValueCard icon={<FaLightbulb className="text-white" size={30} />} title="မေတ္တာ (Compassion)" description="Seeking knowledge " />
-              <ValueCard icon={<FaPeace className="text-white" size={30} />} title="Peace (ငြိမ်းချမ်းရေး)" description="Cultivating inner and outer peace through our practices." />
-              <ValueCard icon={<FaLeaf className="text-white" size={30} />} title="Mindfulness (သတိ)" description="Living in the present moment with awareness and intention." />
-              <ValueCard icon={<FaPeace className="text-white" size={30} />} title="Peace (ငြိမ်းချမ်းရေး)" description="Cultivating inner and outer peace through our practices." />
-            
+              <ValueCard icon={<FaBrain className="text-white" size={30} />} title="သတိပြူမှု (Mindfulness)" description="မိမိစိတ်ကို တည်ကြည်အေးချမ်းစွာ ထိန်းသိမ်းနိုင်ရန်" />
+              <ValueCard icon={<FaPeace className="text-white" size={30} />} title="ငြိမ်းချမ်းရေး (Peace)" description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။" />
+              <ValueCard icon={<FaHandHoldingHeart className="text-white" size={30} />} title="မေတ္တာ (Compassion)" description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။ " />
+              <ValueCard icon={<FaLightbulb className="text-white" size={30} />} title="ပညာ (Wisdom)" description="ဘဝအပေါ် ချက်ချင်းသဘောပေါက်မှုနှင့် ဆင်ခြင်မှုဖြင့် ဉာဏ်ပညာတိုးတက်အောင် ပြုလုပ်နိုင်ရန်။" />
+              <ValueCard icon={<FaPray className="text-white" size={30} />} title="ယုံကြည်မှု (Faith)" description="မိမိရဲ့တရားအယူအဆ၊ အမှန်တရားအပေါ် ယုံကြည်မှုရှိပြီး၊ စိတ်အားထက်သန်စွာ ဆောင်ရွက်နိုင်ရန်။" />
+              <ValueCard icon={<FaLeaf className="text-white" size={30} />} title="တည်ငြိမ်မှု (Tranquility)" description="စိတ်၊ ကိုယ်နှင့် အသက်တာ တစ်ခုလုံးကို တည်တည်ငြိမ်ငြိမ်ဖြင့် ကိုင်တွယ်နိုင်ရန်။" />
+              <ValueCard icon={<FaBalanceScale className="text-white" size={30} />} title="ရိုးသားမှု (Integrity)" description="တရားမျှတမှုနှင့် အတွင်းပိုင်းပျော်ရွှင်မှုအတွက် မိမိစကား၊ အပြုအမူနှင့် စိတ်ဝိညာဉ်အကြား ထိမိမှုရှိအောင် ပြုမူနိုင်ရန်။" />
+              <ValueCard icon={<FaHandshake className="text-white" size={30} />} title="ဂရုစိုက်မှု (Respectfulness)" description="မိမိကိုယ်မိမိမှစ၍ သတ္တဝါအားလုံး၊ ဗုဒ္ဓဘာသာနှင့် ယဉ်ကျေးမှုကို ဂရုစိုက်လေးစားမှုဖြင့် ဆက်ဆံနိုင်ရန်။" />
             </div>
           </div>
         </div>
