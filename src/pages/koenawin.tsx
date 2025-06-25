@@ -3,14 +3,25 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import KoeNaWinGrades from "./KoeNaWinGrades";
 import Buddha from "../assets/KoeNaWinPagoda.png";
+
 function KoeNaWin(){
+    const scrollToGrades = () => {
+        const element = document.getElementById('koenawingrades');
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
     return(
         <>
         <div className=" bg-[#FDE9DA] w-full h-full">
         <Navbar />
         <div className="flex flex-col w-full h-[742px] mt-10 font-bold " >
             <h1 className="text-center mt-14 text-[30px]  text-[#402916]">ကိုးနဝင်း</h1>
-            <h2 className="text-center text-[20px] mt-[14px] mb-[38px] text-[#402916]">“ကိုးနဝင်း မိုးလင်းမှသိမယ်”</h2>
+            <h2 className="text-center text-[20px] mt-[14px] mb-[38px] text-[#402916]">"ကိုးနဝင်း မိုးလင်းမှသိမယ်"</h2>
             <div className="flex flex-row">
               <img src={Buddha} alt="Description" className="size-[508px]" />
               <div className="flex flex-col">
@@ -25,7 +36,7 @@ function KoeNaWin(){
                 </ul>
                  </div>
                <div className="flex flex-row mt-[57px]" >
-              <button className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white mr-[51px] ml-[48px]">ကိုးနဝင်းအဆင့်များ</button>
+              <button onClick={scrollToGrades} className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white mr-[51px] ml-[48px]">ကိုးနဝင်းအဆင့်များ</button>
               <button className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white">ကိုးနဝင်းဝင်ရောက်မည်</button>
               </div>
              
@@ -37,7 +48,9 @@ function KoeNaWin(){
               
 
         </div>
+        <section id="koenawingrades">
 <KoeNaWinGrades/>
+        </section>
 <Footer />
       </div>  
 </>
