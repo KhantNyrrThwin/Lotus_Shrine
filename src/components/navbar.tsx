@@ -26,7 +26,9 @@ export default function Navbar() {
 
       <nav 
         className={`flex fixed top-0 left-0 right-0 z-50 bg-[#4f3016] text-white font-bold h-[58px] items-center transition-all duration-1000 
-        ${isFeaturesOpen || isKoeNaWinOpen ? "h-[240px] " : "h-[58px]"} ${isAboutOpen || isAccountOpen ? "h-[190px] " : "h-[58px]"} `}>
+        ${isFeaturesOpen ? "h-[240px] " : "h-[58px]"}  ${isKoeNaWinOpen ? "h-[200px] " : "h-[58px]"} ${isAboutOpen ? "h-[190px] " : "h-[58px]"} ${!isLogin && isAccountOpen ? "h-[160px] " : "h-[58px]"} 
+        ${isLogin && isAccountOpen ? "h-[190px] " : "h-[58px]"}
+        `}>
           {/* Features Navbar */}
         <div className="absolute top-0 left-0 right-0 h-[58px] flex items-center">
           <Link to="/">
@@ -105,13 +107,6 @@ export default function Navbar() {
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
                     &nbsp; ကိုးနဝင်းအကြောင်း
-                  </Link>
-                  <Link
-                    to="/koe_na_win"
-                    className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
-                  >
-                    <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                    &nbsp; ကိုးနဝင်းအဆင့်များ
                   </Link>
                   <Link
                     to="/aboutus"
@@ -223,7 +218,7 @@ export default function Navbar() {
                     &nbsp; အကောင့်ဝင်မည်
                   </Link>
                   <Link
-                    to="/aboutus"
+                    to="/signin"
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />

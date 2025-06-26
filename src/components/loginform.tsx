@@ -84,14 +84,14 @@ const LoginForm = () => {
         <button 
           type='submit' 
           disabled={loading}
-          className={`w-[251px] h-[57px] bg-[#4f3016] text-[#ffffff] rounded-[9px] hover:bg-[#3a2411] ${
+          className={`w-[251px] h-[57px] bg-[#4f3016] cursor-pointer text-[#ffffff] rounded-[9px] hover:bg-[#3a2411] hover:text-extrabold ${
             loading ? 'opacity-70 cursor-not-allowed' : ''
           }`}
         >
           {loading ? 'လုပ်ဆောင်နေသည်...' : 'အကောင့်ဝင်မည်'}
         </button>
         
-        <Link to="/signup" className='hover:underline'>
+        <Link to="/signin" className='hover:underline'>
       အကောင့်အသစ်ဖွင့်မည်
         </Link>
       </form>
