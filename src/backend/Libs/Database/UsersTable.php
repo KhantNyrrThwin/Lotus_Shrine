@@ -14,7 +14,12 @@ use PDO;
                 INSERT INTO users (name, user_email, age, user_password) 
                 VALUES ( :name, :email, :age, :password)";
             $statement = $this->db->prepare($query);
-            $statement->execute($data);
+            $statement->execute([
+            ':name' => $data['name'],
+            ':email' => $data['email'],
+            ':age' => $data['age'],
+            ':password' => $data['password']
+            ]);
             return $this->db->lastInsertId();
         } catch (PDOException $e) {
             return $e->getMessage()();
@@ -29,19 +34,13 @@ use PDO;
         }
     }
 
-    public function findByEmailAndPassword($email, $password){
+    public function findByEmail($email) {
         try {
-            $statement = $this->db->prepare("SELECT * FROM users WHERE user_email = :email AND user_password = :password");
-            $statement->execute([
-                ':email' => $email,
-                ':password' => $password 
-            ]);
-            $row = $statement->fetch(PDO::FETCH_ASSOC); // Fetch as associative array
-            
-            // Return name if user exists, otherwise return false
-            return ($row !== null) ? $row['name'] : false;
+            $statement = $this->db->prepare("SELECT * FROM users WHERE user_email = :email");
+            $statement->execute([':email' => $email]);
+            return $statement->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            return $e->getMessage(); // Return error message if query fails
+            return null;
         }
     }
 }
