@@ -11,3 +11,53 @@
   body {
     font-family: 'Pyidaungsu', sans-serif;
   }
+
+/* Custom Sonner Toast Styles */
+.toaster {
+  --normal-bg: #4f3016;
+  --normal-text: #111827;
+  --normal-border: #e5e7eb;
+  --success-bg: #4f3016;
+  --success-text: #ffffff;
+  --success-border: #10b981;
+  --error-bg: #ef4444;
+  --error-text: #ffffff;
+  --error-border: #ef4444;
+  --warning-bg: #f59e0b;
+  --warning-text: #ffffff;
+  --warning-border: #f59e0b;
+  --info-bg: #3b82f6;
+  --info-text: #ffffff;
+  --info-border: #3b82f6;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] .toaster {
+  --normal-bg: #4f3016;
+  --normal-text: #f9fafb;
+  --normal-border: #374151;
+  --success-bg: #059669;
+  --success-text: #4f3016;
+  --success-border: #059669;
+  --error-bg: #dc2626;
+  --error-text: #ffffff;
+  --error-border: #dc2626;
+  --warning-bg: #d97706;
+  --warning-text: #ffffff;
+  --warning-border: #d97706;
+  --info-bg: #2563eb;
+  --info-text: #ffffff;
+  --info-border: #2563eb;
+}
+
+/* Custom toast animations */
+.toaster [data-sonner-toast] {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.toaster [data-sonner-toast]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}

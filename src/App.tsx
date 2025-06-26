@@ -8,6 +8,7 @@ import LoginPage from "./pages/login";
 import SigninPage from "./pages/signin";
 import Mission from "./pages/mission";
 import KoeNaWin from "./pages/koenawin";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           
         </Router>
       </AnimatePresence>
+      <Toaster />
     </>
   );
 }

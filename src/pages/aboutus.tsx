@@ -19,11 +19,9 @@ function AboutUs() {
           {/* Team Members Section */}
           <div className="container mx-auto px-6 py-16 ">
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-bold text-[#402916] mb-4">Meet Our Developers</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-[#4f3016] to-[#8B4513] mx-auto mb-6"></div>
-              <p className="text-xl text-[#402916] opacity-80 max-w-2xl mx-auto">
-                Our talented team of developers who brought Lotus Shrine to life with passion and expertise
-              </p>
+              <h2 className="text-5xl font-bold text-[#402916] mb-4">Developers များ </h2>
+              <div className="w-54 h-1 bg-gradient-to-r from-[#4f3016] to-[#8B4513] mx-auto mb-6"></div>
+             
             </div>
             
             <div className="grid md:grid-cols-3 gap-10 mb-16">
@@ -40,19 +38,21 @@ function AboutUs() {
                       <span className="text-white text-5xl font-bold">1</span>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#4f3016] rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">👨‍💻</span>
+                      <span className="text-white text-sm">🛠️</span>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Developer Name 1</h3>
-                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">Full Stack Developer</p>
+                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Pai Min Thway</h3>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">2022-MIIT-CSE-002</p>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">Back-End Developer</p>
                   <p className="text-gray-600 mb-6 leading-relaxed">
-                    Specialized in React, TypeScript, and modern web development. 
-                    Contributed to the frontend architecture and user interface design.
+                  Focused on PHP backend development and database management. 
+                  Implemented authentication systems and API endpoints.
+                  
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">React</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">TypeScript</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Tailwind CSS</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">PHP</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">MySQL</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">API</span>
                   </div>
                 </div>
               </motion.div>
@@ -70,19 +70,24 @@ function AboutUs() {
                       <span className="text-white text-5xl font-bold">2</span>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#4f3016] rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">⚙️</span>
+                      <span className="text-white text-sm">🎨</span>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Developer Name 2</h3>
-                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">Backend Developer</p>
+                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Khant Nyar Thwin</h3>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">2022-MIIT-CSE-018</p>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">Front-End Developer & UI/UX Designer</p>
                   <p className="text-gray-600 mb-6 leading-relaxed">
-                    Focused on PHP backend development and database management. 
-                    Implemented authentication systems and API endpoints.
+                  Focused on UI/UX and frontend with React and Tailwind CSS. 
+                  Designed in Figma and built responsive layouts.
+
+
+
+
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">PHP</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">MySQL</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">API</span>
+                  <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Figma</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">React</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Tailwind CSS</span>
                   </div>
                 </div>
               </motion.div>
@@ -100,19 +105,23 @@ function AboutUs() {
                       <span className="text-white text-5xl font-bold">3</span>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#4f3016] rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">🎨</span>
+                      <span className="text-white text-sm">🖥️</span>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Developer Name 3</h3>
-                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">UI/UX Designer</p>
+                  <h3 className="text-2xl font-bold text-[#4f3016] mb-3">Myat Mon Mon Zaw</h3>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">2022-MIIT-CSE-027</p>
+                  <p className="text-[#8B4513] font-semibold mb-4 text-lg">Front-End Developer</p>
                   <p className="text-gray-600 mb-6 leading-relaxed">
-                    Responsible for user experience design and visual aesthetics. 
-                    Created the beautiful interface and interactive elements.
+                  Focused on frontend using React and Tailwind CSS. 
+                  Helped implement layouts and improve UI consistency.
+
+
+
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">UI/UX</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Framer Motion</span>
-                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Design</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">React</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">Tailwind CSS</span>
+                    <span className="inline-block bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">TypeScript</span>
                   </div>
                 </div>
               </motion.div>
@@ -172,7 +181,7 @@ function AboutUs() {
                       </div>
                       <div className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-[#4f3016]/5">
                         <span className="font-semibold text-gray-700">License:</span>
-                        <span className="text-[#4f3016] font-bold">MIT</span>
+                        <span className="text-[#4f3016] font-bold">MIIT</span>
                       </div>
                     </div>
                   </div>

@@ -3,6 +3,7 @@ import { DevTool } from '@hookform/devtools';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { toast } from "sonner";
 
 type FormData = {
   email: string;
@@ -52,6 +53,10 @@ const LoginForm = () => {
     } else {
       setError(response.data?.message || 'Invalid email or password');
     }
+    toast.success("အကောင့်ဝင်မှူ အောင်မြင်ပါသည်", {
+      description: "Lotus Shrine မှ ကြိုဆိုပါသည်",
+      duration: 3000,
+    });
   } catch (err: any) {
     console.error('Full error:', err);
     console.error('Error response:', err.response);
