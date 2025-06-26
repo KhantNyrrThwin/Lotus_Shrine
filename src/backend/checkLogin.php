@@ -31,17 +31,26 @@ $success = false;
 
 try {
     $table = new UsersTable(new MySQL());
-    $user = $table->findByEmailAndPassword($email, $password);
+    $user = $table->findByEmail($email);
 
-     if ($user !== false) {
-        // Return user's name along with success message
-        echo json_encode([
-            'success' => true,
-            'message' => 'Login successful',
-            'name' => $user  // User's name from database
-        ]);
+     if ($user) {
+        // Verify password in PHP instead of SQL
+        if (password_verify($password, $user['user_password'])){
+            // Password matches - login successful
+            echo json_encode([
+                'success' => true,
+                'message' => 'Login successful',
+                'name' => $user['name']
+            ]);
+        } else {
+            // Email exists but password is wrong
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid password'
+            ]);
+        }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
+        echo json_encode(['success' => false, 'message' => 'Invalid email']);
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Database error']);
