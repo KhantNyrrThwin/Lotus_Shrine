@@ -91,7 +91,7 @@ const LoginForm = () => {
           {loading ? 'လုပ်ဆောင်နေသည်...' : 'အကောင့်ဝင်မည်'}
         </button>
         
-        <Link to="/signup" className='hover:underline'>
+        <Link to="/signin" className='hover:underline'>
       အကောင့်အသစ်ဖွင့်မည်
         </Link>
       </form>
