@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import "../App.css";  
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState("");
@@ -24,19 +26,25 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-  // Clear authentication data
-  localStorage.removeItem('isAuthenticated');
-  localStorage.removeItem('userEmail');
-  localStorage.removeItem('userName');
-  
-  // Update state
-  setIsLogin(false);
-  setUser("ဧည့်သည်");
-  setAccountOpen(false);
-  
-  // Redirect to home page
-  navigate('/');
-};
+    // Show toast notification
+    toast.success("အကောင့်မှ ထွက်ပြီးပါပြီ", {
+      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်ရောက်နိုင်ပါသည်။",
+      duration: 3000,
+    });
+    
+    // Clear authentication data
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    
+    // Update state
+    setIsLogin(false);
+    setUser("ဧည့်သည်");
+    setAccountOpen(false);
+    
+    // Redirect to home page
+    navigate('/');
+  };
 
   return (
     <>
@@ -239,7 +247,7 @@ export default function Navbar() {
                     className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                    &nbsp; အကောင့်ဖွင်မည်
+                    &nbsp; အကောင့်ဖွင့်မည်
                   </Link>
                 </motion.div>
               )}
