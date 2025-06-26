@@ -3,7 +3,7 @@ import profile from "../assets/profile.png";
 import link_logo from "../assets/link_lotus.png";
 import { motion, AnimatePresence } from "framer-motion";
 import "../App.css";  
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [isAboutOpen, setAboutOpen] = useState(false);
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);
   const [isAccountOpen, setAccountOpen] = useState(false);
+  const navigate = useNavigate();
 
    useEffect(() => {
     const isAu = localStorage.getItem('isAuthenticated') === 'true';
@@ -21,6 +22,22 @@ export default function Navbar() {
     setIsLogin(isAu);
     setUser(isAu ? storedName : "ဧည့်သည်");
   }, []);
+
+  const handleLogout = () => {
+  // Clear authentication data
+  localStorage.removeItem('isAuthenticated');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userName');
+  
+  // Update state
+  setIsLogin(false);
+  setUser("ဧည့်သည်");
+  setAccountOpen(false);
+  
+  // Redirect to home page
+  navigate('/');
+};
+
   return (
     <>
 
@@ -192,13 +209,13 @@ export default function Navbar() {
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
                     &nbsp; ပြင်ဆင်ရန်
                   </Link>
-                  <Link
-                    to="/"
-                    className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                  <div 
+                    onClick={handleLogout}
+                    className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
                   >
                     <img src={link_logo} alt="LOGO" className="size-[28px]" />
                     &nbsp; အကောင့်မှ ထွက်မည်
-                  </Link>
+                  </div>
                 </motion.div>
               )}
               {isAccountOpen && !isLogin && (
