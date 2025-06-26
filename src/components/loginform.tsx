@@ -1,9 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 type FormData = {
   email: string;
@@ -15,11 +14,23 @@ const LoginForm = () => {
   const { register, control, handleSubmit } = form;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+      if (location.state?.fromSignup) {
+        setSuccessMessage('အကောင့်အသစ်တည်ဆောက်ပြီးပါပြီ၊ အကောင့်ပြန်ဝင်ပါ။');
+        
+        // Clear state to prevent showing message again on refresh
+        window.history.replaceState({}, document.title);
+      }
+    }, [location]);
+
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     setError('');
-    console.log(data);
     try {
       const response = await axios.post(
         'http://localhost/lotus_shrine/checkLogin.php',
@@ -61,6 +72,12 @@ const LoginForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-4 items-center justify-center'
       >
+        {successMessage && (
+          <div className="w-[451px] mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-[9px] text-center">
+            {successMessage}
+          </div>
+        )}
+
         <input 
           type="email" 
           placeholder='အီးမေးလ်' 
