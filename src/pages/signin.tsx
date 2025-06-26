@@ -17,7 +17,7 @@ export default function SigninPage() {
             <div className="w-full h-full bg-[url('./assets/signin.jpg')] bg-cover bg-center ">
               <img src={logo} alt="logo" className="absolute ml-[1170px] mt-[10px] size-[90px]" />
               <div className="w-[539px] h-[670px] ml-[65px] mt-[20px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
-                <div className="flex flex-rol mt-[44px] ml-[44px] items-center">
+                <div className="flex flex-rol mt-[30px] ml-[44px] items-center">
                   <h1 className="text-[27px] font-extrabold text-[#40320D]">LotusShrine </h1>
                   <h2 className="text-[21px] ">&nbsp; မှကြိုဆိုပါသည်</h2>
                   
