@@ -50,13 +50,18 @@ const LoginForm = () => {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', data.email);
       navigate('/');
+      toast.success("အကောင့်ဝင်မှူ အောင်မြင်ပါသည်", {
+        description: "Lotus Shrine မှ ကြိုဆိုပါသည်",
+        duration: 3000,
+      });
     } else {
       setError(response.data?.message || 'Invalid email or password');
+      toast.error("အကောင့်ဝင်မှူ ကျဆုံးပါသည်", {
+        description: "ပြန်လည်ကြိုးစားပါ",
+        duration: 3000,
+      });
     }
-    toast.success("အကောင့်ဝင်မှူ အောင်မြင်ပါသည်", {
-      description: "Lotus Shrine မှ ကြိုဆိုပါသည်",
-      duration: 3000,
-    });
+   
   } catch (err: any) {
     console.error('Full error:', err);
     console.error('Error response:', err.response);
@@ -98,7 +103,7 @@ const LoginForm = () => {
         />
         
         <div className='w-full flex justify-end'>
-          <Link to="/forgot-password" className='mr-[50px] hover:underline'>
+          <Link to="/forgotpassword" className='mr-[50px] hover:underline'>
         စကားဝှက်မေ့နေပါသလား
         </Link>
         </div>
