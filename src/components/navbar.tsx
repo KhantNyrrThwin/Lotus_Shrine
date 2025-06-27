@@ -10,7 +10,6 @@ import { toast } from "sonner";
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState("");
-  
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isAboutOpen, setAboutOpen] = useState(false);
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);

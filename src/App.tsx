@@ -9,6 +9,8 @@ import SigninPage from "./pages/signin";
 import Mission from "./pages/mission";
 import KoeNaWin from "./pages/koenawin";
 import { Toaster } from "./components/ui/sonner";
+import ForgotPassword from "./pages/forgotpassword";
+import ChangePassword from "./pages/changepassword";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Router>
       
           <Routes>
+            <Route path="/changepassword" element={<ChangePassword />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/koenawin" element={<KoeNaWin />} />
             <Route path="/login" element={<LoginPage  />} />
