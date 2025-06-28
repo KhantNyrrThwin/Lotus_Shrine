@@ -26,7 +26,7 @@ function First() {
           <td>သတ္တာဒေဝမနုဿာနံ </td>
           <td className="px-2">၇ ပတ်</td>
         </tr>
-        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
+        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C] bg-[#e0bcb9]">
           <td className="px-13">သောကြာ</td>
           <td>လောကဝိဒူ </td>
           <td className="px-2">၅ ပတ်</td>
