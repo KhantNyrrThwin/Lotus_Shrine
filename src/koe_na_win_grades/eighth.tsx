@@ -27,8 +27,8 @@ function Eighth() {
           <td>လောကဝိဒူ</td>
           <td className="px-2">၅ ပတ်</td>
         </tr>
-        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td className="px-13">သောကြာ</td>
+        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C] bg-[#e0bcb9]">
+          <td className="px-13" >သောကြာ</td>
           <td>ဝိဇ္ဇာစရဏသမ္ပန္နော</td>
           <td className="px-2">၃ ပတ်</td>
         </tr>
