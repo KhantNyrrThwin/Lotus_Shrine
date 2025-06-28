@@ -8,49 +8,49 @@ function Second() {
       <div className=" flex items-center justify-center ">
         <table className=" bg-[#ffffff] rounded-xl overflow- w-[840px] h-[475px] ">
         <tr className="fy-between px-4 py-2 border-b border-[#D2B48C] ml-[10px] ">
-          <td>ဗုဒ္ဓဟူး</td>
+          <td className="px-13">ဗုဒ္ဓဟူး</td>
           <td>ဝိဇ္ဇာစရဏသမ္ပန္နော </td>
-          <td> ၃ ပတ် </td>
+          <td className="px-2"> ၃ ပတ် </td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>ကြာသပတေး</td>
+          <td className="px-13">ကြာသပတေး</td>
           <td>အရဟံ</td>
-          <td>၁ ပတ်</td>
+          <td className="px-2">၁ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>သောကြာ</td>
+          <td className="px-13">သောကြာ</td>
           <td>လောကဝိဒူ</td>
-          <td>၅ ပတ်</td>
+          <td className="px-2">၅ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>စနေ</td>
+          <td className="px-13">စနေ</td>
           <td>ဗုဒ္ဓေါ</td>
-          <td>၈ ပတ်</td>
+          <td className="px-2">၈ ပတ်</td>
         </tr>
-        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>တနင်္ဂနွေ</td>
+        <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C] bg-[#e0bcb9]">
+          <td className="px-13">တနင်္ဂနွေ</td>
           <td>အနုတ္တရောပုရိသ ဓမ္မသာရိထိ</td>
-          <td>၆ ပတ်</td>
+          <td className="px-2">၆ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>တနင်္လာ</td>
+          <td className="px-13">တနင်္လာ</td>
           <td>သုဂတော</td>
-          <td>၄ ပတ်</td>
+          <td className="px-2">၄ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>အင်္ဂါ</td>
+          <td className="px-13">အင်္ဂါ</td>
           <td>သတ္တာဒေဝမနုဿာနံ</td>
-          <td>၅ ပတ်</td>
+          <td className="px-2">၅ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 border-b  border-[#D2B48C]">
-          <td>ဗုဒ္ဓဟူး</td>
+          <td className="px-13">ဗုဒ္ဓဟူး</td>
           <td>သမ္မာသမ္ဗုဒ္ဓေါ</td>
-          <td>၂ ပတ်</td>
+          <td className="px-2">၂ ပတ်</td>
         </tr>
         <tr className="fy-between px-4 py-2 ">
-          <td>ကြာသပတေး</td>
+          <td className="px-13">ကြာသပတေး</td>
           <td>ဘဂဝါ</td>
-          <td>၉ ပတ်</td>
+          <td className="px-2">၉ ပတ်</td>
         </tr>
       </table>
     </div>
