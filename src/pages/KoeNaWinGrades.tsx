@@ -43,7 +43,7 @@ function KoeNaWinGrades() {
   };
 
   return (
-    <div className="flex flex-col items-center h-screen bg-[#FDE9DA]">
+    <div className="flex flex-col items-center h-screen bg-[#FDE9DA] 2xl:ml-[100px]">
         <h1 className="text-[24px] font-bold mt-5">ကိုးနဝင်းအဆင့်များ</h1>
         <div className="flex flex-rol w-full h-full mt-[17px] ">
             <div className="w-[251px] h-[508px] ml-[38px]  ">
