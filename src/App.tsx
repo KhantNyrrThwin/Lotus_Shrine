@@ -11,6 +11,7 @@ import KoeNaWin from "./pages/koenawin";
 import { Toaster } from "./components/ui/sonner";
 import ForgotPassword from "./pages/forgotpassword";
 import ChangePassword from "./pages/changepassword";
+import RequestEmail from "./pages/requestemail";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       
           <Routes>
             <Route path="/changepassword" element={<ChangePassword />} />
+            <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/koenawin" element={<KoeNaWin />} />

@@ -103,7 +103,7 @@ const LoginForm = () => {
         />
         
         <div className='w-full flex justify-end'>
-          <Link to="/forgotpassword" className='mr-[50px] hover:underline'>
+          <Link to="/requestemail" className='mr-[50px] hover:underline'>
         စကားဝှက်မေ့နေပါသလား
         </Link>
         </div>
