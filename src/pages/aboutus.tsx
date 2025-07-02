@@ -131,7 +131,7 @@ function AboutUs() {
             <div className="text-center mb-16">
               <h2 className="text-5xl font-bold text-[#402916] mb-4">Git Repository</h2>
               <div className="w-24 h-1 bg-gradient-to-r from-[#4f3016] to-[#8B4513] mx-auto mb-6"></div>
-              <p className="text-xl text-[#402916] opacity-80 max-w-2xl mx-auto">
+              <p className="text-xl text-[#402916] opacity-80 mx-auto">
                 Explore our open-source project and contribute to the Lotus Shrine development
               </p>
             </div>
@@ -224,7 +224,7 @@ function AboutUs() {
                 {/* GitHub Button */}
                 <div className="text-center mt-10">
                   <a 
-                    href="https://github.com/your-username/lotus-shrine" 
+                    href="https://github.com/KhantNyrrThwin/Lotus_Shrine" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center bg-gradient-to-r from-[#4f3016] to-[#8B4513] text-white px-8 py-4 rounded-xl hover:from-[#8B4513] hover:to-[#4f3016] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold text-lg"
@@ -301,36 +301,7 @@ function AboutUs() {
                   </div>
                 </div>
 
-                {/* Key Features Grid */}
-                <div className="bg-white/50 rounded-xl p-6 border border-[#4f3016]/10">
-                  <h4 className="text-2xl font-bold text-[#4f3016] mb-6 text-center flex items-center justify-center">
-                    <span className="mr-3 text-3xl">✨</span>
-                    What Makes Us Special
-                  </h4>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-white/70 rounded-lg border border-[#4f3016]/5 hover:bg-white/90 transition-colors">
-                      <div className="w-12 h-12 mx-auto bg-gradient-to-r from-[#4f3016] to-[#8B4513] rounded-full flex items-center justify-center mb-3">
-                        <span className="text-white text-xl">🧘‍♀️</span>
-                      </div>
-                      <h5 className="font-bold text-[#4f3016] mb-2">Meditation Resources</h5>
-                      <p className="text-sm text-gray-600">Guided sessions and mindfulness practices</p>
-                    </div>
-                    <div className="text-center p-4 bg-white/70 rounded-lg border border-[#4f3016]/5 hover:bg-white/90 transition-colors">
-                      <div className="w-12 h-12 mx-auto bg-gradient-to-r from-[#4f3016] to-[#8B4513] rounded-full flex items-center justify-center mb-3">
-                        <span className="text-white text-xl">📖</span>
-                      </div>
-                      <h5 className="font-bold text-[#4f3016] mb-2">Sacred Texts</h5>
-                      <p className="text-sm text-gray-600">Ancient wisdom and modern interpretations</p>
-                    </div>
-                    <div className="text-center p-4 bg-white/70 rounded-lg border border-[#4f3016]/5 hover:bg-white/90 transition-colors">
-                      <div className="w-12 h-12 mx-auto bg-gradient-to-r from-[#4f3016] to-[#8B4513] rounded-full flex items-center justify-center mb-3">
-                        <span className="text-white text-xl">🌍</span>
-                      </div>
-                      <h5 className="font-bold text-[#4f3016] mb-2">Global Community</h5>
-                      <p className="text-sm text-gray-600">Connect with practitioners worldwide</p>
-                    </div>
-                  </div>
-                </div>
+               
 
                 {/* Call to Action */}
                 <div className="text-center mt-10">
