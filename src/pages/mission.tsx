@@ -2,7 +2,16 @@ import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { motion } from "framer-motion";
-import { FaLightbulb, FaLeaf, FaPeace, FaBrain, FaHandHoldingHeart, FaPray, FaBalanceScale, FaHandshake } from "react-icons/fa";
+import {
+  FaLightbulb,
+  FaLeaf,
+  FaPeace,
+  FaBrain,
+  FaHandHoldingHeart,
+  FaPray,
+  FaBalanceScale,
+  FaHandshake,
+} from "react-icons/fa";
 import MissionPagoda from "../assets/mission.png";
 
 function Mission() {
@@ -15,8 +24,6 @@ function Mission() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-       
-
         {/* Mission and Vision Section */}
         <div className="py-13 bg-[#f8f4f0]">
           <div className="container mx-auto px-6">
@@ -27,17 +34,30 @@ function Mission() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className="text-3xl font-extrabold text-[#4f3016] mb-4">ကျွန်ုပ်တို့၏ရည်ရွယ်ချက်</h2>
+                <h2 className="text-3xl font-extrabold text-[#4f3016] mb-4">
+                  ကျွန်ုပ်တို့၏ရည်ရွယ်ချက်
+                </h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                ဗုဒ္ဓဘာသာဝင်များအတွက် ဘုရား ရှိခိုးခြင်း၊ တရားထိုင်ခြင်း၊ ဆုတောင်းခြင်းနှင့် အဓိဌာန်ဝင်ခြင်းများကို နည်းပညာ၏ အကူအညီဖြင့် အထောက်အကူဖြစ်စေရန် ရည်ရွယ်ပါသည်
+                  ဗုဒ္ဓဘာသာဝင်များအတွက် ဘုရား ရှိခိုးခြင်း၊ တရားထိုင်ခြင်း၊
+                  ဆုတောင်းခြင်းနှင့် အဓိဌာန်ဝင်ခြင်းများကို နည်းပညာ၏ အကူအညီဖြင့်
+                  အထောက်အကူဖြစ်စေရန် ရည်ရွယ်ပါသည်
                 </p>
-                <h2 className="text-3xl font-bold text-[#4f3016] mt-8 mb-4">ဘာကြောင့် Project ကိုလုပ်သလဲ?</h2>
+                <h2 className="text-3xl font-bold text-[#4f3016] mt-8 mb-4">
+                  ဘာကြောင့် Project ကိုလုပ်သလဲ?
+                </h2>
                 <p className="text-gray-700 leading-relaxed text-justify ">
-                နည်းပညာ ခေတ်မီတိုးတက်လာသော်လည်း ဘာသာရေးဆိုင်ရာလိုအပ်ချက်များကို ပြည့်စုံအောင် ဖြေရှင်းပေးနိုင်သော အွန်လိုင်းစနစ်များမှာ နည်းပါးနေဆဲဖြစ်သည်။
-                 ခရီးသွား၍ မရသူများ၊ ကိုယ်အင်အားမပြည့်သူများ၊ သို့မဟုတ် နေရာအကန့်အသတ်များကြောင့် ဘုရားဖူးခြင်း၊ 
-                 တရားထိုင်ခြင်းများမှ ဝေးကွာနေရသူများအတွက် သာယာအေးချမ်းသော virtual environment ၊အတွေ့အကြုံတစ်ရပ်ကို ဖန်တီးပေးရန်အတွက်
-                  Lotus Shrine ကို စတင်ဖန်တီးခြင်း ဖြစ်ပါသည်။ ဤပရောဂျက်သည် ဗုဒ္ဓဘာသာရဲ့ ရိုးရာအလေ့အထများကို နည်းပညာနှင့်ပေါင်းစပ်၍၊ 
-                ဘုရားဖူးမျှော်ခြင်း၊ တရားထိုင်ခြင်း၊ အဓိဌာန်ဝင်ခြင်းများကို သက်သာသက်သာသာ ပြုလုပ်နိုင်မည့် ပလက်ဖောင်းတစ်ခုအဖြစ် ရရှိစေနိုင်ရန် ရည်ရွယ်ထားပါသည်။
+                  နည်းပညာ ခေတ်မီတိုးတက်လာသော်လည်း
+                  ဘာသာရေးဆိုင်ရာလိုအပ်ချက်များကို ပြည့်စုံအောင်
+                  ဖြေရှင်းပေးနိုင်သော အွန်လိုင်းစနစ်များမှာ နည်းပါးနေဆဲဖြစ်သည်။
+                  ခရီးသွား၍ မရသူများ၊ ကိုယ်အင်အားမပြည့်သူများ၊ သို့မဟုတ်
+                  နေရာအကန့်အသတ်များကြောင့် ဘုရားဖူးခြင်း၊ တရားထိုင်ခြင်းများမှ
+                  ဝေးကွာနေရသူများအတွက် သာယာအေးချမ်းသော virtual environment
+                  ၊အတွေ့အကြုံတစ်ရပ်ကို ဖန်တီးပေးရန်အတွက် Lotus Shrine ကို
+                  စတင်ဖန်တီးခြင်း ဖြစ်ပါသည်။ ဤပရောဂျက်သည် ဗုဒ္ဓဘာသာရဲ့
+                  ရိုးရာအလေ့အထများကို နည်းပညာနှင့်ပေါင်းစပ်၍၊
+                  ဘုရားဖူးမျှော်ခြင်း၊ တရားထိုင်ခြင်း၊ အဓိဌာန်ဝင်ခြင်းများကို
+                  သက်သာသက်သာသာ ပြုလုပ်နိုင်မည့် ပလက်ဖောင်းတစ်ခုအဖြစ်
+                  ရရှိစေနိုင်ရန် ရည်ရွယ်ထားပါသည်။
                 </p>
               </motion.div>
               <motion.div
@@ -47,7 +67,11 @@ function Mission() {
                 transition={{ duration: 0.8 }}
                 className="text-center"
               >
-                <img src={MissionPagoda} alt="Pagoda" className="rounded-lg mt-0  mx-auto"/>
+                <img
+                  src={MissionPagoda}
+                  alt="Pagoda"
+                  className="rounded-lg mt-0  mx-auto"
+                />
               </motion.div>
             </div>
           </div>
@@ -57,18 +81,52 @@ function Mission() {
         <div className="bg-[#f8f4f0] py-5">
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#4f3016]">Project ၏ ဦးတည်ချက်များ</h2>
+              <h2 className="text-4xl font-bold text-[#4f3016]">
+                Project ၏ ဦးတည်ချက်များ
+              </h2>
               <div className="w-78 h-1 bg-[#4f3016] mx-auto mt-4"></div>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <ValueCard icon={<FaBrain className="text-white" size={30} />} title="သတိပြူမှု (Mindfulness)" description="မိမိစိတ်ကို တည်ကြည်အေးချမ်းစွာ ထိန်းသိမ်းနိုင်ရန်" />
-              <ValueCard icon={<FaPeace className="text-white" size={30} />} title="ငြိမ်းချမ်းရေး (Peace)" description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။" />
-              <ValueCard icon={<FaHandHoldingHeart className="text-white" size={30} />} title="မေတ္တာ (Compassion)" description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။ " />
-              <ValueCard icon={<FaLightbulb className="text-white" size={30} />} title="ပညာ (Wisdom)" description="ဘဝအပေါ် ချက်ချင်းသဘောပေါက်မှုနှင့် ဆင်ခြင်မှုဖြင့် ဉာဏ်ပညာတိုးတက်အောင် ပြုလုပ်နိုင်ရန်။" />
-              <ValueCard icon={<FaPray className="text-white" size={30} />} title="ယုံကြည်မှု (Faith)" description="မိမိရဲ့တရားအယူအဆ၊ အမှန်တရားအပေါ် ယုံကြည်မှုရှိပြီး၊ စိတ်အားထက်သန်စွာ ဆောင်ရွက်နိုင်ရန်။" />
-              <ValueCard icon={<FaLeaf className="text-white" size={30} />} title="တည်ငြိမ်မှု (Tranquility)" description="စိတ်၊ ကိုယ်နှင့် အသက်တာ တစ်ခုလုံးကို တည်တည်ငြိမ်ငြိမ်ဖြင့် ကိုင်တွယ်နိုင်ရန်။" />
-              <ValueCard icon={<FaBalanceScale className="text-white" size={30} />} title="ရိုးသားမှု (Integrity)" description="တရားမျှတမှုနှင့် အတွင်းပိုင်းပျော်ရွှင်မှုအတွက် မိမိစကား၊ အပြုအမူနှင့် စိတ်ဝိညာဉ်အကြား ထိမိမှုရှိအောင် ပြုမူနိုင်ရန်။" />
-              <ValueCard icon={<FaHandshake className="text-white" size={30} />} title="ဂရုစိုက်မှု (Respectfulness)" description="မိမိကိုယ်မိမိမှစ၍ သတ္တဝါအားလုံး၊ ဗုဒ္ဓဘာသာနှင့် ယဉ်ကျေးမှုကို ဂရုစိုက်လေးစားမှုဖြင့် ဆက်ဆံနိုင်ရန်။" />
+              <ValueCard
+                icon={<FaBrain className="text-white" size={30} />}
+                title="သတိပြူမှု (Mindfulness)"
+                description="မိမိစိတ်ကို တည်ကြည်အေးချမ်းစွာ ထိန်းသိမ်းနိုင်ရန်"
+              />
+              <ValueCard
+                icon={<FaPeace className="text-white" size={30} />}
+                title="ငြိမ်းချမ်းရေး (Peace)"
+                description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။"
+              />
+              <ValueCard
+                icon={<FaHandHoldingHeart className="text-white" size={30} />}
+                title="မေတ္တာ (Compassion)"
+                description="မိမိစိတ်အတွင်းနှင့် ပတ်ဝန်းကျင်ထဲတွင်လည်း တည်ငြိမ်မှုအပြည့်ဖြင့် အသက်တာဖြတ်သန်းနိုင်ရန်။ "
+              />
+              <ValueCard
+                icon={<FaLightbulb className="text-white" size={30} />}
+                title="ပညာ (Wisdom)"
+                description="ဘဝအပေါ် ချက်ချင်းသဘောပေါက်မှုနှင့် ဆင်ခြင်မှုဖြင့် ဉာဏ်ပညာတိုးတက်အောင် ပြုလုပ်နိုင်ရန်။"
+              />
+              <ValueCard
+                icon={<FaPray className="text-white" size={30} />}
+                title="ယုံကြည်မှု (Faith)"
+                description="မိမိရဲ့တရားအယူအဆ၊ အမှန်တရားအပေါ် ယုံကြည်မှုရှိပြီး၊ စိတ်အားထက်သန်စွာ ဆောင်ရွက်နိုင်ရန်။"
+              />
+              <ValueCard
+                icon={<FaLeaf className="text-white" size={30} />}
+                title="တည်ငြိမ်မှု (Tranquility)"
+                description="စိတ်၊ ကိုယ်နှင့် အသက်တာ တစ်ခုလုံးကို တည်တည်ငြိမ်ငြိမ်ဖြင့် ကိုင်တွယ်နိုင်ရန်။"
+              />
+              <ValueCard
+                icon={<FaBalanceScale className="text-white" size={30} />}
+                title="ရိုးသားမှု (Integrity)"
+                description="တရားမျှတမှုနှင့် အတွင်းပိုင်းပျော်ရွှင်မှုအတွက် မိမိစကား၊ အပြုအမူနှင့် စိတ်ဝိညာဉ်အကြား ထိမိမှုရှိအောင် ပြုမူနိုင်ရန်။"
+              />
+              <ValueCard
+                icon={<FaHandshake className="text-white" size={30} />}
+                title="ဂရုစိုက်မှု (Respectfulness)"
+                description="မိမိကိုယ်မိမိမှစ၍ သတ္တဝါအားလုံး၊ ဗုဒ္ဓဘာသာနှင့် ယဉ်ကျေးမှုကို ဂရုစိုက်လေးစားမှုဖြင့် ဆက်ဆံနိုင်ရန်။"
+              />
             </div>
           </div>
         </div>
@@ -78,7 +136,15 @@ function Mission() {
   );
 }
 
-const ValueCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+const ValueCard = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
