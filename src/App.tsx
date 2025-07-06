@@ -1,8 +1,9 @@
 import HomePage from "./pages/home";
 import AboutUs from "./pages/aboutus";
+import ContactUs from "./pages/contactus";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import "./App.css"
+import "./App.css";
 import Grid_Features from "./components/features";
 import LoginPage from "./pages/login";
 import SigninPage from "./pages/signin";
@@ -12,32 +13,28 @@ import { Toaster } from "./components/ui/sonner";
 import ForgotPassword from "./pages/forgotpassword";
 import ChangePassword from "./pages/changepassword";
 import RequestEmail from "./pages/requestemail";
+import Meditation from "./pages/meditation";
 
 function App() {
   return (
     <>
       <AnimatePresence mode="wait">
-      
         <Router>
-      
           <Routes>
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/koenawin" element={<KoeNaWin />} />
-            <Route path="/login" element={<LoginPage  />} />
-            <Route path="/signin" element={<SigninPage  />} />
-            <Route path="/" element={<HomePage  />}>
+            <Route path="/meditation" element={<Meditation />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signin" element={<SigninPage />} />
+            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/" element={<HomePage />}>
               <Route path="/features" element={<Grid_Features />} />
             </Route>
             <Route path="/aboutus" element={<AboutUs />} />
-         
-            </Routes>
-            
-         
-          
-          
+          </Routes>
         </Router>
       </AnimatePresence>
       <Toaster />

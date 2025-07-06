@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: 'Pyidaungsu';
-    src: url('./assets/fonts/Pyidaungsu.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  /* Use the font globally */
-  body {
-    font-family: 'Pyidaungsu', sans-serif;
-  }
+  font-family: "Pyidaungsu";
+  src: url("./assets/fonts/Pyidaungsu.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Use the font globally */
+body {
+  font-family: "Pyidaungsu", sans-serif;
+}
 
 /* Custom Sonner Toast Styles */
 .toaster {

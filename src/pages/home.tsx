@@ -11,7 +11,7 @@ function HomePage() {
   const [auth, setAuth] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost/lotus_shrine/fetchQuotes.php") 
+    fetch("http://localhost/lotus_shrine/fetchQuotes.php")
       .then((res) => res.json())
       .then((data) => {
         setQuoto(data.quote_name);
@@ -24,42 +24,38 @@ function HomePage() {
       });
   }, []);
   return (
-    <>    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 1 }}
-    >
-      <Navbar />
-      <div className="bg-[#4f3016] mt-[58px] ">
-        <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl 2xl:h-[800px]">
-          <div className="flex flex-col w-[640px] mr-[50px] mt-[70px] gap-2 items-center">
-            <img
-              src={things}
-              alt="Profile_Picture"
-              className="size-[230px]  "
-            />
-            <br />
-            <p className="text-[27px] font-bold text-[#402916]">
-            “{quoto}”
-            </p>
-            <p className="text-[22px] font-bold text-[#402916]">
-            ({auth})
-            </p>
-            <a href="/koenawin">
-            <button className="bg-[#4f3016] text-[16.2px] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
-              ဝင်ရောက်မည်
-            </button>
-            </a>
+    <>
+      {" "}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 1 }}
+      >
+        <Navbar />
+        <div className="bg-[#4f3016] mt-[58px] ">
+          <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]  justify-end rounded-t-2xl 2xl:h-[800px]">
+            <div className="flex flex-col w-[640px] mr-[50px] mt-[70px] gap-2 items-center">
+              <img
+                src={things}
+                alt="Profile_Picture"
+                className="size-[230px]  "
+              />
+              <br />
+              <p className="text-[27px] font-bold text-[#402916]">“{quoto}”</p>
+              <p className="text-[22px] font-bold text-[#402916]">({auth})</p>
+              <a href="/koenawin">
+                <button className="bg-[#4f3016] text-[16.2px] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
+                  ဝင်ရောက်မည်
+                </button>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    </motion.div>
-
-    <Features  />
-    <Footer />
+      </motion.div>
+      <Features />
+      <Footer />
     </>
-
   );
 }
 
