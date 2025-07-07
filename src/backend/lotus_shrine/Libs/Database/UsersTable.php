@@ -43,4 +43,33 @@ use PDO;
             return null;
         }
     }
+    public function updateResetToken($email, $token, $expiry){
+        $statement = $this->db->prepare(
+            "UPDATE users SET 
+            reset_token = :token,
+            reset_token_expiry = :expiry
+            WHERE user_email = :email"
+        );
+        
+        $statement->execute([
+            ':email' => $email,
+            ':token' => $token,
+            ':expiry' => $expiry
+        ]);
+    }
+    public function updatePasswordByEmail($email, $hashedPassword)
+    {
+        $statement = $this->db->prepare(
+            "UPDATE users SET 
+                user_password = :password,
+                reset_token = NULL,
+                reset_token_expiry = NULL
+            WHERE user_email = :email"
+        );
+        return $statement->execute([
+            ':email' => $email,
+            ':password' => $hashedPassword
+        ]);
+    }
+
 }

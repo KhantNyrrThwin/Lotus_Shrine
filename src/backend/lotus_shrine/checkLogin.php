@@ -10,9 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
-include 'Libs/Database/MySQL.php';
-include 'Libs/Database/UsersTable.php';
 
+require_once __DIR__ . '/vendor/autoload.php';
 use Libs\Database\MySQL;
 use Libs\Database\UsersTable;
 
