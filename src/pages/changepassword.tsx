@@ -1,3 +1,4 @@
+
 import { Link} from "react-router-dom"
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
@@ -55,6 +56,7 @@ const ChangePassword = () => {
             message = 'စကားဝှက်အားကောင်းပါသည်';
             strength = 'strong';
         }
+
 
         setPasswordStrength(strength);
         setStrengthMessage(message);
