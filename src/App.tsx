@@ -14,10 +14,13 @@ import ForgotPassword from "./pages/forgotpassword";
 import ChangePassword from "./pages/changepassword";
 import RequestEmail from "./pages/requestemail";
 import Meditation from "./pages/meditation";
+import TayartawPage from "./pages/tayartaw";
+import { MusicPlayerProvider } from "./components/MusicPlayerContext";
+import MusicPlayerBar from "./components/MusicPlayerBar";
 
 function App() {
   return (
-    <>
+    <MusicPlayerProvider>
       <AnimatePresence mode="wait">
         <Router>
           <Routes>
@@ -26,6 +29,7 @@ function App() {
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/koenawin" element={<KoeNaWin />} />
+            <Route path="/tayartaw" element={<TayartawPage />} />
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signin" element={<SigninPage />} />
@@ -37,8 +41,9 @@ function App() {
           </Routes>
         </Router>
       </AnimatePresence>
+      <MusicPlayerBar />
       <Toaster />
-    </>
+    </MusicPlayerProvider>
   );
 }
 
