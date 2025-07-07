@@ -48,7 +48,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`flex fixed top-0 left-0 right-0 z-50 bg-[#4f3016] text-white font-bold h-[58px] items-center transition-all duration-1000 
+        className={`flex fixed top-0 left-0 right-0 z-50 bg-[#4f3016] text-white font-bold h-[58px] items-center transition-all duration-1000 shadow-lg
         ${isFeaturesOpen ? "h-[280px] " : "h-[58px]"}  ${isKoeNaWinOpen ? "h-[200px] " : "h-[58px]"} ${isAboutOpen ? "h-[190px] " : "h-[58px]"} ${!isLogin && isAccountOpen ? "h-[160px] " : "h-[58px]"} 
         ${isLogin && isAccountOpen ? "h-[190px] " : "h-[58px]"}
         `}
@@ -105,7 +105,7 @@ export default function Navbar() {
                       &nbsp; ဘုရားရှိခိုးနှင့် ဂါတာတော်များ
                     </Link>
                     <Link
-                      to="/meditation"
+                      to="/tayartaw"
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
