@@ -8,8 +8,7 @@ header("Access-Control-Allow-Credentials: true");
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
-include 'Libs/Database/MySQL.php';
-include 'Libs/Database/UsersTable.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Libs\Database\MySQL;
 use Libs\Database\UsersTable;
@@ -29,13 +28,13 @@ try {
     $password = $data['password'];
 
     // Validate age
-    if ($age < 10 || $age > 120) {
+    if ($age <+ 10 || $age > 120) {
         throw new Exception('မှားယွင်းသော အသက်အရွယ်');
     }
 
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    
+
     $table = new UsersTable(new MySQL());
 
     // Check if email exists

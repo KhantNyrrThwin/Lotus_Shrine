@@ -1,3 +1,44 @@
+
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { motion } from "framer-motion"
+
+type FormData = {
+  email: string;
+};
+
+const RequestEmail = () => {
+  const form = useForm<FormData>({ mode: 'onBlur' });
+  const { register, handleSubmit, formState: { errors } } = form;
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: FormData) => {
+    setErrorMessage('');
+    setLoading(true);
+    console.log(data)
+    try {
+      const response = await axios.post(
+        'http://localhost/lotus_shrine/checkEmail.php',
+        JSON.stringify(data),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.success) {
+        localStorage.setItem('userEmail', data.email);
+        navigate('/forgotpassword', { state: { email: data.email } });
+      } else {
+        setErrorMessage('ဤ အီးမေးလ် ဖြင့်အကောင့်မရှိပါ');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.response?.data?.message || 'ဆာဗာနှင့် ချိတ်ဆက်မရပါ');
+
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -99,10 +140,12 @@ const RequestEmail = () => {
       }
     } catch (err: any) {
       setPasswordError(err.response?.data?.message || "ဆာဗာနှင့် ချိတ်ဆက်မရပါ");
+
     } finally {
       setLoading(false);
     }
   };
+
 
   const getStrengthColor = () => {
     switch (passwordStrength) {
@@ -197,6 +240,7 @@ const RequestEmail = () => {
       </motion.div>
     </>
   );
+
 };
 
 export default RequestEmail;
