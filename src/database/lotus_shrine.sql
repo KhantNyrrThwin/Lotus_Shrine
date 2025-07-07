@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 26, 2025 at 04:58 PM
+-- Generation Time: Jul 07, 2025 at 06:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,6 +46,29 @@ INSERT INTO `quotes` (`quote_ID`, `quote_name`, `quote_author`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rate_limits`
+--
+
+CREATE TABLE `rate_limits` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `attempts` int(11) NOT NULL DEFAULT 1,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `rate_limits`
+--
+
+INSERT INTO `rate_limits` (`id`, `email`, `ip`, `attempts`, `created_at`) VALUES
+(23, 'justicforyang@gmail.com', '::1', 1, '2025-07-07 21:52:36'),
+(24, 'nini@gmail.com', '::1', 1, '2025-07-07 21:53:03'),
+(29, 'ttube5020@gmail.com', '::1', 2, '2025-07-07 22:43:01');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -54,18 +77,22 @@ CREATE TABLE `users` (
   `user_email` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `age` int(20) NOT NULL,
-  `user_password` varchar(255) NOT NULL
+  `user_password` varchar(255) NOT NULL,
+  `reset_token` varchar(6) DEFAULT NULL,
+  `reset_token_expiry` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_email`, `name`, `age`, `user_password`) VALUES
-(2, 'paiminthway13@gmail.com', 'Pai Min Thway', 20, '$2y$10$tr2XSd0UVRiFT0c4dI/r3.GM4WvnIZi0TZhU2uaE0awDhYTurcL3y'),
-(3, 'nyarnyar@gmail.com', 'Nyar Nyar', 20, '$2y$10$WJBJbwe0xYwUwL3pBZBmSuA82Pw1uuWpuRk88EFj7jmHN2Kp66bKC'),
-(4, 'nini@gmail.com', 'Ni Ni', 10, '$2y$10$fmNTFUkPDT7plWyKflAh..ZWylbl0hXb3qXOnfgy5IuQfE7iFUygm'),
-(8, 'ttube5020@gmail.com', 'Fatty', 20, '$2y$10$SegnM3b53NTzYB.AfGt7au3OdqSV.b2ZImDEtKvqzFFAbxjoN5VIu');
+INSERT INTO `users` (`user_id`, `user_email`, `name`, `age`, `user_password`, `reset_token`, `reset_token_expiry`) VALUES
+(2, 'paiminthway13@gmail.com', 'Pai Min Thway', 20, '$2y$10$tr2XSd0UVRiFT0c4dI/r3.GM4WvnIZi0TZhU2uaE0awDhYTurcL3y', NULL, NULL),
+(3, 'justicforyang@gmail.com', 'Nyar Nyar', 20, '$2y$10$WJBJbwe0xYwUwL3pBZBmSuA82Pw1uuWpuRk88EFj7jmHN2Kp66bKC', '041212', '2025-07-07 17:27:36'),
+(4, 'nini@gmail.com', 'Ni Ni', 10, '$2y$10$fmNTFUkPDT7plWyKflAh..ZWylbl0hXb3qXOnfgy5IuQfE7iFUygm', '415825', '2025-07-07 17:28:03'),
+(8, 'ttube5020@gmail.com', 'Fatty', 20, '$2y$10$hT5fUooSAR9Gzx7cEXVi3uxybcBjR3NvtZEfIl.QKCyMN5tEMxjvq', NULL, NULL),
+(9, 'paipai@gmail.com', 'ပိုင်မင်းသွေး', 20, '$2y$10$f9fOz.EG2ZTQb5ek/4aCmOiZeY9.N3ZWiVOOFk2QEt2trRMnRboIS', NULL, NULL),
+(10, 'zilong52811@gmail.com', 'Raven', 20, '$2y$10$b7HfaY7jarDTY7eVmKJgJufdf/h435gbaviAnSgs06NY.p8d9tKky', '485899', '2025-07-07 17:29:03');
 
 --
 -- Indexes for dumped tables
@@ -76,6 +103,16 @@ INSERT INTO `users` (`user_id`, `user_email`, `name`, `age`, `user_password`) VA
 --
 ALTER TABLE `quotes`
   ADD PRIMARY KEY (`quote_ID`);
+
+--
+-- Indexes for table `rate_limits`
+--
+ALTER TABLE `rate_limits`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_email_ip` (`email`,`ip`),
+  ADD KEY `email` (`email`),
+  ADD KEY `ip` (`ip`),
+  ADD KEY `created_at` (`created_at`);
 
 --
 -- Indexes for table `users`
@@ -94,10 +131,16 @@ ALTER TABLE `quotes`
   MODIFY `quote_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `rate_limits`
+--
+ALTER TABLE `rate_limits`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
