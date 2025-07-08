@@ -15,7 +15,7 @@ type PasswordStrength = 'very-weak' | 'weak' | 'medium' | 'strong' | '';
 
 const ChangePassword = () => {
     const form = useForm<FormData>({ mode: 'onBlur' });
-    const { register, control, handleSubmit, formState: { errors }, watch } = form;
+    const { register, handleSubmit, formState: { errors }, watch } = form;
     const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>('');
