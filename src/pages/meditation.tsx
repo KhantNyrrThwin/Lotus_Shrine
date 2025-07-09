@@ -5,6 +5,8 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-rea
 import bell from "../assets/sounds/Meditaion.mp3";
 import meditationAudio from "../assets/sounds/Meditaion.mp3";
 import { useMusicPlayer } from "../components/MusicPlayerContext";
+import tayartawVideos from "../data/tayartawVideos";
+import { mantras } from "../data/mantras";
 
 interface DhammaSong {
   id: number;
@@ -46,50 +48,13 @@ const dhammaSongs: DhammaSong[] = [
 ];
 
 // Add Tayartaw videos and Paritta Suttas data
-const tayartawVideos = [
-  {
-    id: 'dyRsYk0LyA8',
-    title: 'ဘလက်ပင့်',
-    description: 'A guided meditation session for relaxation and mindfulness.'
-  },
-  {
-    id: 'pFKxnb1_JkM',
-    title: 'ကိုပိုင်',
-    description: 'An inspiring Dhamma talk by a renowned teacher.'
-  },
-  {
-    id: '3JZ_D3ELwOQ',
-    title: 'Lotus Chanting',
-    description: 'Traditional chanting for daily practice.'
-  },
-  {
-    id: 'ukEZyKdTOCE',
-    title: 'Dhamma Talk',
-    description: 'An inspiring Dhamma talk by a renowned teacher.'
-  },
-  {
-    id: 'EtGzqyBbSzw',
-    title: 'Lotus Chanting',
-    description: 'Traditional chanting for daily practice.'
-  },
-];
-
-const parittaSuttas = [
-  {
-    id: 1,
-    title: "Paritta Sutta 1",
-    artist: "Chanting Group",
-    duration: "10:00",
-    audioUrl: meditationAudio // Replace with real audio
-  },
-  {
-    id: 2,
-    title: "Paritta Sutta 2",
-    artist: "Chanting Group",
-    duration: "12:30",
-    audioUrl: meditationAudio // Replace with real audio
-  }
-];
+const parittaSuttas = mantras.map((m, idx) => ({
+  id: idx + 1,
+  title: m.title,
+  artist: m.artist,
+  duration: m.duration,
+  audioUrl: m.audio
+}));
 
 function Meditation() {
   const [timer, setTimer] = useState(0);
@@ -243,7 +208,7 @@ function Meditation() {
           </div>
 
           {/* Music Player Section */}
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 h-[32rem] overflow-y-auto">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
               {category === 'dhamma' && 'Dhamma Songs'}
               {category === 'tayartaw' && 'Tayartaw Videos'}

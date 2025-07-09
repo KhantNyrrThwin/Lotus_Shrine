@@ -27,6 +27,15 @@ export const mantras = [
     audio: "/audio/sangha-puja.mp3",
     artist: "Unknown",
     duration: "2:45"
+  },
+  {
+    id: "sangha-puja",
+    section: "ဘုရားရှိခိုး",
+    title: "ံနူူသ",
+    text: `သံဃာရှိခိုး စာသား ဥပမာ။`,
+    audio: "/audio/sangha-puja.mp3",
+    artist: "Unknown",
+    duration: "2:45"
   }
   // ... add more mantras as needed
 ]; 
