@@ -1,19 +1,57 @@
 import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { motion } from "framer-motion";
 import applogo from "../assets/logo1.png";
+import { useEffect, useRef, MutableRefObject } from "react";
+import gsap from "gsap";
 
 function AboutUs() {
+  // Refs for animation targets
+  const mainRef = useRef<HTMLDivElement | null>(null);
+  const teamRefs = useRef<HTMLDivElement[]>([]);
+  const sectionRefs = useRef<HTMLDivElement[]>([]);
+
+  useEffect(() => {
+    // Main container fade-in
+    gsap.fromTo(
+      mainRef.current,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+    );
+
+    // Team member cards stagger
+    gsap.fromTo(
+      teamRefs.current,
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.15,
+        ease: "power3.out",
+        delay: 0.5,
+      }
+    );
+
+    // Section blocks (GitHub, About, etc.)
+    gsap.fromTo(
+      sectionRefs.current,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power2.out",
+        delay: 1.1,
+      }
+    );
+  }, []);
+
   return (
     <>
       <Navbar />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 1 }}
-      >
+      <div ref={mainRef}>
         <div className="bg-[#FDE9DA] mt-[58px] min-h-screen">
           {/* Team Members Section */}
           <div className="container mx-auto px-6 py-16 ">
@@ -26,10 +64,10 @@ function AboutUs() {
 
             <div className="grid md:grid-cols-3 gap-10 mb-16">
               {/* Team Member 1 */}
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+              <div
+                ref={el => {
+                  if (el) teamRefs.current[0] = el;
+                }}
                 className="group relative"
               >
                 <div className="bg-gradient-to-br from-white to-[#FDF5E6] rounded-2xl shadow-2xl p-8 text-center hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 border border-[#4f3016]/10 h-[500px]">
@@ -66,13 +104,13 @@ function AboutUs() {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Team Member 2 */}
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+              <div
+                ref={el => {
+                  if (el) teamRefs.current[1] = el;
+                }}
                 className="group relative"
               >
                 <div className="bg-gradient-to-br from-white to-[#FDF5E6] rounded-2xl shadow-2xl p-8 text-center hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 border border-[#4f3016]/10 h-[500px]">
@@ -109,13 +147,13 @@ function AboutUs() {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Team Member 3 */}
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+              <div
+                ref={el => {
+                  if (el) teamRefs.current[2] = el;
+                }}
                 className="group relative"
               >
                 <div className="bg-gradient-to-br from-white to-[#FDF5E6] rounded-2xl shadow-2xl p-8 text-center hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 border border-[#4f3016]/10 h-[500px]">
@@ -152,7 +190,7 @@ function AboutUs() {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {/* Git Repository Section */}
@@ -167,10 +205,10 @@ function AboutUs() {
               </p>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+            <div
+              ref={el => {
+                if (el) sectionRefs.current[0] = el;
+              }}
               className="group relative mb-16"
             >
               <div className="bg-gradient-to-br from-white to-[#FDF5E6] rounded-2xl shadow-2xl p-10 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 border border-[#4f3016]/10">
@@ -298,7 +336,7 @@ function AboutUs() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* About Lotus Shrine Section */}
             <div className="text-center mb-16">
@@ -312,10 +350,10 @@ function AboutUs() {
               </p>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+            <div
+              ref={el => {
+                if (el) sectionRefs.current[1] = el;
+              }}
               className="group relative mb-16"
             >
               <div className="bg-gradient-to-br from-white to-[#FDF5E6] rounded-2xl shadow-2xl p-10 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 border border-[#4f3016]/10">
@@ -388,10 +426,10 @@ function AboutUs() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
       <Footer />
     </>
   );
