@@ -275,12 +275,7 @@ function Meditation() {
               <>
                 {/* Open Music Player Button */}
                 <div className="flex justify-center mb-4">
-                  <button
-                    onClick={openPlayer}
-                    className="bg-[#4f3016] text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-[#6a3c1a] transition-colors"
-                  >
-                    Open Music Player
-                  </button>
+                 
                 </div>
                 {/* Song List */}
                 <div className="space-y-3">
