@@ -98,7 +98,7 @@ export default function Navbar() {
                       &nbsp; ဘုရားများ
                     </Link>
                     <Link
-                      to="/meditation"
+                      to="/dhamma"
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
