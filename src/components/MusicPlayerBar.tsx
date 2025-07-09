@@ -1,4 +1,3 @@
-import React from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import { useMusicPlayer } from './MusicPlayerContext';
 
@@ -33,7 +32,7 @@ const MusicPlayerBar = () => {
       <div className="flex items-center space-x-4">
         <button
           onClick={previousSong}
-          className="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+          className="p-2 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors"
         >
           <SkipBack size={20} />
         </button>
@@ -45,7 +44,7 @@ const MusicPlayerBar = () => {
         </button>
         <button
           onClick={nextSong}
-          className="p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+          className="p-2 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors"
         >
           <SkipForward size={20} />
         </button>
@@ -53,7 +52,7 @@ const MusicPlayerBar = () => {
       <div className="flex items-center space-x-2 w-48">
         <button
           onClick={toggleMute}
-          className="p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+          className="p-1 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors"
         >
           {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
