@@ -18,6 +18,8 @@ import TayartawPage from "./pages/tayartaw";
 import { MusicPlayerProvider } from "./components/MusicPlayerContext";
 import MusicPlayerBar from "./components/MusicPlayerBar";
 import Gonetawkoeprr from "./pages/gonetawkoeprr";
+import Dhamma from "./pages/dhamma";
+import MantraDetail from "./pages/mantra";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
             <Route path="/tayartaw" element={<TayartawPage />} />
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/dhamma" element={<Dhamma />} />
+            <Route path="/mantra/:id" element={<MantraDetail />} />
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/contactus" element={<ContactUs />} />
             <Route path="/" element={<HomePage />}>
