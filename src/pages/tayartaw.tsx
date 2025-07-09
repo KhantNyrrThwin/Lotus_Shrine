@@ -5,14 +5,14 @@ import Footer from "../components/footer";
 // Video data with id, title, and description
 const videos = [
   {
-    id: 'dyRsYk0LyA8',
-    title: 'ဘလက်ပင့်',
-    description: 'A guided meditation session for relaxation and mindfulness.'
+    id: 'ZQYjadDutMk',
+    title: 'စွန့်လွှတ်ခြင်းနှင့် ဆုတ်ကိုင်ခြင်းတရားတော်',
+    description: 'The Law of Letting Go and Holding On'
   },
   {
-    id: 'pFKxnb1_JkM',
-    title: 'ကိုပိုင်',
-    description: 'An inspiring Dhamma talk by a renowned teacher.'
+    id: 'JKvJ0yQM1w8',
+    title: 'ကုသိုလ်အစုံလုပ်ရင် ကံတွေတက်လာမယ်',
+    description: 'If you do a lot of good deeds, your karma will really increase.'
   },
   {
     id: '3JZ_D3ELwOQ',

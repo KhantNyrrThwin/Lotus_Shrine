@@ -17,6 +17,7 @@ import Meditation from "./pages/meditation";
 import TayartawPage from "./pages/tayartaw";
 import { MusicPlayerProvider } from "./components/MusicPlayerContext";
 import MusicPlayerBar from "./components/MusicPlayerBar";
+import Gonetawkoeprr from "./pages/gonetawkoeprr";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
+            <Route path="/gonetaw" element={<Gonetawkoeprr />} />
             <Route path="/koenawin" element={<KoeNaWin />} />
             <Route path="/tayartaw" element={<TayartawPage />} />
             <Route path="/meditation" element={<Meditation />} />
