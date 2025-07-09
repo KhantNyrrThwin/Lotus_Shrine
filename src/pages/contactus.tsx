@@ -14,22 +14,30 @@ type ContactFormData = {
 
 function ContactUs() {
   const form = useForm<ContactFormData>();
-  const { register, control, handleSubmit, reset } = form;
+  const { register, control, handleSubmit, reset, formState } = form;
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: ContactFormData) => {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost/lotus_shrine/contact.php",
+        "http://localhost/lotus_shrine/contactUs.php",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        },
+        }
       );
+
+      // Handle non-2xx responses
+      if (!response.ok) {
+        const errorResult = await response.json().catch(() => ({
+          message: "Server responded with an error",
+        }));
+        throw new Error(errorResult.message || "Request failed");
+      }
 
       const result = await response.json();
 
@@ -38,17 +46,14 @@ function ContactUs() {
           description: "ကျေးဇူးတင်ပါသည်။ မကြာမီ ပြန်လည်ဆက်သွယ်ပေးပါမည်။",
           duration: 5000,
         });
-        reset(); // Reset form after successful submission
+        reset();
       } else {
-        toast.error("မက်ဆေ့ချ်ပို့ခြင်း ကျဆုံးပါသည်", {
-          description: result.message || "ပြန်လည်ကြိုးစားပါ",
-          duration: 5000,
-        });
+        throw new Error(result.message || "Message submission failed");
       }
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("မက်ဆေ့ချ်ပို့ခြင်း ကျဆုံးပါသည်", {
-        description: "ဆာဗာချိတ်ဆက်မှု ပျက်ကွက်ပါသည်။ ပြန်လည်ကြိုးစားပါ။",
+        description: error instanceof Error ? error.message : "ပြန်လည်ကြိုးစားပါ",
         duration: 5000,
       });
     } finally {
@@ -99,9 +104,9 @@ function ContactUs() {
                     })}
                     className="w-full h-[57px] bg-white border-2 border-[#4f3016] rounded-[9px] px-4 focus:outline-none focus:border-amber-600 transition-colors"
                   />
-                  {form.formState.errors.email && (
+                  {formState.errors.email && (
                     <p className="text-red-500 text-sm mt-1">
-                      {form.formState.errors.email.message}
+                      {formState.errors.email.message}
                     </p>
                   )}
                 </div>
@@ -127,9 +132,9 @@ function ContactUs() {
                     })}
                     className="w-full bg-white border-2 border-[#4f3016] rounded-[9px] px-4 py-3 focus:outline-none focus:border-amber-600 transition-colors resize-none"
                   />
-                  {form.formState.errors.message && (
+                  {formState.errors.message && (
                     <p className="text-red-500 text-sm mt-1">
-                      {form.formState.errors.message.message}
+                      {formState.errors.message.message}
                     </p>
                   )}
                 </div>
