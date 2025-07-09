@@ -21,7 +21,7 @@ function ContactUs() {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost/lotus_shrine/contactUs.php",
+        "http://localhost/lotus_shrine/contact.php",
         {
           method: "POST",
           headers: {
