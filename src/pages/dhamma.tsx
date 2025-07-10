@@ -56,7 +56,7 @@ function Dhamma() {
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Search section or mantra..."
+                placeholder="ဂါထာတော်များရှာရန်..."
                 className="w-full px-4 py-2 rounded-full border border-brown-100 shadow focus:outline-none focus:ring-2 focus:ring-brown-200 bg-white/80 text-brown-800 transition-all duration-200 focus:shadow-lg"
               />
               <Search className="absolute right-3 top-2.5 text-brown-300" size={20} />
@@ -91,13 +91,13 @@ function Dhamma() {
                             })}
                           >
                             <Play size={18} />
-                            Play
+                            ဖွင့်မည်
                           </button>
                           <button
                             className="px-4 py-2 bg-brown-100 hover:bg-brown-200 rounded-full shadow text-brown-700 cursor-pointer font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg hover:text-white hover:bg-[#bfa074]"
                             onClick={() => navigate(`/mantra/${mantra.id}`)}
                           >
-                            View
+                            ဖတ်မည်
                           </button>
                         </div>
                       </div>

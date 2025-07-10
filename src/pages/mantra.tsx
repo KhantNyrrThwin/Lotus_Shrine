@@ -22,7 +22,7 @@ function MantraDetail() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center py-12 min-h-screen bg-gray-50">
+      <div className="flex flex-col items-center py-20 min-h-screen bg-[#FDE9DA]">
         <div className="w-full max-w-2xl bg-white rounded shadow p-6">
           <h1 className="text-2xl font-bold mb-4 text-center">{mantra.title}</h1>
           <div className="flex justify-center gap-4 mb-4">

@@ -64,7 +64,7 @@ function Meditation() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Add category state
-  const [category, setCategory] = useState<'dhamma' | 'tayartaw' | 'paritta'>('dhamma');
+  const [category, setCategory] = useState< 'tayartaw' | 'paritta' | 'dhamma' >('tayartaw');
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
   // Use global music player context
@@ -130,14 +130,14 @@ function Meditation() {
       
       <div className="container mx-auto px-4 py-20">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-          Meditation Center
+          တရားထိုင်ခြင်း
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Timer Section */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              Meditation Timer
+              တရားထိုင်မည်
             </h2>
             
             <div className="text-center mb-8">
@@ -145,7 +145,7 @@ function Meditation() {
                 {formatTime(timer)}
               </div>
               <div className="text-gray-600 mb-4">
-                Target: {formatTimerDuration(timerDuration)}
+                တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}
               </div>
               
               {/* Progress bar */}
@@ -164,27 +164,27 @@ function Meditation() {
                 disabled={isTimerRunning}
                 className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
-                Start
+                စတင်မည်
               </button>
               <button
                 onClick={pauseTimer}
                 disabled={!isTimerRunning}
                 className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
-                Pause
+                ခဏရပ်မည်
               </button>
               <button
                 onClick={resetTimer}
                 className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
-                Reset
+                ပြန်စတင်မည်
               </button>
             </div>
 
             {/* Timer Duration Selection */}
             <div className="text-center">
               <label className="block text-gray-700 font-medium mb-2">
-                Set Duration:
+                တရားထိုင်ချိန် သတ်မှတ်ပါ :
               </label>
               <div className="flex justify-center space-x-2">
                 {[5, 10, 15, 20, 30].map((minutes) => (
@@ -200,7 +200,7 @@ function Meditation() {
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                   >
-                    {minutes}m
+                    {minutes} မိနစ်
                   </button>
                 ))}
               </div>
@@ -210,29 +210,31 @@ function Meditation() {
           {/* Music Player Section */}
           <div className="bg-white rounded-2xl shadow-lg p-8 h-[32rem] overflow-y-auto">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              {category === 'dhamma' && 'Dhamma Songs'}
-              {category === 'tayartaw' && 'Tayartaw Videos'}
-              {category === 'paritta' && 'Paritta Suttas'}
+              
+              {category === 'tayartaw' && 'တရားတော်များ'}
+              {category === 'paritta' && 'ဂါတာတော်များ'}
+              {category === 'dhamma' && 'ဓမ္မသီချင်းများ'}
             </h2>
             {/* Category Buttons */}
             <div className="flex justify-center mb-6 space-x-2">
-              <button
-                onClick={() => setCategory('dhamma')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'dhamma' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-              >
-                Dhamma Songs
-              </button>
+              
               <button
                 onClick={() => setCategory('tayartaw')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'tayartaw' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
-                Tayartaw Videos
+                တရားတော်များ
               </button>
               <button
                 onClick={() => setCategory('paritta')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'paritta' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
-                Paritta Suttas
+                ဂါတာတော်များ
+              </button>
+              <button
+                onClick={() => setCategory('dhamma')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'dhamma' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >
+                ဓမ္မသီချင်းများ
               </button>
             </div>
             {/* Category Content */}
