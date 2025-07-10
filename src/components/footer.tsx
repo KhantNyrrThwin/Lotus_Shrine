@@ -34,32 +34,32 @@ function Footer() {
             </div>
             <div className="flex flex-col w-[200px] h-[280px] 2xl:ml-[80px]">
               <Link
-                to="/aboutus"
+                to="/koenawin"
                 className="flex items-center text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                &nbsp; ရည်ရွယ်ချက်
+                &nbsp; ကိုးနဝင်း
               </Link>
               <Link
-                to="/aboutus"
+                to="/pagodas"
                 className="flex items-center text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                &nbsp; ကျွန်ုပ်တို့အကြောင်း
+                &nbsp; ဘုရားများ
+              </Link>
+              <Link
+                to="/dhamma"
+                className="flex items-center  text-white hover:text-amber-300 mb-[10px] font-extrabold"
+              >
+                <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                &nbsp; တရားတော်များ
               </Link>
               <Link
                 to="/meditation"
                 className="flex items-center  text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                &nbsp; ဆက်သွယ်ရန်
-              </Link>
-              <Link
-                to="/meditation"
-                className="flex items-center  text-white hover:text-amber-300 mb-[10px] font-extrabold"
-              >
-                <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                &nbsp; ဆက်သွယ်ရန်
+                &nbsp; တရားထိုင်ရန်
               </Link>
             </div>
           </div>
@@ -79,14 +79,14 @@ function Footer() {
                 &nbsp; Developers များ
               </Link>
               <Link
-                to="/aboutus"
+                to="/"
                 className="flex items-center text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
                 &nbsp; 09406323053
               </Link>
               <Link
-                to="/meditation"
+                to="/"
                 className="flex items-center  text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
