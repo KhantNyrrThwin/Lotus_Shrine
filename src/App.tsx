@@ -20,6 +20,8 @@ import MusicPlayerBar from "./components/MusicPlayerBar";
 import Gonetawkoeprr from "./pages/gonetawkoeprr";
 import Dhamma from "./pages/dhamma";
 import MantraDetail from "./pages/mantra";
+import Pagodas from "./pages/pagodas";
+import Test from "./pages/test";
 
 function App() {
   return (
@@ -27,7 +29,9 @@ function App() {
       <AnimatePresence mode="wait">
         <Router>
           <Routes>
+          <Route path="/test" element={<Test />} />
             <Route path="/changepassword" element={<ChangePassword />} />
+            <Route path="/pagodas" element={<Pagodas />} />
             <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />

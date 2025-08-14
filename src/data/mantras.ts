@@ -1,4 +1,6 @@
-import meditationAudio from "../assets/sounds/Meditaion.mp3";
+import ဩကာတ from "../assets/sounds/ဩကာာတ.mp3"
+import စိန်ရောင်ခြည် from "../assets/sounds/စိန်ရောင်ခြည်.mp3"
+import မေတ္တာ from "../assets/sounds/မေတ္တာသုတ်.mp3"
 
 export const mantras = [
   {
@@ -6,7 +8,7 @@ export const mantras = [
     section: "ဘုရားရှိခိုး",
     title: "သြကာသကန်တော့ချိုး",
     text: `သြကာသ၊ သြကာသ၊ သြကာသ\nကာယကံ၊ ဝစီကံ၊ မနောကံ သဗ္ဗဒေါသ ခပ်သိမ်းသော အပြစ်တို့ကို ပျောက်ပါစေခြင်း အကျိုးငှာ ပထမ၊ ဒုတိယ၊ တတိယ၊ တစ်ကြိမ်၊ နှစ်ကြိမ်၊ သုံးကြိမ်မြောက်အောင် ဘုရားရတနာ၊ တရားရတနာ၊ သံဃာရတနာ၊ ရတနာမြတ်သုံးပါးတို့ကို အရိုအသေ အလေးအမြတ် လက်အုပ်မိုး၍ ရှိခိုးပူဇော် ဖူးမြော်မာန်လျှော့ ကန်တော့ပါ၏။`,
-    audio: meditationAudio,
+    audio: ဩကာတ,
     artist: "Unknown",
     duration: "3:00"
   },
@@ -61,7 +63,7 @@ export const mantras = [
 သီသကေ – လေးထွေ ဘူတ ကာယကိုယ်တွင် အမြတ်တင်သည့် ဦးပြင်ထိပ်၌။
 
 ဌာတု – ခိုင်ခိုင်မတ်မတ် တန့်ရပ်တည်တော်မူပါ့ စိန်ရောင်ခြည် နေတနှုန်းကဲ့သို့ ရွှေဘုန်းတော်သခင် အရှင်မြတ်ကြီးဘုရား။`,
-    audio: "/audio/dhamma-puja.mp3",
+    audio: စိန်ရောင်ခြည်,
     artist: "Unknown",
     duration: "2:30"
   },
@@ -969,7 +971,7 @@ export const mantras = [
 ဒိဋ္ဌိဉ္စ အနုပဂ္ဂမ္မ၊ သီလဝါ ဒဿနေန သမ္ပန္နော။ ကာမေသု ဝိနယ ဂေဓံ၊ န ဟိ ဇာတုဂ္ဂဗ္ဘသေယျ ပုန ရေတိ။
 
 မေတ္တသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: မေတ္တာ,
     artist: "Unknown",
     duration: "2:45"
   },

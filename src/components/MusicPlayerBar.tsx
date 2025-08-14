@@ -1,6 +1,8 @@
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import { useMusicPlayer } from './MusicPlayerContext';
 import applogo from "../assets/logo1.png";
+import { useEffect, useState } from 'react';
+
 const MusicPlayerBar = () => {
   const {
     currentSong,
@@ -16,17 +18,46 @@ const MusicPlayerBar = () => {
     closePlayer,
   } = useMusicPlayer();
 
-  if (!showPlayer || !currentSong) return null;
+  const [isVisible, setIsVisible] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+
+  useEffect(() => {
+    if (showPlayer && currentSong) {
+      setIsVisible(true);
+      setIsExiting(false);
+    } else {
+      setIsExiting(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 300); // Match the transition duration
+      return () => clearTimeout(timer);
+    }
+  }, [showPlayer, currentSong]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      closePlayer();
+    }, 300);
+  };
+
+  if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-gradient-to-r bg-amber-800 text-white shadow-2xl z-50 flex items-center justify-between px-6 py-3 transition-all">
+    <div 
+      className={`fixed bottom-0 left-0 w-full bg-gradient-to-r bg-amber-800 text-white shadow-2xl z-50 flex items-center justify-between px-6 py-3 transition-all duration-300 ease-in-out transform ${
+        isExiting 
+          ? 'translate-y-full opacity-0' 
+          : 'translate-y-0 opacity-100'
+      }`}
+    >
       <div className="flex items-center space-x-4">
         <div className=" bg-opacity-10 rounded-lg p-2">
           <img src={applogo} className='size-12' />
         </div>
         <div>
-          <p className="font-semibold text-lg">{currentSong.title}</p>
-          <p className="text-sm text-gray-300">{currentSong.artist}</p>
+          <p className="font-semibold text-lg">{currentSong?.title}</p>
+          <p className="text-sm text-gray-300">{currentSong?.artist}</p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
@@ -67,7 +98,7 @@ const MusicPlayerBar = () => {
         />
       </div>
       <button
-        onClick={closePlayer}
+        onClick={handleClose}
         className="ml-4 px-3 py-1 rounded-lg cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold transition-colors"
       >
         ပိတ်မည်
