@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { Button } from "../components/ui/button";
@@ -17,8 +15,7 @@ import {
   Eye
 } from "lucide-react";
 
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
+// Tailwind-only page (no external animation libs)
 
 interface Pagoda {
   id: number;
@@ -62,7 +59,7 @@ const pagodas: Pagoda[] = [
     location: "Mandalay, Myanmar",
     description: "မြန်မာသက္ကရာဇ် ၁၂၃၀ ကဆုန်လဆန်း ၁ ရက်နေ့တွင်-ဝိနည်း ၅ ကျမ်း ပါဠိတော်က ချပ်ရေ ၁၁၁ ချပ် / အဘိဓမ္မာ ၇ ကျမ်း ပါဠိတော်က ချပ်ရေ ၂၀၈ ချပ်နိကာယ် ၅ ကျမ်း၊ သုတ် ၃ ကျမ်း ပါဠိတော်က ချပ်ရေ ၄၁၀ ချပ် စုစုပေါင်း ကျောက်စာချပ်ရေ ၇၂၉ ချပ် အတွက် ဓမ္မစေတီ ၇၂၉ဆူကို ထုလုပ် ဝန်းရံတည်ထားခဲ့သည်။ ကျောက်စာများရေ များတဲ့ဘုရားဖြစ်သောကြောင့် ကမ္ဘာ့အကြီးဆုံးစာအုပ် ဟုတင်စားရေးသားကြသည်။",
     descriptionMyanmar: "ကုသိုလ်တော်ဘုရား သည် မန္တလေးတောင်၏ အရှေ့တောင်ဘက်တွင် တည်ရှိပြီး မင်းတုန်းမင်း၏ ကုသိုလ်တော် ဖြစ်သည်။ မြန်မာသက္ကရာဇ် ၁၂၂၄ ဝါဆိုလတွင် မင်းတုန်းမင်း တည်ထားကိုးကွယ်ခဲ့သော ဘုရားဖြစ်ပြီး ဘွဲ့အမည်မှာ မဟာလောကမာရဇိန် ဖြစ်သည်။ တံတိုင်း ၃ ထပ်ရှိပြီး ဖိနပ်ခင်းအချင်း သံတောင် ၆၅၊ အရပ်တော် သံတောင် ၅၀၊ ၁ မိုက် ၄ သစ်ရှိသည်။",
-    image: "/src/assets/KuToTaw/Main.jpg",
+         image: "/src/assets/KuToTaw/Main Pagoda/MainPagoda1.jpg",
     category: "Historical",
     features: ["World's Largest Book", "Educational", "Marble Slabs", "Scriptures"]
   },
@@ -101,64 +98,11 @@ const categories = [
 ];
 
 export default function Pagodas() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPagoda, setSelectedPagoda] = useState<Pagoda | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const pageRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // GSAP Animations
-    const tl = gsap.timeline();
-
-    // Header animation
-    tl.fromTo(headerRef.current, 
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
-    );
-
-    // Cards stagger animation
-    gsap.fromTo(".pagoda-card",
-      { y: 100, opacity: 0, scale: 0.8 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
-
-    // Category buttons animation
-    gsap.fromTo(".category-btn",
-      { x: -50, opacity: 0 },
-      {
-        x: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".categories-section",
-          start: "top 80%"
-        }
-      }
-    );
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
 
   const filteredPagodas = pagodas.filter(pagoda => {
     const matchesCategory = selectedCategory === "all" || 
@@ -379,7 +323,7 @@ export default function Pagodas() {
             </div>
             
             <div class="footer">
-              Shared from Lotus Shrine App
+              Lotus Shrine App မှ မျှဝေထားပါသည်
             </div>
           </div>
         </body>
@@ -506,94 +450,38 @@ Shared from Lotus Shrine App
     }
   };
 
-  const takeScreenshotForDownload = async () => {
-    try {
-      const html2canvas = (await import('html2canvas')).default;
-      const modalContent = document.querySelector('.modal-content') as HTMLElement;
-      
-      if (modalContent) {
-        const canvas = await html2canvas(modalContent, {
-          backgroundColor: '#ffffff',
-          scale: 2,
-          useCORS: true,
-          allowTaint: true
-        });
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${selectedPagoda?.name.replace(/\s+/g, '-')}-details.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            console.log("Screenshot downloaded successfully!");
-          }
-        }, 'image/png');
-      }
-    } catch (error) {
-      console.error("Error taking screenshot:", error);
-              console.error("Failed to take screenshot");
-    }
-  };
+  // Removed unused download helper to keep Tailwind-only and clean
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="bg-[#FDE9DA] w-full min-h-screen">
       <Navbar />
-      
-      {/* Hero Section */}
-      <div ref={headerRef} className="pt-20 pb-16 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold text-white mb-6"
-          >
-            ဘုရားများ
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto"
-          >
-            Discover the sacred pagodas and temples of Myanmar
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex justify-center"
-          >
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 flex items-center space-x-4">
-              <div className="flex items-center bg-white rounded-full px-4 py-2">
-                <Search className="w-5 h-5 text-gray-500 mr-2" />
-                <input
+
+      {/* Hero Section - Tailwind only, consistent with other pages */}
+      <div className="pt-20 pb-12 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#402916] mb-4">ဘုရားများ</h1>
+          <p className="text-lg text-[#4f3016] max-w-3xl mx-auto leading-relaxed">
+            မြန်မာနိုင်ငံ၏ အထွတ်အမြတ်ဆုံး ဘုရားများနှင့် စေတီများကို ရှာဖွေလေ့လာပါ
+          </p>
+        </div>
+        <div className="max-w-4xl mx-auto mt-6">
+          <div className="bg-white rounded-full p-2 shadow-lg">
+            <div className="flex items-center px-2">
+              <Search className="w-5 h-5 text-gray-400 mr-2" />
+                              <input
                   type="text"
-                  placeholder="Search pagodas..."
+                  placeholder="ဘုရားများရှာရန်..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-transparent outline-none text-gray-700 placeholder-gray-500 w-64"
+                  className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 py-2"
                 />
-              </div>
             </div>
-          </motion.div>
-        </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
-          <div className="absolute top-20 right-20 w-16 h-16 bg-white/10 rounded-full"></div>
-          <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-white/10 rounded-full"></div>
+          </div>
         </div>
       </div>
 
       {/* Categories Section */}
-      <div className="categories-section py-8 bg-white/50">
+      <div className="categories-section py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-4">
             {categories.map((category) => (
@@ -616,13 +504,12 @@ Shared from Lotus Shrine App
       </div>
 
       {/* Pagodas Grid */}
-      <div ref={cardsRef} className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPagodas.map((pagoda) => (
-            <motion.div
+            <div
               key={pagoda.id}
-              className="pagoda-card group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2"
-              whileHover={{ scale: 1.02 }}
+              className="pagoda-card group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 hover:scale-[1.02]"
               onClick={() => openModal(pagoda)}
             >
               {/* Image */}
@@ -654,7 +541,7 @@ Shared from Lotus Shrine App
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Share this pagoda</p>
+                      <p>ဤဘုရားကို မျှဝေရန်</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -702,15 +589,15 @@ Shared from Lotus Shrine App
                   အသေးစိတ်ကြည့်ရှုရန်
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {filteredPagodas.length === 0 && (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🏛️</div>
-            <h3 className="text-2xl font-semibold text-gray-600 mb-2">No pagodas found</h3>
-            <p className="text-gray-500">Try adjusting your search or category filter</p>
+            <h3 className="text-2xl font-semibold text-gray-600 mb-2">ဘုရားမတွေ့ပါ</h3>
+            <p className="text-gray-500">ရှာဖွေမှု သို့မဟုတ် အမျိုးအစားစစ်ထုတ်မှုများကို ပြောင်းလဲကြည့်ပါ</p>
           </div>
         )}
       </div>
@@ -718,12 +605,9 @@ Shared from Lotus Shrine App
       {/* Modal */}
       {isModalOpen && selectedPagoda && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-                         id="pagoda-modal-content"
-             className="modal-content bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          <div
+            id="pagoda-modal-content"
+            className="modal-content bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-scaleIn"
           >
             <div className="relative">
               <img
@@ -809,20 +693,27 @@ Shared from Lotus Shrine App
                    <Share2 className="w-4 h-4 mr-2" />
                    မျှဝေရန်
                  </Button>
-                 <Button 
-                   variant="outline"
-                   className="flex-1 border-amber-600 text-amber-600 hover:bg-amber-50"
-                   onClick={() => {
-                     // Handle visit/pay respect action
-                     console.log(`ဖူးမျှော်ရန်: ${selectedPagoda?.nameMyanmar}`);
-                   }}
-                 >
-                   <Eye className="w-4 h-4 mr-2" />
-                   ဖူးမျှော်ရန်
-                 </Button>
+                                   <Button 
+                    variant="outline"
+                    className="flex-1 border-amber-600 text-amber-600 hover:bg-amber-50"
+                    onClick={() => {
+                      if (selectedPagoda?.id === 3) { // Kuthodaw Pagoda
+                        // Navigate to CCTV view page with pagoda info
+                        navigate(`/pagoda-view/${selectedPagoda?.id}`, { 
+                          state: { pagoda: selectedPagoda } 
+                        });
+                      } else {
+                        // Show coming soon message
+                        alert("ဤဘုရားအတွက် ရှိခိုးဆုတောင်းခြင်း ဝန်ဆောင်မှုကို မကြာမီ စတင်ပေးပါမည်။");
+                      }
+                    }}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    ဖူးမျှော်ရန်
+                  </Button>
                </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
