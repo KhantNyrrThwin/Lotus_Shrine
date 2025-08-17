@@ -1,4 +1,5 @@
 import HomePage from "./pages/home";
+import BooksPage from "./pages/books";
 import AboutUs from "./pages/aboutus";
 import ContactUs from "./pages/contactus";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -21,6 +22,8 @@ import Gonetawkoeprr from "./pages/gonetawkoeprr";
 import Dhamma from "./pages/dhamma";
 import MantraDetail from "./pages/mantra";
 import Pagodas from "./pages/pagodas";
+import PagodaView from "./pages/pagoda-view";
+import PagodaPray from "./pages/pagoda-pray";
 import Test from "./pages/test";
 
 function App() {
@@ -32,6 +35,8 @@ function App() {
           <Route path="/test" element={<Test />} />
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/pagodas" element={<Pagodas />} />
+            <Route path="/pagoda-view/:id" element={<PagodaView />} />
+            <Route path="/pagoda-pray/:pagodaId/:cameraId" element={<PagodaPray />} />
             <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
@@ -41,6 +46,7 @@ function App() {
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dhamma" element={<Dhamma />} />
+            <Route path="/books" element={<BooksPage />} />
             <Route path="/mantra/:id" element={<MantraDetail />} />
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/contactus" element={<ContactUs />} />

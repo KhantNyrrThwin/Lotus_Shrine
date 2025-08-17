@@ -59,8 +59,9 @@ const TayartawPage: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 py-20">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-[#4f3016] text-center mb-8">တရားတော်များ</h1>
+      <div className="bg-[#FDE9DA] w-full min-h-screen">
+      <div className="max-w-5xl mx-auto px-4 py-20 ">
+        <h1 className="text-4xl md:text-4xl font-bold text-[#4f3016] text-center mb-8">တရားတော်များ</h1>
         <div className="flex justify-center mb-8">
           <input
             type="text"
@@ -86,6 +87,7 @@ const TayartawPage: React.FC = () => {
             ))
           )}
         </div>
+      </div>
       </div>
       <Footer />
     </>
