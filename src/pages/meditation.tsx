@@ -68,7 +68,7 @@ function Meditation() {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
   // Use global music player context
-  const { playSong, openPlayer } = useMusicPlayer();
+  const { playSong } = useMusicPlayer();
 
   // Timer functions
   useEffect(() => {

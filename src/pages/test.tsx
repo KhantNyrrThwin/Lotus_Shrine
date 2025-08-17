@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function VirtualPagoda() {
-  const containerRef = useRef(null);
-  const imgRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   const [containerWidth, setContainerWidth] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
@@ -14,6 +14,7 @@ export default function VirtualPagoda() {
 
   useEffect(() => {
     const update = () => {
+      if (!containerRef.current || !imgRef.current) return;
       const cWidth = containerRef.current.clientWidth;
       const iWidth = imgRef.current.naturalWidth;
       setContainerWidth(cWidth);
@@ -26,19 +27,21 @@ export default function VirtualPagoda() {
     };
 
     window.addEventListener("resize", update);
-    imgRef.current.onload = update;
+    if (imgRef.current) {
+      imgRef.current.onload = update;
+    }
 
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-  const handleStart = (clientX) => {
+  const handleStart = (clientX: number) => {
     isDragging.current = true;
     startX.current = clientX;
   };
 
-  const handleMove = (clientX) => {
+  const handleMove = (clientX: number) => {
     if (!isDragging.current) return;
     const dx = clientX - startX.current;
     let next = currentTranslate.current + dx;
