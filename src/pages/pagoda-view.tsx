@@ -26,7 +26,7 @@ interface CameraView {
 }
 
 export default function PagodaView() {
-  const { id } = useParams();
+  useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const pagoda = location.state?.pagoda as Pagoda;

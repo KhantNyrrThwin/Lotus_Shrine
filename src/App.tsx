@@ -25,6 +25,8 @@ import Pagodas from "./pages/pagodas";
 import PagodaView from "./pages/pagoda-view";
 import PagodaPray from "./pages/pagoda-pray";
 import Test from "./pages/test";
+import ProfilePage from "./pages/profile";
+import EditProfilePage from "./pages/edit-profile";
 
 function App() {
   return (
@@ -50,6 +52,8 @@ function App() {
             <Route path="/mantra/:id" element={<MantraDetail />} />
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/" element={<HomePage />}>
               <Route path="/features" element={<Grid_Features />} />
             </Route>
