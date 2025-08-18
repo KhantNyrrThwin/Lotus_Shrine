@@ -220,7 +220,7 @@ export default function PagodaView() {
               {pagoda.nameMyanmar}
             </h1>
             <p className="text-lg text-[#4f3016] max-w-3xl mx-auto leading-relaxed">
-              ဘုရားဖူးများ ရှိခိုးဆုတောင်းနိုင်ရန် CCTV ကင်မရာများဖြင့် ကြည့်ရှုပါ
+              ဘုရားဖူးများ ရှိခိုးဆုတောင်းနိုင်ရန် ကြည့်ရှုပါ
             </p>
           </div>
         </div>
@@ -239,11 +239,11 @@ export default function PagodaView() {
               <div className="bg-[#4f3016] text-white px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Camera className="w-5 h-5" />
-                  <span className="font-semibold">Camera {cameraView.id}</span>
+                  <span className="font-semibold"> {cameraView.id}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm">LIVE</span>
+                  <span className="text-sm"></span>
                 </div>
               </div>
 

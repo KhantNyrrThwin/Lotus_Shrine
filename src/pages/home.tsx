@@ -44,7 +44,7 @@ function HomePage() {
               <br />
               <p className="text-[27px] font-bold text-[#402916]">“{quoto}”</p>
               <p className="text-[22px] font-bold text-[#402916]">({auth})</p>
-              <a href="/koenawin">
+              <a href="/pagodas">
                 <button className="bg-[#4f3016] text-[16.2px] w-[200px] h-[50px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
                   ဝင်ရောက်မည်
                 </button>
