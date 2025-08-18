@@ -70,7 +70,7 @@ const pagodas: Pagoda[] = [
     location: "Bagan, Myanmar",
     description: "Ancient city with over 2,000 Buddhist temples, pagodas, and monasteries from the 9th to 13th centuries.",
     descriptionMyanmar: "ရှေးဟောင်းမြို့တော်ဖြစ်ပြီး ဘုရားများ၊ စေတီများနှင့် ကျောင်းများ ၂၀၀၀ ကျော် ပါဝင်သော ဘုရားများဖြစ်သည်။",
-    image: "/src/assets/KoeNaWinPagoda.png",
+    image: "/src/assets/AungTawMu/Main.jpg",
     category: "Mandalay",
     features: [""]
   },
@@ -81,7 +81,7 @@ const pagodas: Pagoda[] = [
     location: "Yangon, Myanmar",
     description: "Ancient pagoda located in the heart of Yangon, surrounded by modern city life.",
     descriptionMyanmar: "ရန်ကုန်မြို့လယ်တွင် တည်ရှိသော ရှေးဟောင်းဘုရားဖြစ်ပြီး ခေတ်မီမြို့ပြဘဝဖြင့် ဝန်းရံထားသည်။",
-    image: "/src/assets/KoeNaWinPagoda.png",
+    image: "/src/assets/Su Lay/0.jpg",
     category: "Yangon",
     features: [""]
   },
