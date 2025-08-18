@@ -10,8 +10,8 @@ const tayartawVideos = [
     description: 'သစ္စာရွှေစည်ဆရာတော်'
   },
   {
-    id: 'JKvJ0yQM1w8',
-    title: 'ကုသိုလ်အစုံလုပ်ရင် ကံတွေတက်လာမယ်',
+    id: 'Aw8ZD5bN1rQ',
+    title: 'လူတွေအသိနည်းတဲ့ ငရဲ့ရောက်စေမယ့် အလှူများအကြောင်း',
     description: 'ပါချုပ်ဆရာတော် ဘုရားကြီး'
   },
   
@@ -53,7 +53,7 @@ const tayartawVideos = [
   {
     id: 'ZQYjadDutMk',
     title: 'စွန့်လွှတ်ခြင်းနှင့် ဆုတ်ကိုင်ခြင်းတရားတော်',
-    description: 'The Law of Letting Go and Holding On'
+    description: 'ပါချုပ်ဆရာတော် ဘုရားကြီး'
   },
   {
     id: '71Fnc_eZU_Q',
@@ -84,9 +84,9 @@ const tayartawVideos = [
     description: 'အရှင်သုစိတ္တ (မော်ကျွန်းဆရာတော်)'
   },
   {
-    id: 'D_C_Wto0NMs&',
-    title: 'ကြေကွဲကွဲစရာတွေဝေးပါစေ',
-    description: 'အရှင်သုစိတ္တ (မော်ကျွန်းဆရာတော်)'
+    id: 'Aw8ZD5bN1rQ',
+    title: 'ဘာပဲဖြစ်ဖြစ် မေတ္တာဖြင့် အနိုင်ယူပါ',
+    description: 'ပါချုပ်ဆရာတော် ဘုရားကြီး'
   },
   
   {
