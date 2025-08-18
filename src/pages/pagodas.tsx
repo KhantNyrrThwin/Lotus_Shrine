@@ -38,7 +38,7 @@ const pagodas: Pagoda[] = [
     description: "မဟာမုနိ ရုပ်ရှင်တော်ကား ကမ္ဘာက လေးစားရသော သမိုင်းဝင် ရုပ်ပွားတော် တစ်ဆူဖြစ်ပါသည်။ မန္တလေးမြို့၏ ကျက်သရေဆောင် အဓိကရ ထင်ရှားသော ဘုရားတစ်ဆူလည်း ဖြစ်သည်။",
     descriptionMyanmar: "မဟာမုနိ ရုပ်ရှင်တော်မြတ်ကြီး သည် မြန်မာနိုင်ငံ၊ မန္တလေးတိုင်းဒေသကြီး၊ မန္တလေးမြို့တွင် တည်ရှိသည်။ မန္တလေး မဟာမုနိ ဘုရား ကို မဟာမြတ်မုနိဟူ၍ လည်းကောင်း၊ ဘုရားကြီးဟူ၍ လည်းကောင်းခေါ်ကြသည်။",
     image: "/src/assets/MaharMyatMuNi/Main.jpg",
-    category: "Sacred",
+    category: "Mandalay",
     features: ["Golden Plates", "Diamond Umbrella", "Historical", "Sacred Relics"]
   },
   {
@@ -49,7 +49,7 @@ const pagodas: Pagoda[] = [
     description: "",
     descriptionMyanmar: "မန္တလေးမြို့ အောင်သီဟကျောက်ဆစ်လုပ်ငန်းမှ ဦးသောင်းထွန်း၊ ဒေါ်မမလေးတို့က ဉာဏ်တော်အမြင့် ၁၅ ပေ၊ ဒူးခေါင်းတော်အကျယ် ၈ ပေ ၆ လက်မနှင့် အလေးချိန် ၁၇ တန်ခန့်ရှိ ဆင်းတုတော်ကြီးကို ရွှေလီမြို့သို့ ပင့်ဆောင်ရန် မော်တော်ယာဉ်ဖြင့် မန္တလေးမှ သယ်ဆောင်လာစဉ် ပြင်ဦးလွင်မြို့နယ် ရေငယ်ကျေးရွာအလွန် မန္တလေး-လားရှိုးကားလမ်း မိုင်တိုင် ၄၇/၁ အရောက်တွင် မော်တော်ယာဉ်တိမ်းမှောက်ပြီး ဆင်းတုတော်ကြီးမှာ ကားပေါ်မှကျ၍ မြေခခဲ့သည်။ ဆင်းတုတော်ကြီး မြေခသည့်ရက်မှာ မြန်မာသက္ကရာဇ် ၁၃၅၈ ခုနှစ် တပေါင်းလပြည့်ကျော် ၁၄ ရက်နေ့ (၁၉၉၇ ခုနှစ် ဧပြီလ ၆ ရက်) တနင်္ဂနွေနေ့ ၁၁ နာရီအချိန်ခန့်ဖြစ်သည်။ ဆင်းတုတော်ကြီးအား ရွှေလီမြို့သို့ ဆက်လက်ပင့်ဆောင်ခြင်းမပြုတော့ပဲ အများလှူဒါန်းငွေ ၈၀၀,၀၀၀ ကျပ် နှင့် ထုလုပ်သူက လှူဒါန်းငွေ ၂၀၀,၀၀၀ ကျပ်၊ စုစုပေါင်း ၁,၀၀၀,၀၀၀ ကျပ်ဖြင့် ကျောက်ဆစ်လုပ်ငန်းရှင်အား ပေးချေ၍ လက်ရှိနေရာတွင် ပူဇော်ရန် ဆောင်ရွက်ခဲ့သည်။",
     image: "/src/assets/Mahar/Main.jpg",
-    category: "Natural Wonder",
+    category: "Pyin Oo Lwin",
     features: ["Golden Rock", "Mountain View", "Pilgrimage", "Natural Beauty"]
   },
   {
@@ -60,8 +60,8 @@ const pagodas: Pagoda[] = [
     description: "မြန်မာသက္ကရာဇ် ၁၂၃၀ ကဆုန်လဆန်း ၁ ရက်နေ့တွင်-ဝိနည်း ၅ ကျမ်း ပါဠိတော်က ချပ်ရေ ၁၁၁ ချပ် / အဘိဓမ္မာ ၇ ကျမ်း ပါဠိတော်က ချပ်ရေ ၂၀၈ ချပ်နိကာယ် ၅ ကျမ်း၊ သုတ် ၃ ကျမ်း ပါဠိတော်က ချပ်ရေ ၄၁၀ ချပ် စုစုပေါင်း ကျောက်စာချပ်ရေ ၇၂၉ ချပ် အတွက် ဓမ္မစေတီ ၇၂၉ဆူကို ထုလုပ် ဝန်းရံတည်ထားခဲ့သည်။ ကျောက်စာများရေ များတဲ့ဘုရားဖြစ်သောကြောင့် ကမ္ဘာ့အကြီးဆုံးစာအုပ် ဟုတင်စားရေးသားကြသည်။",
     descriptionMyanmar: "ကုသိုလ်တော်ဘုရား သည် မန္တလေးတောင်၏ အရှေ့တောင်ဘက်တွင် တည်ရှိပြီး မင်းတုန်းမင်း၏ ကုသိုလ်တော် ဖြစ်သည်။ မြန်မာသက္ကရာဇ် ၁၂၂၄ ဝါဆိုလတွင် မင်းတုန်းမင်း တည်ထားကိုးကွယ်ခဲ့သော ဘုရားဖြစ်ပြီး ဘွဲ့အမည်မှာ မဟာလောကမာရဇိန် ဖြစ်သည်။ တံတိုင်း ၃ ထပ်ရှိပြီး ဖိနပ်ခင်းအချင်း သံတောင် ၆၅၊ အရပ်တော် သံတောင် ၅၀၊ ၁ မိုက် ၄ သစ်ရှိသည်။",
          image: "/src/assets/KuToTaw/Main Pagoda/MainPagoda1.jpg",
-    category: "Historical",
-    features: ["World's Largest Book", "Educational", "Marble Slabs", "Scriptures"]
+    category: "Mandalay",
+    features: ["ကမ္ဘာ့ အကြီးဆုံးစာအုပ်", "Educational", "Marble Slabs", "Scriptures"]
   },
   {
     id: 4,
@@ -71,7 +71,7 @@ const pagodas: Pagoda[] = [
     description: "Ancient city with over 2,000 Buddhist temples, pagodas, and monasteries from the 9th to 13th centuries.",
     descriptionMyanmar: "ရှေးဟောင်းမြို့တော်ဖြစ်ပြီး ဘုရားများ၊ စေတီများနှင့် ကျောင်းများ ၂၀၀၀ ကျော် ပါဝင်သော ဘုရားများဖြစ်သည်။",
     image: "/src/assets/KoeNaWinPagoda.png",
-    category: "Ancient",
+    category: "Mandalay",
     features: ["Ancient Temples", "Sunrise View", "Historical", "UNESCO Site"]
   },
   {
@@ -82,7 +82,7 @@ const pagodas: Pagoda[] = [
     description: "Ancient pagoda located in the heart of Yangon, surrounded by modern city life.",
     descriptionMyanmar: "ရန်ကုန်မြို့လယ်တွင် တည်ရှိသော ရှေးဟောင်းဘုရားဖြစ်ပြီး ခေတ်မီမြို့ပြဘဝဖြင့် ဝန်းရံထားသည်။",
     image: "/src/assets/KoeNaWinPagoda.png",
-    category: "City Center",
+    category: "Yangon",
     features: ["City Center", "Accessible", "Historical", "Urban"]
   },
 
@@ -90,11 +90,9 @@ const pagodas: Pagoda[] = [
 
 const categories = [
   { id: "all", name: "အားလုံး", nameEn: "All" },
-  { id: "sacred", name: "အထွတ်အမြတ်", nameEn: "Sacred" },
-  { id: "historical", name: "သမိုင်း", nameEn: "Historical" },
-  { id: "ancient", name: "ရှေးဟောင်း", nameEn: "Ancient" },
-  { id: "natural", name: "သဘာဝ", nameEn: "Natural" },
-  { id: "city", name: "မြို့ပြ", nameEn: "City" }
+  { id: "Mandalay", name: "မန္တလေး", nameEn: "Mandalay" },
+  { id: "Pyin Oo Lwin", name: "ပြင်ဦးလွင်", nameEn: "Pyin Oo Lwin" },
+  { id: "Yangon", name: "ရန်ကုန်", nameEn: "Yangon" }
 ];
 
 export default function Pagodas() {
@@ -461,7 +459,7 @@ Shared from Lotus Shrine App
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-[#402916] mb-4">ဘုရားများ</h1>
           <p className="text-lg text-[#4f3016] max-w-3xl mx-auto leading-relaxed">
-            မြန်မာနိုင်ငံ၏ အထွတ်အမြတ်ဆုံး ဘုရားများနှင့် စေတီများကို ရှာဖွေလေ့လာပါ
+            မြန်မာနိုင်ငံ၏  ဘုရားများနှင့် စေတီများကို ရှာဖွေလေ့လာပါ
           </p>
         </div>
         <div className="max-w-4xl mx-auto mt-6">
