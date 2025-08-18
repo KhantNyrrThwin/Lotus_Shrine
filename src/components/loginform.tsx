@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 type FormData = {
   email: string;
@@ -16,6 +17,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,12 +102,22 @@ const LoginForm = () => {
           className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
         />
 
-        <input
-          type="password"
-          placeholder="စကားဝှက်"
-          {...register("password", { required: true })}
-          className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="စကားဝှက်"
+            {...register("password", { required: true })}
+            className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2 pr-10"
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4f3016]/70 hover:text-[#4f3016]"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
 
         <div className="w-full flex justify-end">
           <Link to="/requestemail" className="mr-[50px] hover:underline">
