@@ -38,7 +38,7 @@ export default function PagodaView() {
     {
       id: 1,
       name: "Main Pagoda",
-      nameMyanmar: "အဓိကဘုရား",
+      nameMyanmar: "ကုသိုလ်တော်ဘုရား",
       image: "/src/assets/KuToTaw/Main Pagoda/MainPagoda1.jpg",
       description: "Main pagoda entrance view",
       descriptionMyanmar: "အဓိကဘုရား ဝင်ပေါက်မြင်ကွင်း"
@@ -46,10 +46,10 @@ export default function PagodaView() {
     {
       id: 2,
       name: "Side Pagoda",
-      nameMyanmar: "ဘေးဘုရား",
+      nameMyanmar: "ဘေးဘက်ရှိ ဘုရား",
       image: "/src/assets/KuToTaw/Side Pagoda/SidePagoda1.jpg",
       description: "Side pagoda view",
-      descriptionMyanmar: "ဘေးဘုရား မြင်ကွင်း"
+      descriptionMyanmar: "ဘေးဘက်ရှိဘုရား မြင်ကွင်း"
     },
     {
       id: 3,
@@ -62,10 +62,10 @@ export default function PagodaView() {
     {
       id: 4,
       name: "Day Pagodas",
-      nameMyanmar: "နေ့စဉ်ဘုရားများ",
+      nameMyanmar: "နေ့နံအလိုက် ဘုရားများ",
       image: "/src/assets/KuToTaw/Day Pagoda/7-Sun.jpg",
       description: "Choose from 8 different day-specific pagodas",
-      descriptionMyanmar: "နေ့စဉ်ဘုရား ၈ ဆူမှ ရွေးချယ်ရှိခိုးနိုင်သည်"
+      descriptionMyanmar: "နေ့နံအလိုက် ၈ ဆူမှ ရွေးချယ်ရှိခိုးနိုင်သည်"
     }
   ];
 
