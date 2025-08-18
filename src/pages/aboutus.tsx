@@ -2,7 +2,7 @@ import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import applogo from "../assets/logo1.png";
-import { useEffect, useRef, MutableRefObject } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 function AboutUs() {

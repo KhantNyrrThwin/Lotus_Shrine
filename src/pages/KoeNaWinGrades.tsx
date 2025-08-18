@@ -108,10 +108,13 @@ function KoeNaWinGrades() {
             ဆဌမအဆင့်
           </button>
         </div>
+        
         <div className="w-[865px] ml-[84px] mr-[42px] flex flex-col  items-center">
+       
           <div className="w-[865px] h-[508px]  flex items-center justify-center">
             {renderGradeContent()}
           </div>
+          <h1 className="font-bold mt-1">🚨🚨 အရောင်ချယ်ထားသောနေ့များသည် သက်သက်လွတ် စားရမည့်နေ့များဖြစ်သည် 🚨🚨</h1>
           <div className="w-[820px] h-[68px] mt-[31px] flex flex-row justify-center gap-[30px]">
             <button
               className={`w-[247px] h-[68px] rounded-[19px] cursor-pointer text-white text-[18px] font-bold transition-colors duration-200 ${

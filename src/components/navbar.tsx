@@ -112,7 +112,7 @@ export default function Navbar() {
                       &nbsp; တရားတော်များ
                     </Link>
                     <Link
-                      to="/meditation"
+                      to="/books"
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
@@ -242,14 +242,14 @@ export default function Navbar() {
                     onMouseLeave={() => setAccountOpen(false)}
                   >
                     <Link
-                      to="/aboutus"
+                      to="/profile"
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
                       &nbsp; မိမိအကောင့်
                     </Link>
                     <Link
-                      to="/aboutus"
+                      to="/edit-profile"
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />

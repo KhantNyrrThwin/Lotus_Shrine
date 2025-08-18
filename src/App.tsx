@@ -1,4 +1,5 @@
 import HomePage from "./pages/home";
+import BooksPage from "./pages/books";
 import AboutUs from "./pages/aboutus";
 import ContactUs from "./pages/contactus";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -20,6 +21,12 @@ import MusicPlayerBar from "./components/MusicPlayerBar";
 import Gonetawkoeprr from "./pages/gonetawkoeprr";
 import Dhamma from "./pages/dhamma";
 import MantraDetail from "./pages/mantra";
+import Pagodas from "./pages/pagodas";
+import PagodaView from "./pages/pagoda-view";
+import PagodaPray from "./pages/pagoda-pray";
+import Test from "./pages/test";
+import ProfilePage from "./pages/profile";
+import EditProfilePage from "./pages/edit-profile";
 
 function App() {
   return (
@@ -27,7 +34,11 @@ function App() {
       <AnimatePresence mode="wait">
         <Router>
           <Routes>
+          <Route path="/test" element={<Test />} />
             <Route path="/changepassword" element={<ChangePassword />} />
+            <Route path="/pagodas" element={<Pagodas />} />
+            <Route path="/pagoda-view/:id" element={<PagodaView />} />
+            <Route path="/pagoda-pray/:pagodaId/:cameraId" element={<PagodaPray />} />
             <Route path="/requestemail" element={<RequestEmail />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/mission" element={<Mission />} />
@@ -37,9 +48,12 @@ function App() {
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dhamma" element={<Dhamma />} />
+            <Route path="/books" element={<BooksPage />} />
             <Route path="/mantra/:id" element={<MantraDetail />} />
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/" element={<HomePage />}>
               <Route path="/features" element={<Grid_Features />} />
             </Route>

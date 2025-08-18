@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { Play } from "lucide-react";
 import bell from "../assets/sounds/Meditaion.mp3";
 import meditationAudio from "../assets/sounds/Meditaion.mp3";
 import { useMusicPlayer } from "../components/MusicPlayerContext";
@@ -68,7 +68,7 @@ function Meditation() {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
   // Use global music player context
-  const { playSong, openPlayer } = useMusicPlayer();
+  const { playSong } = useMusicPlayer();
 
   // Timer functions
   useEffect(() => {
