@@ -1,14 +1,48 @@
-import meditationAudio from "../assets/sounds/Meditaion.mp3";
+// import meditationAudio from "../assets/sounds/Meditaion.mp3";
+import meditationAudio1 from "../assets/sounds/ဩကာသ ဘုရားရှိခိုး ကန်တော့ချိုး.mp3";
+import meditationAudio2 from "../assets/sounds/နမော တဿ ဘုရားရှိခိုး သီတဂူဆရာတော်.mp3";
+import meditationAudio3 from "../assets/sounds/စိန်ရောင်ခြည်ဘုရားပင့်.mp3";
+import meditationAudio4 from "../assets/sounds/အောင်ခြင်းရှစ်ပါးဘုရားရှိခိုး.mp3";
+import meditationAudio5 from "../assets/sounds/ခင်ပွန်းကြီးဆယ်ပါးကန်တော့ခန်းဘုရား.mp3";
+import meditationAudio6 from "../assets/sounds/ငါးပါးသီလ ခံယူတည်ဆောက်ပုံ.mp3";
+import meditationAudio7 from "../assets/sounds/ရှစ်ပါးသီလ ခံယူတည်ဆောက်ပုံ.mp3";
+import meditationAudio8 from "../assets/sounds/ကိုးပါးသီလ ခံယူတည်ဆောက်ပုံ.mp3";
+import meditationAudio9 from "../assets/sounds/ဆယ်ပါးသီလ ခံယူတည်ဆောက်ပုံ.mp3";
+import meditationAudio10 from "../assets/sounds/ဘုရားဂုဏ်တော် (၉)ပါး.mp3";
+import meditationAudio11 from "../assets/sounds/တရားဂုဏ်တော် (၆)ပါး.mp3";
+import meditationAudio12 from "../assets/sounds/သံဃာဂုဏ်တော် (၉)ပါး.mp3";
+import meditationAudio13 from "../assets/sounds/ဆွမ်း ပန်း ရေချမ်း ဆီမီး ကပ်လှူပုံ.mp3";
+import meditationAudio14 from "../assets/sounds/ဆွမ်း ပန်း ရေချမ်း ဆီမီး ကပ်လှူပုံ.mp3";
+import meditationAudio15 from "../assets/sounds/ဆွမ်း ပန်း ရေချမ်း ဆီမီး ကပ်လှူပုံ.mp3";
+import meditationAudio16 from "../assets/sounds/ဆွမ်း ပန်း ရေချမ်း ဆီမီး ကပ်လှူပုံ.mp3";
+import meditationAudio17 from "../assets/sounds/မေတ္တာသုတ်လာ မေတ္တာပွားနည်း.mp3";
+import meditationAudio18 from "../assets/sounds/အရပ်(၁၀)မျက်နှာ မေတ္တာပွားနည်း.mp3";
+import meditationAudio19 from "../assets/sounds/မင်္ဂလသုတ် ပါဠိတော်.mp3";
+import meditationAudio20 from "../assets/sounds/ရတနသုတ် ပါဠိတော်.mp3";
+import meditationAudio21 from "../assets/sounds/မေတ္တသုတ် ပါဠိတော်.mp3";
+import meditationAudio22 from "../assets/sounds/ခန္ဓသုတ် ပါဠိတော်.mp3";
+import meditationAudio23 from "../assets/sounds/မောရသုတ် ပါဠိတော်.mp3";
+import meditationAudio24 from "../assets/sounds/ဝဋ္ဋသုတ် ပါဠိတော်.mp3";
+import meditationAudio25 from "../assets/sounds/ဓဇဂ္ဂသုတ် ပါဠိတော်.mp3";
+import meditationAudio26 from "../assets/sounds/အာဋာနာဋိယသုတ် ပါဠိတော်.mp3";
+import meditationAudio27 from "../assets/sounds/အင်္ဂုလိမာလသုတ် ပါဠိတော်.mp3";
+import meditationAudio28 from "../assets/sounds/ဗောဇ္ဈင်္ဂသုတ် ပါဠိတော်.mp3";
+import meditationAudio29 from "../assets/sounds/ပုဗ္ဗဏှသုတ် ပါဠိတော်.mp3";
+
+
+
 
 export const mantras = [
   {
     id: "buddha-puja",
     section: "ဘုရားရှိခိုး",
     title: "သြကာသကန်တော့ချိုး",
-    text: `သြကာသ၊ သြကာသ၊ သြကာသ\nကာယကံ၊ ဝစီကံ၊ မနောကံ သဗ္ဗဒေါသ ခပ်သိမ်းသော အပြစ်တို့ကို ပျောက်ပါစေခြင်း အကျိုးငှာ ပထမ၊ ဒုတိယ၊ တတိယ၊ တစ်ကြိမ်၊ နှစ်ကြိမ်၊ သုံးကြိမ်မြောက်အောင် ဘုရားရတနာ၊ တရားရတနာ၊ သံဃာရတနာ၊ ရတနာမြတ်သုံးပါးတို့ကို အရိုအသေ အလေးအမြတ် လက်အုပ်မိုး၍ ရှိခိုးပူဇော် ဖူးမြော်မာန်လျှော့ ကန်တော့ပါ၏။`,
-    audio: meditationAudio,
-    artist: "Unknown",
-    duration: "3:00"
+    text: `ဩကာသ ဘုရားရှိခိုး ကန်တော့ချိုး
+ဩကာသ ဩကာသ ဩကာသ ကာယကံ ဝစီကံ ပနောကံ သဗ္ဗဒေါသ စပ်သိမ်းသော အပြစ်တို့ကို ပျောက်ပါစေခြင်းအကျိုးငှါ ပထမ ဒုတိယ တတိယ တစ်ကြိမ် နှစ်ကြိမ် သုံးကြိမ်မြောက်အောင် ဘုရားရတနာ တရားရတနာ သံဃာရတနာ ရတနာမြတ်သုံးပါးတို့ကို အချို့အသေ အလေးအမြတ် လက်အုပ်မိုး၍ ရှိခိုးပူဇော် ဖူးမြော်မာန်လျှော့ ကန်တော့ပါ၏ အရှင်ဘုရား။
+ကန်တော့ရသော အကျိုးအားကြောင့် အပါယ်လေးပါး ကပ်သုံးပါး ရပ်ပြစ်ရှစ်ပါး ရန်သူမျိုးငါးပါး ဝိပတ္တိတရားလေးပါး ဗျသနတရားငါးပါးတို့မှ အခါခပ်သိမ်း ကင်းလွတ်ငြိမ်းသည်ဖြစ်၍ မဂ်တရား ဖိုလ်တရား နိဗ္ဗာန်တရားတော်မြတ်ကို ရပါလို၏ အရှင်ဘုရား။`,
+    audio:meditationAudio1,
+    artist: "",
+    duration: ""
   },
   {
     id: "dhamma-puja",
@@ -28,8 +62,8 @@ export const mantras = [
 
     သာဓု၊ သာဓု၊ သာဓု …`,
 
-    audio: "/audio/dhamma-puja.mp3",
-    artist: "Unknown",
+    audio: meditationAudio2,
+    artist: "",
     duration: "2:30"
   },
    {
@@ -61,9 +95,9 @@ export const mantras = [
 သီသကေ – လေးထွေ ဘူတ ကာယကိုယ်တွင် အမြတ်တင်သည့် ဦးပြင်ထိပ်၌။
 
 ဌာတု – ခိုင်ခိုင်မတ်မတ် တန့်ရပ်တည်တော်မူပါ့ စိန်ရောင်ခြည် နေတနှုန်းကဲ့သို့ ရွှေဘုန်းတော်သခင် အရှင်မြတ်ကြီးဘုရား။`,
-    audio: "/audio/dhamma-puja.mp3",
-    artist: "Unknown",
-    duration: "2:30"
+    audio: meditationAudio3,
+    artist: "",
+    duration: ""
   },
 
      {
@@ -101,7 +135,7 @@ export const mantras = [
 ဟောတု=စင်စစ်မသွေ ဖြစ်ပါစေသတည်း။
 
 သာဓု သာဓု သာဓု။`,
-    audio: "/audio/dhamma-puja.mp3",
+    audio: meditationAudio4,
     artist: "Unknown",
     duration: "2:30"
   },
@@ -159,7 +193,7 @@ export const mantras = [
 (ကုသိုလ် အမျှ အမျှ အမျှ ယူတော်မူကြပါကုန်လာ့။
 
 သာဓု … သာဓု … သာဓု) (၃ခေါက်)`,
-    audio: "/audio/dhamma-puja.mp3",
+    audio:  meditationAudio5,
     artist: "Unknown",
     duration: "2:30"
   },
@@ -221,7 +255,7 @@ export const mantras = [
 (၄) လိမ်လည်ပြောဆိုခြင်းမှ ရှောင်ကြဥ်ပါ၏
 
 (၅) အရက်သေစာသောက်ခြင်းမှ ရှောင်ကြဥ်ပါ၏`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio6,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -318,7 +352,7 @@ export const mantras = [
 (၈) (တန်ဘိုးကြီးလွန်းသောအသုံးအဆောင်များသုံးစွဲခြင်း၊ မြင့်လွန်းမြတ်လွန်းသော အိပ်ယာနေရာထိုင်ခင်းစသည်ဖြင့်
 
 သုံးစွဲခြင်း တစ်တောင်အတိုင်းအတာထက်မြင့်သော ကုတင်တွင် အိပ်စက်ခြင်းစသည်တို့ မပြုပဲ ရှောင်ကြဉ်စောင့်ထိန်းခြင်း)`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio7,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -387,7 +421,7 @@ export const mantras = [
 ၈။ မြင့်သောနေရာ မြတ်သောနေရာ အိပ် ထိုင်ခြင်းမှ အမြဲရှောင်ကြဉ်မည်။
 
 ၉။ မေတ္တာနှင့် ယှဉ်သောစိတ်ဖြင့် သတ္တဝါရှိသော လောကကို ပျံ့နှံ့၍နေစေမည်။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio8,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -460,7 +494,7 @@ export const mantras = [
 (၉) မြင့်သောနေရာ မြတ်သောနေရာ၌ ထိုင်ခြင်း နေခြင်းမှ ရှောင်ကြဉ်ပါ၏
 
 (၁၀) ရွှေငွေကိုင်ခြင်း ခံယူခြင်း စီမံခြင်းမှ ရှောင်ကြည်ပါ၏။သံဃာရှိခိုး စာသား ဥပမာ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio9,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -641,7 +675,7 @@ export const mantras = [
 (ဓ) ဘဂဝါ – အခက်အခဲအားလုံးကို အောင်မြင်စွာ ကျော်ဖြတ်ပြီးဖြစ်တော်မူသော မြတ်စွာဘုရား။
 
 (မ) ဘဂဝါ – သံသရာဝဋ်ဆင်းရဲဒုက္ခအပေါင်းတို့ကို အောင်မြင်စွာ ကျော်ဖြတ်ပြီးဖြစ်တော်မူသော မြတ်စွာဘုရား။ ကိလေသာဘေးရန်အန္တရာယ်အားလုံး ကင်းစင်ပြီး ဖြစ်တော်မူသော မြတ်စွာဘုရား။ ဘေးရန်အန္တရာယ်အားလုံး ကင်းစင်ပြီးဖြစ်တော်မူသော မြတ်စွာဘုရား။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio10 ,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -676,7 +710,7 @@ export const mantras = [
 (၅) ဩပနေယျိက ဂုဏ်တော် မိမိစိတ်၌ အမြဲကပ်၍ ဆောင်ထားသင့်ခြင်းဂုဏ်။
 
 (၆) ပစ္စတ္တံ ဝေဒိတဗ္ဗ ဝိညူဟိ ဂုဏ်တော် အရိယာတို့သည် နိဗ္ဗာန်ချမ်းသာကို အသီးသီး လက်တွေ့ ခံစားနိုင်ခြင်းဂုဏ်။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio11,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -723,7 +757,7 @@ export const mantras = [
 အဉ္ဇလိကရဏီယျေ ဂုဏ်တော် = လက်အုပ်ချီမိုး ရှိခိုးထိုက်သောဂုဏ်၊
 
 အနုတ္တရံ ပုညက္ခေတ္တ ဂုဏ်တော် = လယ်ယာမြေကောင်းနှင့် တူသောဂုဏ်။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio12,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -740,7 +774,7 @@ export const mantras = [
 (ဆုတောင်း)
 
 ရသာမွှေးကြူ ဆွမ်းဖွေးဖြူကို၊ ပေးလှူပါရ ဤပုညကြောင့်၊ ဘဝတိုင်းဝယ် ပညာကြွယ်လျှက်၊ မြနှယ်ရွှေနှင့် အနေတင့်၊အဆင့်ဆင့်မြင့်ရလို။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio13,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -755,7 +789,7 @@ export const mantras = [
 
 (ဆုတောင်း)
 ကြည်လင်အေးမြ ရေလှူရ၍၊ ဘဝတိုင်းဝယ် ပညာကြွယ်လျှက်၊ ကိုယ်ဝယ်တွင်းပြင် ညစ်ကြေးစင်၊ ကြည်လင်အေးမြလို။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio14,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -770,7 +804,7 @@ export const mantras = [
 
 (ဆုတောင်း)
 အနံ့လည်းသင်း အဆင်းလည်းလှ၊ ပန်းလှူရ၍ ဘဝတိုင်းဝယ်၊ ပညာကြွယ်လျှက် သွယ်သွယ်ဂုဏ်နှင့်၊ အစုံဆင့် ထုံသင်းကြိုင်ရလို။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio15,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -784,7 +818,7 @@ export const mantras = [
 
 (ဆုတောင်း)
 ထွန်းလင်းတောက်ပ မီးလှူရ၍၊ ဘဝတိုင်းဝယ် ပညာကြွယ်လျှက်၊ လနှယ်နေနှင့် အသေရေတင့်၊ ဆင့်ဆင့်ထွန်းတောက်လို။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio16,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -814,7 +848,7 @@ export const mantras = [
 ၁၀။ အထင်သေးခြင်း၊ အချင်းချင်း၊ ကင်းရှင်းကြပါစေ။
 
 ၁၁။ ဆင်းရဲလိုခြင်း၊ အချင်းချင်း၊ ကင်းရှင်းကြပါစေ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio17,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -843,7 +877,7 @@ export const mantras = [
 ဝသုန္ဓရေ ဤမြေပံသု သိလာထုလည်း သက်သေအမှု တည်စေသော်။
 
 (အားလုံးကြားကြားသမျှ အမျှ အမျှ အမျှ ယူတော်မူကြပါကုန်လော့…..သာဓု သာဓု သာဓု)`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio18,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -883,7 +917,7 @@ export const mantras = [
 ဧတာဒိသာနိ ကတွာန၊ သဗ္ဗတ္ထ မပရာဇိတာ။ သဗ္ဗတ္ထ သောတ္ထိံ ဂစ္ဆန္တိ၊ တံ တေသံ မင်္ဂလ မုတ္တမံ။
 
 မင်္ဂလသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio19,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -935,7 +969,7 @@ export const mantras = [
 ယာနီဓ ဘူတာနိ သမာဂတာနိ၊ ဘုမ္မာနိ ဝါ ယာနိ ဝ အန္တလိက္ခေ၊ တထာဂတံ ဒေဝမနုဿ ပူဇိတံ၊ သံဃံ နမဿာမ သုဝတ္ထိ ဟောတု။
 
 ရတန သုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio20,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -969,7 +1003,7 @@ export const mantras = [
 ဒိဋ္ဌိဉ္စ အနုပဂ္ဂမ္မ၊ သီလဝါ ဒဿနေန သမ္ပန္နော။ ကာမေသု ဝိနယ ဂေဓံ၊ န ဟိ ဇာတုဂ္ဂဗ္ဘသေယျ ပုန ရေတိ။
 
 မေတ္တသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio21,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -995,7 +1029,7 @@ export const mantras = [
 ကတာ မေ ရက္ခာ ကတံ မေ ပရိတ္တံ၊ ပဋိက္ကမန္တု ဘူတာနိ။ သောဟံ နမော ဘဂဝတော။ နမော သတ္တန္နံ သမ္မာသမ္ဗုဒ္ဓါနံ။
 
 ခန္ဓသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio22,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1017,7 +1051,7 @@ export const mantras = [
 ယေ ဗြဟ္မဏာ ဝေဒဂူ သဗ္ဗဓမ္မေ၊ တေ မေ နမော တေ စ မံ ပါလယန္တု။ နမတ္တု ဗုဒ္ဓါနံ နမတ္ထု ဗောဓိယာ။ နမော ဝိမုတ္တာနံ နမော ဝိမုတ္တိယာ။ ဣမံ သော ပရိတ္တံ ကတွာ၊ မောရော ဝါသ မကပ္ပယိ။
 
 မောရသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio23,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1039,7 +1073,7 @@ export const mantras = [
 သဟ သစ္စေ ကတေ မယှံ၊ မဟာပဇ္ဇလိတော သိခီ။ ဝဇ္ဇေသိ သောဠသကရီသာနိ၊ ဥဒကံ ပတွာ ယထာ သိခီ။ သစ္စေန မေ သမော နတ္ထိ၊ ဧသာ မေ သစ္စပါရမီ။
 
 ဝဋ္ဋသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio24,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1096,7 +1130,7 @@ export const mantras = [
 ဧဝံ ဗုဒ္ဓံ သရန္တာနံ၊ ဓမ္မံ သံဃဉ္စ ဘိက္ခဝေါ၊ ဘယံ ဝါ ဆမ္ဘိတတ္တံ ဝါ၊ လောမဟံသော န ဟေဿတိ။
 
 ဓဇဂ္ဂသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio25,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1165,7 +1199,7 @@ export const mantras = [
 အဘိဝါဒန သီလိဿ၊ နိစ္စံ ဝုဍ္ဎာပစာယိနော။ စတ္တာရော ဓမ္မာ ဝဍ္ဎန္တိ၊ အာယု ဝဏ္ဏော သုခံ ဗလံ။
 
 အာဋာနာဋိယသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio26,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1180,7 +1214,7 @@ export const mantras = [
 ယတော ဟံ ဘဂိနိ အရိယာယ၊ ဇာတိယာ ဇာတော၊ နာဘိဇာနာမိ သဉ္စိစ္စ ပါဏံ၊ ဇီဝိတာ ဝေါရောပေတာ၊ တေန သစ္စန သောတ္ထိ တေ၊ ဟောတု သောတ္ထိ ဂဗ္ဘဿ။
 
 အင်္ဂုလိမာလသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio27,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1211,7 +1245,7 @@ export const mantras = [
 ပဟီနာ တေ စ အာဗာဓာ၊ တိဏ္ဏန္နမ္ပိ မဟေသိနံ။ မဂ္ဂဟတာ ကိလေသာဝ၊ ပတ္တာ’ နုပ္ပတ္တိဓမ္မတံ။ဧတေန သစ္စဝဇ္ဇေန၊ သောတ္ထိ တေ (မေ/ပီတ) ဟောတု သဗ္ဗဒါ။
 
 ဗောဇ္ဈင်္ဂသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio:  meditationAudio28,
     artist: "Unknown",
     duration: "2:45"
   },
@@ -1258,7 +1292,7 @@ export const mantras = [
 ပဒက္ခိဏာနိ ကတွာန၊ လဘန္တတ္ထေ ပဒက္ခိဏေ။ တေ အတ္ထလဒ္ဓါ သုခိတာ၊ ဝိရုဠှာ ဗုဒ္ဓသာသနေ။ အရောဂါ သုခိတာ ဟောထ၊ သဟ သ‌‌‌ေဗ္ဗဟိ ဉာတိဘိ။
 
 ပုဗ္ဗဏှသုတ္တံ နိဋ္ဌိတံ။`,
-    audio: "/audio/sangha-puja.mp3",
+    audio: meditationAudio29,
     artist: "Unknown",
     duration: "2:45"
   },
