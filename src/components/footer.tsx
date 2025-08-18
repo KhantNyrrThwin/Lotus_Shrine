@@ -93,7 +93,7 @@ function Footer() {
                 &nbsp; lotusshrine@gmail.com
               </Link>
               <Link
-                to="/meditation"
+                to="https://github.com/KhantNyrrThwin/Lotus_Shrine"
                 className="flex items-center  text-white hover:text-amber-300 mb-[10px] font-extrabold"
               >
                 <img src={link_logo} alt="LOGO" className="size-[28px]" />
