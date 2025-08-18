@@ -118,3 +118,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Myanmar font utility */
+.font-myanmar {
+  font-family: "Noto Sans Myanmar", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}

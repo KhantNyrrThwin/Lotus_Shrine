@@ -2,6 +2,7 @@ import LoginForm from "../components/loginform";
 import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import "../App.css";
+import GoogleAuth from "../components/GoogleAuth";
 export default function LoginPage() {
   return (
     <>
@@ -30,6 +31,9 @@ export default function LoginPage() {
                   အကောင့်ဝင်ရန်
                 </h1>
                 <LoginForm />
+                <div className="mt-4 flex items-center justify-center">
+                  <GoogleAuth mode="signin" />
+                </div>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import SigninForm from "../components/signinform";
 import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import "../App.css";
+import GoogleAuth from "../components/GoogleAuth";
 export default function SigninPage() {
   return (
     <>
@@ -30,6 +31,9 @@ export default function SigninPage() {
                   အကောင့်ဖွင့်ရန်
                 </h1>
                 <SigninForm />
+                <div className="mt-4 flex items-center justify-center">
+                  <GoogleAuth mode="signup" />
+                </div>
               </div>
             </div>
           </div>
