@@ -7,7 +7,8 @@ function Gonetawkoeprr() {
   return (
     <>
       <div
-        className="relative min-h-screen w-full bg-[#FDE9DA] flex flex-col"
+        className="relative min-h-screen w-full bg-[#FDE9DA] flex flex-col font-myanmar"
+        lang="my"
         style={{
           backgroundSize: 'cover',
           backgroundPosition: 'center',
