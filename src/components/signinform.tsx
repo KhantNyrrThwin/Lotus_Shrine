@@ -3,6 +3,7 @@ import { DevTool } from "@hookform/devtools";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 type FormData = {
   name: string;
@@ -29,6 +30,8 @@ const signinForm = () => {
     useState<PasswordStrength>("");
   const [strengthMessage, setStrengthMessage] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Watch password changes
   const password = watch("password");
@@ -220,18 +223,28 @@ const signinForm = () => {
             စကားဝှက်ရိုက်ထည့်ပါ
           </label>
         </div>
-        <input
-          type="password"
-          placeholder="စကားဝှက်"
-          {...register("password", {
-            required: "စကားဝှက်လိုအပ်ပါသည်",
-            minLength: {
-              value: 8,
-              message: "အနည်းဆုံး ၈ လုံးရှိရပါမည်",
-            },
-          })}
-          className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="စကားဝှက်"
+            {...register("password", {
+              required: "စကားဝှက်လိုအပ်ပါသည်",
+              minLength: {
+                value: 8,
+                message: "အနည်းဆုံး ၈ လုံးရှိရပါမည်",
+              },
+            })}
+            className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2 pr-10"
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4f3016]/70 hover:text-[#4f3016]"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         {errors.password && (
           <p className="text-red-500 text-sm -mt-2 self-start ml-11">
             {errors.password.message}
@@ -253,14 +266,24 @@ const signinForm = () => {
             စကားဝှက်အတည်ပြုပါ
           </label>
         </div>
-        <input
-          type="password"
-          placeholder="စကားဝှက်အတည်ပြုရန်"
-          {...register("confirm_password", {
-            required: "စကားဝှက်အတည်ပြုရန်လိုအပ်ပါသည်",
-          })}
-          className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
-        />
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="စကားဝှက်အတည်ပြုရန်"
+            {...register("confirm_password", {
+              required: "စကားဝှက်အတည်ပြုရန်လိုအပ်ပါသည်",
+            })}
+            className="w-[451px] h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2 pr-10"
+          />
+          <button
+            type="button"
+            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4f3016]/70 hover:text-[#4f3016]"
+          >
+            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         {passwordError && (
           <p className="text-red-500 text-sm -mt-2 self-start ml-11">
             {passwordError}
