@@ -367,7 +367,7 @@ export default function Navbar() {
             <div className="mt-5 flex justify-end">
               <Dialog.Close asChild>
                 <button className="inline-flex h-10 items-center justify-center rounded-md bg-[#4f3016] px-4 text-white hover:bg-[#3a2411]">
-                  ပြီးဆုတ်ရန်
+                  နောက်ဆုတ်ရန်
                 </button>
               </Dialog.Close>
             </div>
