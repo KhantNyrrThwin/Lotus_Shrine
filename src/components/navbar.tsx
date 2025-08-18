@@ -6,6 +6,8 @@ import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import * as Dialog from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
@@ -14,6 +16,8 @@ export default function Navbar() {
   const [isAboutOpen, setAboutOpen] = useState(false);
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);
   const [isAccountOpen, setAccountOpen] = useState(false);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -164,13 +168,20 @@ export default function Navbar() {
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
                       &nbsp; ဘုရား ဂုဏ်တော် (၉)ပါး
                     </Link>
-                    <Link
-                      to="/aboutus"
-                      className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                    <div
+                      onClick={() => {
+                        setKoeNaWinOpen(false);
+                        if (isLogin) {
+                          setComingSoonOpen(true);
+                        } else {
+                          setLoginPromptOpen(true);
+                        }
+                      }}
+                      className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
                       &nbsp; ကိုးနဝင်းဝင်မည်
-                    </Link>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -301,6 +312,68 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
+      {/* Login Prompt Dialog for Guests */}
+      <Dialog.Root open={loginPromptOpen} onOpenChange={setLoginPromptOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+            <div className="flex items-start justify-between">
+              <Dialog.Title className="text-lg font-semibold text-[#4f3016]">အကောင့်ဝင်ရန် လိုအပ်ပါသည်</Dialog.Title>
+              <Dialog.Close className="inline-flex items-center justify-center rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                <X size={18} />
+              </Dialog.Close>
+            </div>
+            <Dialog.Description className="mt-2 text-sm text-gray-600">
+              ကိုးနဝင်းဝင်မည် ကို သုံးမည်ဆိုပါက အကောင့်ဝင်ရန် (သို့) အကောင့်အသစ်ဖွင့်ရန် လိုအပ်ပါသည်။
+            </Dialog.Description>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => {
+                  setLoginPromptOpen(false);
+                  navigate("/login");
+                }}
+                className="inline-flex h-10 items-center justify-center rounded-md bg-[#4f3016] px-4 text-white hover:bg-[#3a2411]"
+              >
+                အကောင့်ဝင်ရန်
+              </button>
+              <button
+                onClick={() => {
+                  setLoginPromptOpen(false);
+                  navigate("/signin");
+                }}
+                className="inline-flex h-10 items-center justify-center rounded-md border border-[#4f3016] px-4 text-[#4f3016] hover:bg-[#4f3016]/10"
+              >
+                အကောင့်အသစ်ဖွင့်ရန်
+              </button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      {/* Coming Soon Dialog for Logged-in Users */}
+      <Dialog.Root open={comingSoonOpen} onOpenChange={setComingSoonOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+            <div className="flex items-start justify-between">
+              <Dialog.Title className="text-lg font-semibold text-[#4f3016]">မကြာမီ လာမည်</Dialog.Title>
+              <Dialog.Close className="inline-flex items-center justify-center rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                <X size={18} />
+              </Dialog.Close>
+            </div>
+            <Dialog.Description className="mt-2 text-sm text-gray-600">
+              ကိုးနဝင်းဝင်မည် လုပ်ဆောင်ချက်ကို mid-term seminar ပြီးဆုံးပြီးနောက် ထည့်သွင်းပေးမည်ဖြစ်ပါသည်။ ကျေးဇူးတင်ပါသည်။
+            </Dialog.Description>
+            <div className="mt-5 flex justify-end">
+              <Dialog.Close asChild>
+                <button className="inline-flex h-10 items-center justify-center rounded-md bg-[#4f3016] px-4 text-white hover:bg-[#3a2411]">
+                  ပြီးဆုတ်ရန်
+                </button>
+              </Dialog.Close>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </>
   );
 }
