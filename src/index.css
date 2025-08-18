@@ -5,11 +5,20 @@
   src: url("./assets/fonts/Pyidaungsu.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 /* Use the font globally */
 body {
-  font-family: "Pyidaungsu", sans-serif;
+  font-family: "Pyidaungsu", "Noto Sans Myanmar", "Padauk", "Tharlon", "Myanmar Text", "Noto Serif Myanmar", sans-serif;
+}
+
+/* Ensure Burmese text uses proper font stack when scoped with lang attribute */
+[lang="my"] {
+  font-family: "Pyidaungsu", "Noto Sans Myanmar", "Padauk", "Tharlon", "Myanmar Text", "Noto Serif Myanmar", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Custom Sonner Toast Styles */

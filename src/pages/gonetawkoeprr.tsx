@@ -12,6 +12,7 @@ function Gonetawkoeprr() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
+        lang="my"
       >
         <Navbar />
         <div className="flex flex-col items-center justify-center flex-1 px-4 py-10">
