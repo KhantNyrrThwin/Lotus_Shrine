@@ -1,13 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react"; 
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { Play } from "lucide-react";
+import { Play, Camera, AlertTriangle } from "lucide-react";
 import bell from "../assets/sounds/Meditaion.mp3";
 import meditationAudio from "../assets/sounds/Meditaion.mp3";
 import { useMusicPlayer } from "../components/MusicPlayerContext";
 import tayartawVideos from "../data/tayartawVideos";
 import { mantras } from "../data/mantras";
+// Replace existing bell import
+import completeMBell from "../assets/sounds/completeM.ogg";  // Meditation completion sound
+import incorrectPostureAudio from "../assets/sounds/alarm.ogg";  // Incorrect posture sound
 
+import * as tmPose from "@teachablemachine/pose";
+
+// -----------------------------
+// Types / Interfaces
+// -----------------------------
 interface DhammaSong {
   id: number;
   title: string;
@@ -16,71 +24,204 @@ interface DhammaSong {
   audioUrl: string;
 }
 
+interface PostureOption {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+}
+
+// -----------------------------
+// Static data
+// -----------------------------
+const postureOptions: PostureOption[] = [
+  {
+    id: "Burmese",
+    name: "Burmese Posture",
+    description: "Traditional cross-legged sitting with both feet on the ground",
+    imageUrl: "/postures/standard.png",
+  },
+  {
+    id: "Chair Posture",
+    name: "Chair Posture",
+    description: "Sitting on a chair with feet flat on the ground",
+    imageUrl: "/postures/chair.png",
+  },
+  {
+    id: "Seiza",
+    name: "Seiza Posture",
+    description: "Kneeling with buttocks on heels",
+    imageUrl: "/postures/seiza.png",
+  },
+  {
+    id: "Yoga Pose",
+    name: "Yoga Pose",
+    description: "Lotus or half-lotus position",
+    imageUrl: "/postures/yoga.png",
+  },
+];
+
 const dhammaSongs: DhammaSong[] = [
   {
     id: 1,
     title: "Metta Meditation",
     artist: "Buddhist Chants",
     duration: "15:30",
-    audioUrl: meditationAudio
+    audioUrl: meditationAudio,
   },
   {
     id: 2,
     title: "Mindfulness Breathing",
     artist: "Meditation Guide",
     duration: "20:15",
-    audioUrl: meditationAudio
+    audioUrl: meditationAudio,
   },
   {
     id: 3,
     title: "Loving Kindness",
     artist: "Dhamma Teacher",
     duration: "18:45",
-    audioUrl: meditationAudio
+    audioUrl: meditationAudio,
   },
   {
     id: 4,
     title: "Body Scan Meditation",
     artist: "Mindfulness Guide",
     duration: "25:00",
-    audioUrl: meditationAudio
-  }
+    audioUrl: meditationAudio,
+  },
 ];
 
-// Add Tayartaw videos and Paritta Suttas data
+// Convert mantras data into the same shape as dhammaSongs / audio lists
 const parittaSuttas = mantras.map((m, idx) => ({
   id: idx + 1,
   title: m.title,
   artist: m.artist,
   duration: m.duration,
-  audioUrl: m.audio
+  audioUrl: m.audio,
 }));
 
+// -----------------------------
+// Component: Meditation
+// -----------------------------
 function Meditation() {
+  // Timer state
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timerDuration, setTimerDuration] = useState(10 * 60); // 10 minutes default
+  const [timerDuration, setTimerDuration] = useState(10 * 60); // 10 minutes default (seconds)
+
+  // Posture / pose detection UI state
+  const [showPostureSelection, setShowPostureSelection] = useState(false);
+  const [selectedPosture, setSelectedPosture] = useState<string | null>(null);
+
+  // Pose detection runtime state
+  const [isPoseDetectionActive, setIsPoseDetectionActive] = useState(false);
+  const [poseStatus, setPoseStatus] = useState<'correct' | 'incorrect' | 'detecting' | null>(null);
+  const [poseConfidence, setPoseConfidence] = useState<number>(0);
+  const [modelLoaded, setModelLoaded] = useState(false);
+  const [holdProgress, setHoldProgress] = useState(0); // Progress for 5-second hold
+  const [isPostureHeld, setIsPostureHeld] = useState(false); // Track if posture has been held for 5 seconds
+  const [cameraOffAfterHold, setCameraOffAfterHold] = useState(false); // New state to track if camera should be off after hold
+
+  // Raw predictions and per-class probabilities
+  const [predictions, setPredictions] = useState<Array<{ className: string; probability: number }>>([]);
+  const [posePredictions, setPosePredictions] = useState<number[]>([0, 0, 0, 0, 0]);
+
+  // Refs for timers, audio, and pose-model objects
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Add category state
-  const [category, setCategory] = useState< 'tayartaw' | 'paritta' | 'dhamma' >('tayartaw');
+  const bellRef = useRef<HTMLAudioElement | null>(null);
+  const incorrectPostureRef = useRef<HTMLAudioElement | null>(null);
+  const alarmPlayingRef = useRef(false); // Track if alarm is currently playing
+  const shouldTriggerAlarmRef = useRef(false); // Track if alarm should be triggered
+
+  const webcamRef = useRef<tmPose.Webcam | null>(null);
+  const modelRef = useRef<any>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const poseLoopRef = useRef<number | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null); // Timer for 5-second hold
+  const consecutiveCorrectFrames = useRef(0); // Track consecutive correct frames
+
+  // UI music / category state
+  const [category, setCategory] = useState<"tayartaw" | "paritta" | "dhamma">("tayartaw");
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
-  // Use global music player context
+  // This ref mirrors selectedPosture so the animation loop reads a stable value
+  const selectedPostureRef = useRef<string | null>(null);
+
   const { playSong } = useMusicPlayer();
 
-  // Timer functions
+  // Initialize audio elements and event listeners
+  useEffect(() => {
+    const bellAudio = new Audio(completeMBell);
+    bellRef.current = bellAudio;
+
+    const incorrectAudio = new Audio(incorrectPostureAudio);
+    incorrectPostureRef.current = incorrectAudio;
+
+    // Handle audio completion event
+    const handleAudioEnded = () => {
+      alarmPlayingRef.current = false;
+      
+      // Re-trigger alarm if posture is still incorrect and not held
+      if (shouldTriggerAlarmRef.current && !isPostureHeld) {
+        incorrectAudio.play();
+        alarmPlayingRef.current = true;
+      }
+    };
+
+    incorrectAudio.addEventListener('ended', handleAudioEnded);
+
+    return () => {
+      incorrectAudio.removeEventListener('ended', handleAudioEnded);
+    };
+  }, []);
+
+  // -----------------------------
+  // Load teachable machine pose model once on mount
+  // -----------------------------
+  useEffect(() => {
+    const initPoseModel = async () => {
+      try {
+        console.log("Loading pose model...");
+        const modelURL = "/pose_model/model.json";
+        const metadataURL = "/pose_model/metadata.json";
+
+        console.log("Loading pose model from:", modelURL);
+        modelRef.current = await tmPose.load(modelURL, metadataURL);
+
+        console.log("Pose model loaded successfully");
+        console.log("Model labels:", modelRef.current.getClassLabels());
+        console.log("Total classes:", modelRef.current.getTotalClasses());
+
+        setModelLoaded(true);
+      } catch (error) {
+        console.error("Error loading pose model:", error);
+        alert("Failed to load pose model. Please check your model URL and try again.");
+      }
+    };
+
+    initPoseModel();
+  }, []);
+
+  // -----------------------------
+  // Timer effect: increments `timer` every second while running
+  // Stops when timer reaches timerDuration and triggers end-of-session behavior
+  // -----------------------------
   useEffect(() => {
     if (isTimerRunning && timer < timerDuration) {
       timerRef.current = setTimeout(() => {
         setTimer(timer + 1);
       }, 1000);
     } else if (timer >= timerDuration) {
+      // Timer finished: stop everything, play bell, and stop pose detection
       setIsTimerRunning(false);
-      // Play bell sound when timer ends
-      if (audioRef.current) {
-        audioRef.current.play();
+      setIsPoseDetectionActive(false);
+      stopPoseDetection();
+      if (bellRef.current) {
+        bellRef.current.play(); 
       }
     }
 
@@ -91,30 +232,271 @@ function Meditation() {
     };
   }, [isTimerRunning, timer, timerDuration]);
 
-  // Music player audio control
+  // Stop alarm when posture is held for 5 seconds
   useEffect(() => {
-    // This useEffect is no longer needed as music player state is managed by context
-  }, []);
+    if (isPostureHeld && incorrectPostureRef.current) {
+      incorrectPostureRef.current.pause();
+      incorrectPostureRef.current.currentTime = 0;
+      alarmPlayingRef.current = false;
+      shouldTriggerAlarmRef.current = false;
+    }
+  }, [isPostureHeld]);
 
-  // Remove all local music player state and handlers
+  // -----------------------------
+  // Main pose detection loop
+  // - Reads webcam frame, runs estimate + predict, updates UI probabilities
+  // - Uses selectedPostureRef (stable ref) to compare prediction to selected posture
+  // -----------------------------
+  const poseDetectionLoop = async () => {
+    if (!webcamRef.current || !canvasRef.current || !ctxRef.current || !modelRef.current) return;
 
+    try {
+      // Update webcam frame and draw it to canvas
+      webcamRef.current.update();
+      ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      ctxRef.current.drawImage(webcamRef.current.canvas, 0, 0);
+
+      if (modelRef.current) {
+        const { pose, posenetOutput } = await modelRef.current.estimatePose(webcamRef.current.webcam);
+        const prediction = await modelRef.current.predict(posenetOutput, pose);
+
+        setPredictions(prediction);
+
+        // Map predictions into a predictable fixed-size array for the UI
+        const newPosePredictions = [0, 0, 0, 0, 0];
+        prediction.forEach((p: any) => {
+          const index = ["Burmese", "Chair Posture", "Seiza", "Yoga Pose", "Error"].indexOf(p.className);
+          if (index !== -1) {
+            newPosePredictions[index] = p.probability;
+          }
+        });
+        setPosePredictions(newPosePredictions);
+
+        // Find the top prediction
+        let maxConfidence = 0;
+        let predictedClass = "";
+        prediction.forEach((p: any) => {
+          if (p.probability > maxConfidence) {
+            maxConfidence = p.probability;
+            predictedClass = p.className;
+          }
+        });
+
+        setPoseConfidence(maxConfidence);
+
+        // Use the ref value to avoid stale closure issues in the animation loop
+        const currentSelectedPosture = selectedPostureRef.current;
+
+        // Decide poseStatus based on thresholds
+        if (
+          predictedClass.trim().toLowerCase() === currentSelectedPosture?.trim().toLowerCase() &&
+          maxConfidence > 0.7
+        ) {
+          setPoseStatus("correct");
+          
+          // Track consecutive correct frames for 5-second hold
+          consecutiveCorrectFrames.current++;
+          
+          // Start hold timer if we have enough consecutive correct frames (5 seconds @ 30fps = 150 frames)
+          if (consecutiveCorrectFrames.current >= 60 && !isPostureHeld) {
+            setIsPostureHeld(true);
+            setIsTimerRunning(true);
+            // NEW: Turn off camera after hold is complete
+            stopPoseDetection();
+            setCameraOffAfterHold(true);
+          }
+        } else {
+          // Reset consecutive count if posture is incorrect
+          consecutiveCorrectFrames.current = 0;
+          
+          if (
+            (predictedClass.trim().toLowerCase() !== currentSelectedPosture?.trim().toLowerCase() ||
+              predictedClass === "Error") &&
+            maxConfidence > 0.5
+          ) {
+            setPoseStatus("incorrect");
+            
+            // ALARM LOGIC: Only trigger if not held and not already playing
+            if (!isPostureHeld && !alarmPlayingRef.current) {
+              shouldTriggerAlarmRef.current = true;
+              if (incorrectPostureRef.current) {
+                incorrectPostureRef.current.play();
+                alarmPlayingRef.current = true;
+              }
+            }
+          } else {
+            setPoseStatus("detecting");
+            shouldTriggerAlarmRef.current = false;
+          }
+        }
+
+        // Draw keypoints and skeleton on canvas if a pose is detected
+        if (pose) {
+          const minPartConfidence = 0.5;
+          tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctxRef.current);
+          tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctxRef.current);
+        }
+      }
+    } catch (error) {
+      console.error("Error in pose detection loop:", error);
+    }
+
+    // Schedule next frame
+    poseLoopRef.current = requestAnimationFrame(poseDetectionLoop);
+  };
+
+  // -----------------------------
+  // startPoseDetection(): sets up webcam, canvas, and begins the animation loop
+  // -----------------------------
+  const startPoseDetection = async () => {
+    try {
+      if (!modelLoaded) {
+        alert("Model is still loading. Please wait a moment and try again.");
+        return;
+      }
+
+      // sync just in case
+      if (!selectedPostureRef.current && selectedPosture) {
+        selectedPostureRef.current = selectedPosture;
+      }
+
+      // Initialize webcam if missing
+      if (!webcamRef.current) {
+        const size = 400;
+        const flip = true;
+        webcamRef.current = new tmPose.Webcam(size, size, flip);
+        await webcamRef.current.setup();
+        await webcamRef.current.play();
+      }
+
+      // Ensure canvas context is setup only once
+      if (canvasRef.current && !ctxRef.current && webcamRef.current) {
+        canvasRef.current.width = webcamRef.current.width;
+        canvasRef.current.height = webcamRef.current.height;
+        ctxRef.current = canvasRef.current.getContext("2d", { willReadFrequently: true });
+      }
+
+      setIsPoseDetectionActive(true);
+      consecutiveCorrectFrames.current = 0; // Reset consecutive frames counter
+      setCameraOffAfterHold(false); // Reset camera off state
+      poseDetectionLoop();
+    } catch (error) {
+      console.error("Error starting pose detection:", error);
+      alert("Failed to start camera. Please check camera permissions and try again.");
+    }
+  };
+
+  // -----------------------------
+  // stopPoseDetection(): stop animation and webcam
+  // -----------------------------
+  const stopPoseDetection = () => {
+    if (poseLoopRef.current) {
+      cancelAnimationFrame(poseLoopRef.current);
+      poseLoopRef.current = null;
+    }
+    if (webcamRef.current) {
+      webcamRef.current.stop();
+      webcamRef.current = null;
+    }
+
+    setIsPoseDetectionActive(false);
+    setPoseStatus(null);
+    setPredictions([]);
+    setPosePredictions([0, 0, 0, 0, 0]);
+  };
+
+  // -----------------------------
+  // Timer control helpers
+  // -----------------------------
   const startTimer = () => {
-    setIsTimerRunning(true);
+    if (!modelLoaded) {
+      alert("Pose model is still loading. Please wait a moment and try again.");
+      return;
+    }
+    setShowPostureSelection(true);
+  };
+
+  const selectPosture = (postureId: string) => {
+    setSelectedPosture(postureId);
+    // Keep ref in sync immediately to avoid races with the pose loop
+    selectedPostureRef.current = postureId;
+    setShowPostureSelection(false);
+    setIsPostureHeld(false); // Reset hold state
+    startPoseDetection(); // Start detection immediately
   };
 
   const pauseTimer = () => {
     setIsTimerRunning(false);
+    setIsPoseDetectionActive(false);
+
+    // Stop the detection loop but keep webcam available
+    if (poseLoopRef.current) {
+      cancelAnimationFrame(poseLoopRef.current);
+      poseLoopRef.current = null;
+    }
+    
+    // Stop any active alarms
+    if (incorrectPostureRef.current) {
+      incorrectPostureRef.current.pause();
+      incorrectPostureRef.current.currentTime = 0;
+      alarmPlayingRef.current = false;
+      shouldTriggerAlarmRef.current = false;
+    }
   };
 
+  // Resume from a paused state
+  const resumeTimer = () => {
+    if (!modelLoaded || !selectedPosture) {
+      alert("Please select a posture first");
+      return;
+    }
+
+    setIsTimerRunning(true);
+
+    // Restart pose detection only if camera is not off after hold
+    if (!isPoseDetectionActive && !cameraOffAfterHold) {
+      startPoseDetection();
+    }
+  };
+
+  // Reset everything back to initial state
   const resetTimer = () => {
     setIsTimerRunning(false);
+    setIsPoseDetectionActive(false);
+    setIsPostureHeld(false); // Reset hold state
+    setCameraOffAfterHold(false); // Reset camera state
+    setHoldProgress(0);
+    stopPoseDetection();
     setTimer(0);
+    setSelectedPosture(null);
+    selectedPostureRef.current = null;
+    setPoseStatus(null);
+    setPredictions([]);
+    setPosePredictions([0, 0, 0, 0, 0]);
+    consecutiveCorrectFrames.current = 0;
+    
+    // Clear hold timer if exists
+    if (holdTimerRef.current) {
+      clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    
+    // Stop any active alarms
+    if (incorrectPostureRef.current) {
+      incorrectPostureRef.current.pause();
+      incorrectPostureRef.current.currentTime = 0;
+      alarmPlayingRef.current = false;
+      shouldTriggerAlarmRef.current = false;
+    }
   };
 
+  // -----------------------------
+  // Formatting helpers
+  // -----------------------------
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const formatTimerDuration = (seconds: number) => {
@@ -122,102 +504,352 @@ function Meditation() {
     return `${mins} min`;
   };
 
-  // Remove all local music player functions
+  // Keep the ref and state for selected posture in sync so the loop reads the latest
+  useEffect(() => {
+    selectedPostureRef.current = selectedPosture;
+  }, [selectedPosture]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopPoseDetection();
+      // Clear hold timer if exists
+      if (holdTimerRef.current) {
+        clearInterval(holdTimerRef.current);
+      }
+      
+      // Stop any active alarms
+      if (incorrectPostureRef.current) {
+        incorrectPostureRef.current.pause();
+        incorrectPostureRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className="min-h-screen bg-[#FDE9DA]">
       <Navbar />
-      
       <div className="container mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-          တရားထိုင်ခြင်း
-        </h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">တရားထိုင်ခြင်း နှင့် ပုံစံစစ်ဆေးခြင်း</h1>
+
+        {/* Model Loading Status */}
+        {!modelLoaded && (
+          <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6 text-center">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
+              <span>ပုံစံစစ်ဆေးမှု မော်ဒယ် ဖွင့်နေသည်...</span>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Timer Section */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              တရားထိုင်မည်
-            </h2>
-            
-            <div className="text-center mb-8">
-              <div className="text-6xl font-mono text-[#493016] mb-4">
-                {formatTime(timer)}
-              </div>
-              <div className="text-gray-600 mb-4">
-                တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}
-              </div>
-              
-              {/* Progress bar */}
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
-                <div 
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${(timer / timerDuration) * 100}%` }}
-                ></div>
-              </div>
-            </div>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">တရားထိုင်မည်</h2>
 
-            {/* Timer Controls */}
-            <div className="flex justify-center space-x-4 mb-6">
-              <button
-                onClick={startTimer}
-                disabled={isTimerRunning}
-                className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-              >
-                စတင်မည်
-              </button>
-              <button
-                onClick={pauseTimer}
-                disabled={!isTimerRunning}
-                className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-              >
-                ခဏရပ်မည်
-              </button>
-              <button
-                onClick={resetTimer}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-              >
-                ပြန်စတင်မည်
-              </button>
-            </div>
+            {!showPostureSelection && !isTimerRunning && (
+              <>
+                <div className="text-center mb-8">
+                  <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
+                  <div className="text-gray-600 mb-4">တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}</div>
 
-            {/* Timer Duration Selection */}
-            <div className="text-center">
-              <label className="block text-gray-700 font-medium mb-2">
-                တရားထိုင်ချိန် သတ်မှတ်ပါ :
-              </label>
-              <div className="flex justify-center space-x-2">
-                {[5, 10, 15, 20, 30].map((minutes) => (
+                  {/* Progress bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${(timer / timerDuration) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Timer Controls */}
+                <div className="flex justify-center space-x-4 mb-6">
                   <button
-                    key={minutes}
-                    onClick={() => {
-                      setTimerDuration(minutes * 60);
-                      resetTimer();
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      timerDuration === minutes * 60
-                        ? 'bg-[#4f3016] text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    onClick={startTimer}
+                    disabled={!modelLoaded}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-colors flex items-center space-x-2 ${
+                      modelLoaded ? "bg-green-500 hover:bg-green-600 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                   >
-                    {minutes} မိနစ်
+                    <Camera size={20} />
+                    <span>{modelLoaded ? "တရားထိုင်စတင်မည်" : "ဖွင့်နေသည်..."}</span>
                   </button>
-                ))}
+                  <button
+                    onClick={resetTimer}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    ပြန်စတင်မည်
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Posture Selection */}
+            {showPostureSelection && (
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-gray-800 mb-6">တရားထိုင်မည့်ပုံစံ ရွေးချယ်ပါ</h3>
+                <p className="text-gray-600 mb-6">သင့်အနေအထားနှင့် ကိုက်ညီသော ပုံစံကို ရွေးချယ်ပါ။ ရွေးချယ်ပြီးနောက် ကင်မရာက သင့်ပုံစံကို စစ်ဆေးပေးမည်။</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {postureOptions.map((posture) => (
+                    <div
+                      key={posture.id}
+                      onClick={() => selectPosture(posture.id)}
+                      className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-lg cursor-pointer transition-all duration-200 transform hover:scale-105"
+                    >
+                      <div className="w-24 h-24 mx-auto mb-3 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img
+                          src={posture.imageUrl}
+                          alt={posture.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = "flex";
+                          }}
+                        />
+                        <span className="text-2xl hidden">🧘</span>
+                      </div>
+                      <h4 className="font-medium text-gray-800 mb-1">{posture.name}</h4>
+                      <p className="text-sm text-gray-600">{posture.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Active Meditation with Pose Detection */}
+            {selectedPosture && !isPostureHeld && (
+              <div className="text-center">
+                {/* Status Header */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+                  <h3 className="text-xl font-bold text-purple-800 mb-2">⏳ ပုံစံအတည်ပြုနေသည်</h3>
+                  <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === selectedPosture)?.name}</span></p>
+                </div>
+
+                <div className="mb-4">
+                  <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
+                  <div className="text-6xl font-mono text-[#493016] mb-4">00:00</div>
+
+                  {/* Hold Progress */}
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+                    <div
+                      className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${(consecutiveCorrectFrames.current / 60) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-gray-600">
+                    5 စက္ကန့် ထိန်းထားရန်
+                  </p>
+                </div>
+
+                {/* Pose Status */}
+                <div
+                  className={`mb-4 p-4 rounded-lg border-2 ${
+                    poseStatus === "correct"
+                      ? "bg-green-100 border-green-500 shadow-lg shadow-green-200"
+                      : poseStatus === "incorrect"
+                      ? "bg-red-100 border-red-500 shadow-lg shadow-red-200"
+                      : "bg-blue-100 border-blue-500 shadow-lg shadow-blue-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-center space-x-2">
+                    {poseStatus === "correct" && <span className="text-green-600 text-2xl">✅</span>}
+                    {poseStatus === "incorrect" && <span className="text-red-600 text-2xl">❌</span>}
+                    {poseStatus === "detecting" && <span className="text-blue-600 text-2xl">🔍</span>}
+                    <span
+                      className={`font-bold text-lg ${
+                        poseStatus === "correct" ? "text-green-700" : poseStatus === "incorrect" ? "text-red-700" : "text-blue-700"
+                      }`}
+                    >
+                      {poseStatus === "correct" ? "ပုံစံမှန် - ဆက်လက်ထိုင်ပါ" : poseStatus === "incorrect" ? "ပုံစံမှား - ပြင်ဆင်ပါ" : "ပုံစံစစ်ဆေးနေသည်..."}
+                    </span>
+                  </div>
+                  {poseStatus && (
+                    <div className="text-sm mt-2 text-center font-medium">ယုံကြည်မှု: {(poseConfidence * 100).toFixed(1)}%</div>
+                  )}
+                </div>
+
+                {/* Live Pose Detection Canvas */}
+                <div className="relative inline-block mb-6">
+                  <canvas
+                    ref={canvasRef}
+                    width={400}
+                    height={400}
+                    className={`rounded-lg border-4 bg-gray-100 ${
+                      poseStatus === "correct"
+                        ? "border-green-500 shadow-lg shadow-green-200"
+                        : poseStatus === "incorrect"
+                        ? "border-red-500 shadow-lg shadow-red-200"
+                        : "border-blue-500 shadow-lg shadow-blue-200"
+                    }`}
+                    style={{
+                      minWidth: "400px",
+                      minHeight: "400px",
+                      borderWidth: "6px",
+                      transition: "all 0.3s ease",
+                      boxShadow:
+                        poseStatus === "correct"
+                          ? "0 0 20px rgba(34, 197, 94, 0.3)"
+                          : poseStatus === "incorrect"
+                          ? "0 0 20px rgba(239, 68, 68, 0.3)"
+                          : "0 0 20px rgba(59, 130, 246, 0.3)",
+                    }}
+                  />
+                  {isPoseDetectionActive && (
+                    <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">Camera Active</div>
+                  )}
+                  {/* Pose detection status overlay */}
+                  {isPoseDetectionActive && (
+                    <div
+                      className={`absolute bottom-2 left-2 px-3 py-1 rounded text-sm font-medium ${
+                        poseStatus === "correct" ? "bg-green-600 text-white" : poseStatus === "incorrect" ? "bg-red-600 text-white" : "bg-blue-600 text-white"
+                      }`}
+                    >
+                      {poseStatus === "correct" && "✅ ပုံစံမှန်"}
+                      {poseStatus === "incorrect" && "❌ ပုံစံမှား"}
+                      {poseStatus === "detecting" && "🔍 စစ်ဆေးနေသည်..."}
+                      {!poseStatus && "📷 ကင်မရာ အဆင်သင့်"}
+                    </div>
+                  )}
+                </div>
+
+                {/* Real-time Prediction Labels */}
+                {isPoseDetectionActive && (
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 text-center">ပုံစံစစ်ဆေးမှုရလဒ်များ</h4>
+                    <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-center">
+                      <span className="text-blue-800 font-medium">ရွေးချယ်ထားသောပုံစံ: {postureOptions.find((p) => p.id === selectedPosture)?.name}</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                      {['Burmese', 'Chair Posture', 'Seiza', 'Yoga Pose', 'Error'].map((className, index) => (
+                        <div
+                          key={className}
+                          className={`text-center p-2 rounded border-2 ${
+                            className === selectedPosture ? 'bg-green-100 border-green-400' : 'bg-white border-gray-200'
+                          }`}
+                        >
+                          <div className="text-sm font-medium text-gray-600">{className}</div>
+                          <div className={`text-lg font-bold ${className === selectedPosture ? 'text-green-700' : 'text-[#493016]'}`}>
+                            {posePredictions[index] ? `${(posePredictions[index] * 100).toFixed(1)}%` : '0.0%'}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Timer Controls */}
+                <div className="flex justify-center space-x-4 mt-6">
+                  <button
+                    onClick={resetTimer}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    ပြန်စတင်မည်
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Active Meditation after hold is complete */}
+            {isTimerRunning && selectedPosture && isPostureHeld && (
+              <div className="text-center">
+                {/* Status Header */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+                  <h3 className="text-xl font-bold text-purple-800 mb-2">🧘 တရားထိုင်ခြင်း လုပ်ဆောင်နေသည်</h3>
+                  <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === selectedPosture)?.name}</span></p>
+                </div>
+
+                <div className="mb-4">
+                  <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
+                  <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
+
+                  {/* Progress bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${(timer / timerDuration) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Camera Off Confirmation Message */}
+                <div className="mb-6 p-4 bg-green-100 border border-green-500 rounded-lg">
+                  <div className="flex items-center justify-center space-x-2">
+                    <span className="text-green-600 text-2xl">✅</span>
+                    <span className="font-bold text-lg text-green-700">
+                      ပုံစံမှန်ကြောင်း အတည်ပြုပြီးပါပြီ။ လုံခြုံရေးအတွက် ကင်မရာကို ပိတ်ထားပါသည်။
+                    </span>
+                  </div>
+                </div>
+
+                {/* Timer Controls */}
+                <div className="flex justify-center space-x-4 mt-6">
+                  <button
+                    onClick={pauseTimer}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    ခဏရပ်မည်
+                  </button>
+                  <button
+                    onClick={resetTimer}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    ပြန်စတင်မည်
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add resume button when paused */}
+            {!isTimerRunning && timer > 0 && selectedPosture && isPostureHeld && (
+              <div className="text-center mt-6">
+                <button
+                  onClick={resumeTimer}
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  ဆက်လက်ထိုင်မည်
+                </button>
+              </div>
+            )}
+
+            {/* Timer Duration Selection */}
+            {!showPostureSelection && !isTimerRunning && !selectedPosture && (
+              <div className="text-center">
+                <label className="block text-gray-700 font-medium mb-2">တရားထိုင်ချိန် သတ်မှတ်ပါ :</label>
+                <div className="flex justify-center space-x-2">
+                  {[5, 10, 15, 20, 30].map((minutes) => (
+                    <button
+                      key={minutes}
+                      onClick={() => {
+                        setTimerDuration(minutes * 60);
+                        resetTimer();
+                      }}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        timerDuration === minutes * 60 ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {minutes} မိနစ်
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Music Player Section */}
           <div className="bg-white rounded-2xl shadow-lg p-8 h-[32rem] overflow-y-auto">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              
               {category === 'tayartaw' && 'တရားတော်များ'}
               {category === 'paritta' && 'ဂါတာတော်များ'}
               {category === 'dhamma' && 'ဓမ္မသီချင်းများ'}
             </h2>
+
             {/* Category Buttons */}
             <div className="flex justify-center mb-6 space-x-2">
-              
               <button
                 onClick={() => setCategory('tayartaw')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'tayartaw' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
@@ -237,14 +869,10 @@ function Meditation() {
                 ဓမ္မသီချင်းများ
               </button>
             </div>
+
             {/* Category Content */}
             {category === 'dhamma' && (
               <>
-                {/* Open Music Player Button */}
-                <div className="flex justify-center mb-4">
-                 
-                </div>
-                {/* Song List */}
                 <div className="space-y-3">
                   {dhammaSongs.map((song, index) => (
                     <div
@@ -267,6 +895,7 @@ function Meditation() {
                 </div>
               </>
             )}
+
             {category === 'tayartaw' && (
               <div className="space-y-3">
                 {tayartawVideos.map((video) => (
@@ -286,7 +915,6 @@ function Meditation() {
                       <p className="font-medium text-gray-800">{video.title}</p>
                       <p className="text-sm text-gray-600">{video.description}</p>
                     </div>
-                    {/* Play inline video if selected */}
                     {playingVideoId === video.id && (
                       <div className="ml-4 w-64 h-36">
                         <iframe
@@ -302,6 +930,7 @@ function Meditation() {
                 ))}
               </div>
             )}
+
             {category === 'paritta' && (
               <div className="space-y-3">
                 {parittaSuttas.map((song, index) => (
@@ -329,42 +958,34 @@ function Meditation() {
 
         {/* Meditation Tips */}
         <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Meditation Tips
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">တရားထိုင်ခြင်း အကြံပြုချက်များ</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🧘</span>
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Find Comfort</h3>
-              <p className="text-gray-600 text-sm">
-                Sit in a comfortable position with your back straight and shoulders relaxed.
-              </p>
+              <h3 className="font-semibold text-gray-800 mb-2">သက်တောင့်သက်သာရှိပါ</h3>
+              <p className="text-gray-600 text-sm">ကျောရိုးဖြောင့်ပြီး ပုခုံးများလျော့ပြီး သက်တောင့်သက်သာရှိသော အနေအထားဖြင့် ထိုင်ပါ။</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🫁</span>
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Focus on Breath</h3>
-              <p className="text-gray-600 text-sm">
-                Pay attention to your natural breathing pattern without trying to change it.
-              </p>
+              <h3 className="font-semibold text-gray-800 mb-2">အသက်ရှူခြင်းကို အာရုံစိုက်ပါ</h3>
+              <p className="text-gray-600 text-sm">သဘာဝအသက်ရှူခြင်းကို ပြောင်းလဲရန် မကြိုးစားဘဲ အာရုံစိုက်ပါ။</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">💭</span>
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">Let Thoughts Pass</h3>
-              <p className="text-gray-600 text-sm">
-                When thoughts arise, acknowledge them and gently return to your breath.
-              </p>
+              <h3 className="font-semibold text-gray-800 mb-2">အတွေးများကို လွှတ်ထားပါ</h3>
+              <p className="text-gray-600 text-sm">အတွေးများပေါ်လာသောအခါ ၎င်းတို့ကို အသိအမှတ်ပြုပြီး သင့်အသက်ရှူခြင်းဆီသို့ ပြန်သွားပါ။</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Hidden audio element for bell sound only */}
+      {/* Hidden audio element for bell sound and posture alerts */}
       <audio ref={audioRef} src={bell} />
       <Footer />
     </div>
