@@ -10,6 +10,7 @@ import LoginPage from "./pages/login";
 import SigninPage from "./pages/signin";
 import Mission from "./pages/mission";
 import KoeNaWin from "./pages/koenawin";
+import KoeNaWinDashboard from "./pages/koenawin/dashboard";
 import { Toaster } from "./components/ui/sonner";
 import ForgotPassword from "./pages/forgotpassword";
 import ChangePassword from "./pages/changepassword";
@@ -44,6 +45,7 @@ function App() {
             <Route path="/mission" element={<Mission />} />
             <Route path="/gonetaw" element={<Gonetawkoeprr />} />
             <Route path="/koenawin" element={<KoeNaWin />} />
+            <Route path="/koenawin/dashboard" element={<KoeNaWinDashboard />} />
             <Route path="/tayartaw" element={<TayartawPage />} />
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/login" element={<LoginPage />} />

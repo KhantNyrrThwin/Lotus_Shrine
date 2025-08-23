@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { authService } from "../data/authService";
 
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
@@ -21,7 +22,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAu = localStorage.getItem("isAuthenticated") === "true";
+    const isAu = authService.isAuthenticated();
     const storedName = localStorage.getItem("userName") || "ဧည့်သည်";
 
     setIsLogin(isAu);
@@ -35,10 +36,8 @@ export default function Navbar() {
       duration: 3000,
     });
 
-    // Clear authentication data
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName");
+    // Clear authentication data using mock auth
+    authService.logout();
 
     // Update state
     setIsLogin(false);
@@ -168,20 +167,27 @@ export default function Navbar() {
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
                       &nbsp; ဘုရား ဂုဏ်တော် (၉)ပါး
                     </Link>
-                    <div
-                      onClick={() => {
-                        setKoeNaWinOpen(false);
-                        if (isLogin) {
-                          setComingSoonOpen(true);
-                        } else {
+                    {isLogin ? (
+                      <Link
+                        to="/koenawin/dashboard"
+                        onClick={() => setKoeNaWinOpen(false)}
+                        className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                      >
+                        <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                        &nbsp; ဒက်ရှ်ဘုတ်ဝင်မည်
+                      </Link>
+                    ) : (
+                      <div
+                        onClick={() => {
+                          setKoeNaWinOpen(false);
                           setLoginPromptOpen(true);
-                        }
-                      }}
-                      className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
-                    >
-                      <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                      &nbsp; ကိုးနဝင်းဝင်မည်
-                    </div>
+                        }}
+                        className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
+                      >
+                        <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                        &nbsp; ကိုးနဝင်းဝင်မည်
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
