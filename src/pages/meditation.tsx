@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"; 
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { Play, Camera, AlertTriangle } from "lucide-react";
+import { Play, Camera } from "lucide-react";
 import bell from "../assets/sounds/Meditaion.mp3";
 import meditationAudio from "../assets/sounds/Meditaion.mp3";
 import { useMusicPlayer } from "../components/MusicPlayerContext";
@@ -119,12 +119,11 @@ function Meditation() {
   const [poseStatus, setPoseStatus] = useState<'correct' | 'incorrect' | 'detecting' | null>(null);
   const [poseConfidence, setPoseConfidence] = useState<number>(0);
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [holdProgress, setHoldProgress] = useState(0); // Progress for 5-second hold
+  // removed unused hold progress state
   const [isPostureHeld, setIsPostureHeld] = useState(false); // Track if posture has been held for 5 seconds
   const [cameraOffAfterHold, setCameraOffAfterHold] = useState(false); // New state to track if camera should be off after hold
 
-  // Raw predictions and per-class probabilities
-  const [predictions, setPredictions] = useState<Array<{ className: string; probability: number }>>([]);
+  // Raw predictions and per-class probabilities (only keep aggregated posePredictions)
   const [posePredictions, setPosePredictions] = useState<number[]>([0, 0, 0, 0, 0]);
 
   // Refs for timers, audio, and pose-model objects
@@ -259,8 +258,6 @@ function Meditation() {
       if (modelRef.current) {
         const { pose, posenetOutput } = await modelRef.current.estimatePose(webcamRef.current.webcam);
         const prediction = await modelRef.current.predict(posenetOutput, pose);
-
-        setPredictions(prediction);
 
         // Map predictions into a predictable fixed-size array for the UI
         const newPosePredictions = [0, 0, 0, 0, 0];
@@ -401,7 +398,6 @@ function Meditation() {
 
     setIsPoseDetectionActive(false);
     setPoseStatus(null);
-    setPredictions([]);
     setPosePredictions([0, 0, 0, 0, 0]);
   };
 
@@ -465,13 +461,11 @@ function Meditation() {
     setIsPoseDetectionActive(false);
     setIsPostureHeld(false); // Reset hold state
     setCameraOffAfterHold(false); // Reset camera state
-    setHoldProgress(0);
     stopPoseDetection();
     setTimer(0);
     setSelectedPosture(null);
     selectedPostureRef.current = null;
     setPoseStatus(null);
-    setPredictions([]);
     setPosePredictions([0, 0, 0, 0, 0]);
     consecutiveCorrectFrames.current = 0;
     

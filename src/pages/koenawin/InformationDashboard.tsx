@@ -14,45 +14,47 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
+import {
+  getProgramStartDate,
+  getDayIndex,
+  getProgressPercentage,
+  getDayInStage,
+  isMeatFreeDayByDayInStage,
+  isTodayCompleted as getIsTodayCompleted,
+  setTodayCompleted,
+  getMantraForDayIndex,
+  TOTAL_STAGES
+} from "../../lib/koenawin";
 
 const InformationDashboard: React.FC = () => {
-  const [progress, setProgress] = useState(65);
+  const [progress, setProgress] = useState(0);
   const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
-  const [isTodayCompleted, setIsTodayCompleted] = useState(false);
-  const [currentStage, setCurrentStage] = useState(5);
-  const [totalStages] = useState(9);
+  const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
+  const [currentStage, setCurrentStage] = useState(1);
+  const [totalStages] = useState(TOTAL_STAGES);
 
-  // Mock mantra data
-  const currentMantra = {
-    name: "ဘုရားဂုဏ်တော် (၉)ပါး",
-    description: "အရှင်မြတ်ဘုရား၏ ဂုဏ်တော်ကိုးပါးကို ရွတ်ဖတ်ခြင်း",
-    timesToRead: 9,
-    currentTimes: 6,
-    instructions: [
-      "အာရုံစိုက်၍ စိတ်ငြိမ်သက်စွာ ထိုင်ပါ",
-      "ဘုရားရှိခိုးပြီး ဂုဏ်တော်ကိုးပါးကို ရွတ်ဖတ်ပါ",
-      "တစ်ပါးလျှင် ပုတီးတစ်ပတ်စိတ်ပါ",
-      "စိတ်ကို ဘုရားဂုဏ်တော်တွေမှာ စိုက်ထားပါ"
-    ]
-  };
+  // Removed mock mantra data in favor of computed mantra from utilities
 
   useEffect(() => {
-    // Check if today is meat-free day (Monday)
     const today = new Date();
-    const dayOfWeek = today.getDay();
-    setIsMeatFreeDay(dayOfWeek === 1); // Monday = 1
+    const start = getProgramStartDate();
+    const dayIdx = getDayIndex(today, start);
+    const dayInStage = getDayInStage(dayIdx);
+    setIsMeatFreeDay(isMeatFreeDayByDayInStage(dayInStage));
+    setProgress(getProgressPercentage(dayIdx));
+    setCurrentStage(Math.ceil((dayIdx + 1) / 9));
+    setIsTodayCompletedState(getIsTodayCompleted(today));
+  }, []);
 
-    // Calculate progress based on current stage
-    const progressPercentage = (currentStage / totalStages) * 100;
-    setProgress(Math.round(progressPercentage));
-  }, [currentStage, totalStages]);
+  const today = new Date();
+  const start = getProgramStartDate();
+  const dayIdx = getDayIndex(today, start);
+  const mantra = getMantraForDayIndex(dayIdx);
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('my-MM', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const onToggleToday = () => {
+    const next = !isTodayCompleted;
+    setTodayCompleted(today, next);
+    setIsTodayCompletedState(next);
   };
 
   return (
@@ -101,26 +103,25 @@ const InformationDashboard: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-[#FDE9DA] p-4 rounded-lg">
-                <h4 className="font-semibold text-[#4f3016] mb-2">{currentMantra.name}</h4>
-                <p className="text-sm text-[#735240] mb-3">{currentMantra.description}</p>
+                <h4 className="font-semibold text-[#4f3016] mb-2">{mantra.label}</h4>
+                <p className="text-sm text-[#735240] mb-3">ယနေ့ ဖတ်ရန် မန္တရား</p>
                 
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm text-[#4f3016]">ရွတ်ဖတ်ရန် အကြိမ်ရေ</span>
-                  <span className="text-sm font-bold text-[#4f3016]">
-                    {currentMantra.currentTimes} / {currentMantra.timesToRead}
-                  </span>
+                  <span className="text-sm font-bold text-[#4f3016]">{mantra.loops} ပတ်</span>
                 </div>
                 
-                <Progress 
-                  value={(currentMantra.currentTimes / currentMantra.timesToRead) * 100} 
-                  className="h-2 mb-3" 
-                />
+                <Progress value={0} className="h-2 mb-3" />
               </div>
 
               <div>
                 <h5 className="font-medium text-[#4f3016] mb-2">ညွှန်ကြားချက်များ</h5>
                 <ul className="space-y-2">
-                  {currentMantra.instructions.map((instruction, index) => (
+                  {[
+                    "အာရုံစိုက်၍ စိတ်ငြိမ်သက်စွာ ထိုင်ပါ",
+                    "ဘုရားရှိခိုးပြီး ယနေ့ မန္တရားကို ရွတ်ဖတ်ပါ",
+                    "ပုတီးပတ်ဖြင့် အကြိမ်ရေ စိပ်ပါ",
+                  ].map((instruction, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm text-[#735240]">
                       <span className="w-2 h-2 bg-[#4f3016] rounded-full mt-2 flex-shrink-0"></span>
                       {instruction}
@@ -210,7 +211,7 @@ const InformationDashboard: React.FC = () => {
               <div className="space-y-2">
                 <Button 
                   className="w-full bg-[#4f3016] hover:bg-[#3a2411] text-white"
-                  onClick={() => {/* Handle start reading */}}
+                  onClick={() => { /* optional: route to mantra reading page */ }}
                 >
                   <BookOpen className="w-4 h-4 mr-2" />
                   တရားဖတ်ရန် စတင်မည်
@@ -219,10 +220,10 @@ const InformationDashboard: React.FC = () => {
                 <Button 
                   variant="outline" 
                   className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                  onClick={() => {/* Handle mark as completed */}}
+                  onClick={onToggleToday}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်
+                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်"}
                 </Button>
               </div>
             </CardContent>
