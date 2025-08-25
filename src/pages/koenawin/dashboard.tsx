@@ -76,21 +76,21 @@ const KoeNaWinDashboard: React.FC = () => {
         
         <div className="flex pt-[58px]">
           {/* Sidebar */}
-          <Sidebar className="bg-[#4f3016] text-white border-r border-[#3a2411]">
-            <SidebarHeader className="p-4 border-b border-[#3a2411]">
+          <Sidebar className="bg-[#4f3016] text-white border-r border-[#3a2411] mt-[58px]">
+            <SidebarHeader className="p-4 border-b border-[#3a2411] bg-[#4f3016]">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-[#735240] rounded-full flex items-center justify-center">
                   <User className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{username}</span>
-                  <span className="text-xs text-[#a8a8a8]">ကိုးနဝင်းအသုံးပြုသူ</span>
+                <div className="flex flex-col ">
+                  <span className="text-sm font-medium text-amber">{username}</span>
+                  <span className="text-xs text-white">ကိုးနဝင်းအသုံးပြုသူ</span>
                 </div>
               </div>
             </SidebarHeader>
             
-            <SidebarContent>
-              <SidebarMenu>
+            <SidebarContent className="bg-[#4f3016]">
+              <SidebarMenu >
                 <SidebarMenuItem>
                   <SidebarMenuButton 
                     onClick={() => handleNavigation("home")}
@@ -137,7 +137,7 @@ const KoeNaWinDashboard: React.FC = () => {
           </Sidebar>
 
           {/* Main Content */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 w-full">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="md:hidden" />
@@ -146,10 +146,7 @@ const KoeNaWinDashboard: React.FC = () => {
                 </h1>
               </div>
               
-              <div className="flex items-center gap-2 bg-[#735240] text-white px-4 py-2 rounded-lg">
-                <User className="w-4 h-4" />
-                <span className="text-sm font-medium">{username}</span>
-              </div>
+          
             </div>
 
             <motion.div

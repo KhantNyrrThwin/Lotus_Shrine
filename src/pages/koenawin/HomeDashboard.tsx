@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 import { 
   Calendar as CalendarIcon,
   AlertTriangle,
+  BookOpen,
+  Leaf,
   CheckCircle,
   Clock,
-  Quote,
   Heart
 } from "lucide-react";
-
+import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Calendar } from "../../components/ui/calendar";
 import { Button } from "../../components/ui/button";
 import {
   getProgramStartDate,
@@ -28,13 +28,30 @@ interface HomeDashboardProps {
 }
 
 const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
   const [startDate, setStartDate] = useState<Date>(getProgramStartDate());
   const [endDate, setEndDate] = useState<Date>(getProgramEndDate(getProgramStartDate()));
   const [daysRemaining, setDaysRemaining] = useState(0);
   const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
 
+
+  const [quoto, setQuoto] = useState("Loading");
+  const [auth, setAuth] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost/lotus_shrine/fetchQuotes.php")
+      .then((res) => res.json())
+      .then((data) => {
+        setQuoto(data.quote_name);
+        setAuth(data.quote_author);
+      })
+      .catch((err) => {
+        setQuoto("ဖတ်ရန်မအောင်မြင်ပါ");
+        setAuth("ဖတ်ရန်မအောင်မြင်ပါ");
+        console.error(err);
+      });
+  }, []);
   // Mock motivational quotes
   const motivationalQuotes = [
     {
@@ -78,6 +95,8 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     setIsTodayCompletedState(next);
   };
 
+  const today = new Date();
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('my-MM', {
       year: 'numeric',
@@ -86,8 +105,14 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     });
   };
 
+  const onToggleToday = () => {
+    const next = !isTodayCompleted;
+    setTodayCompleted(today, next);
+    setIsTodayCompletedState(next);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-242">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -96,10 +121,10 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
       >
         <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
           <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold flex items-center gap-2">
               <Heart className="w-6 h-6" />
               မင်္ဂလာပါ {username}
-            </CardTitle>
+            </h1>
             <CardDescription className="text-[#e0e0e0]">
               ကိုးနဝင်းစိတ်ဓာတ်ဖြင့် နေ့စဉ်ဘဝကို ဖြတ်သန်းနိုင်ပါစေ
             </CardDescription>
@@ -107,29 +132,24 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
         </Card>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="flex flex-row gap-6">
         {/* Calendar Section */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
-                <CalendarIcon className="w-5 h-5" />
-               က္ခဒိန်
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border"
-              />
-            </CardContent>
-          </Card>
+          <div className="bg-white border-[#4f3016] border-2 flex flex-col w-100">
+          <h2 className="text-2xl p-5 font-bold text-[#4f3016] flex">ပြက္ခဒိန် <CalendarIcon className="ml-3 mt-1" /></h2>  
+          <div className="flex justify-center">
+          <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="rounded-lg item-center border p-5 border-amber-950"
+  />
+          </div> 
+          </div>
         </motion.div>
 
         {/* Motivational Quotes Section */}
@@ -138,13 +158,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card className="bg-gradient-to-br from-[#FDE9DA] to-[#f5e6d3] border-[#4f3016]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
-                <Quote className="w-5 h-5" />
-                စိတ်ဓာတ်မြှင့်တင်ရန် စကားလုံးများ
-              </CardTitle>
-            </CardHeader>
+          <Card className="bg-gradient-to-br from-[#FDE9DA] to-[#f5e6d3] border-[#4f3016] w-130">             
             <CardContent>
               <motion.div
                 key={currentQuoteIndex}
@@ -153,13 +167,86 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 transition={{ duration: 0.5 }}
                 className="text-center space-y-4"
               >
-                <p className="text-lg font-medium text-[#4f3016] italic">
-                  "{motivationalQuotes[currentQuoteIndex].text}"
-                </p>
-                <p className="text-sm text-[#735240]">
-                  - {motivationalQuotes[currentQuoteIndex].author}
+                <h1 className="text-lg font-bold text-[#4f3016] italic mt-3">
+                  "{quoto}"
+                </h1>
+                <p className="text-md text-[#735240]">
+                  - {auth}
                 </p>
               </motion.div>
+            </CardContent>
+
+          </Card>
+          
+          <Card className="bg-white border-[#4f3016] mt-5">
+            <CardHeader>
+              <h1 className="flex items-center gap-2 text-2xl font-bold text-[#4f3016]">
+                <CalendarIcon className="w-5 h-5" />
+                ယနေ့၏ အခြေအနေ
+              </h1>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Meat-free Day Status */}
+              <div className={`p-3 rounded-lg border ${
+                isMeatFreeDay 
+                  ? 'bg-yellow-50 border-yellow-200' 
+                  : 'bg-green-50 border-green-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  {isMeatFreeDay ? (
+                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                  ) : (
+                    <Leaf className="w-5 h-5 text-green-600" />
+                  )}
+                  <div>
+                    <p className={`text-sm font-medium ${
+                      isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
+                    }`}>
+                      သားသတ်လွတ်နေ့
+                    </p>
+                    <p className={`text-xs ${
+                      isMeatFreeDay ? 'text-yellow-600' : 'text-green-600'
+                    }`}>
+                      {isMeatFreeDay 
+                        ? 'ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်သောကြောင့် အသားမစားရန် သတိပေးချက်' 
+                        : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Today's Process Status */}
+              <div className={`p-3 rounded-lg border ${
+                isTodayCompleted 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-blue-50 border-blue-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  {isTodayCompleted ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Clock className="w-5 h-5 text-blue-600" />
+                  )}
+                  <div>
+                    <p className={`text-sm font-medium ${
+                      isTodayCompleted ? 'text-green-800' : 'text-blue-800'
+                    }`}>
+                      ယနေ့၏ လုပ်ငန်းစဉ်
+                    </p>
+                    <p className={`text-xs ${
+                      isTodayCompleted ? 'text-green-600' : 'text-blue-600'
+                    }`}>
+                      {isTodayCompleted 
+                        ? 'ယနေ့အတွက် ကိုးနဝင်းတရား ပြီးဆုံးပါပြီ' 
+                        : 'ယနေ့အတွက် ကိုးနဝင်းတရား ဖတ်ရန်လိုအပ်ပါသည်'
+                      }
+                    </p>
+                  </div>
+                </div>  
+              </div>
+
+             
             </CardContent>
           </Card>
         </motion.div>
