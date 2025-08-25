@@ -193,35 +193,32 @@ const signinForm = () => {
               </label>
             </div>
             <input
-  type="date"
-  placeholder="မွေးသက္ကရာဇ်"
-  {...register("dob", {
-    required: "မွေးသက္ကရာဇ် လိုအပ်ပါသည်",
-    validate: {
-      minAge: (value) => {
-        const dob = new Date(value);
-        const today = new Date();
-
-        // calculate age
-        let age = today.getFullYear() - dob.getFullYear();
-        const monthDiff = today.getMonth() - dob.getMonth();
-        const dayDiff = today.getDate() - dob.getDate();
-
-        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-          age--; // not yet birthday this year
-        }
-
-        return age >= 10 || "အနည်းဆုံး ၁၀ နှစ်ရှိရပါမည်";
-      },
-      notFuture: (value) => {
-        const dob = new Date(value);
-        const today = new Date();
-        return dob <= today || "အနာဂတ်ရက် မဖြစ်ရပါ";
-      },
-    },
-  })}
-  className="w-full h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
-/>
+              type="date"
+              placeholder="မွေးသက္ကရာဇ်"
+              {...register("dob", {
+                required: "မွေးသက္ကရာဇ် လိုအပ်ပါသည်",
+                validate: {
+                  minAge: (value) => {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const monthDiff = today.getMonth() - dob.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                      age--;
+                    }
+                    
+                    return age >= 10 || "အနည်းဆုံး ၁၀ နှစ်ရှိရပါမည်";
+                  },
+                  notFuture: (value) => {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    return dob <= today || "အနာဂတ်ရက် မဖြစ်ရပါ";
+                  },
+                },
+              })}
+              className="w-full h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
+            />
 
             {errors.dob && (
               <p className="text-red-500 text-sm -mt-2">{errors.dob.message}</p>
