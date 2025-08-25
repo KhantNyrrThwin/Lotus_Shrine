@@ -52,9 +52,9 @@ export default function EditProfilePage() {
               </div>
 
               <div>
-                <label className="block text-[#8B4513] font-semibold mb-2">အသက်</label>
+                <label className="block text-[#8B4513] font-semibold mb-2">မွေးနေ့သက္ကရာဇ်</label>
                 <input
-                  type="number"
+                  type="date"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   className="w-full h-[50px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-3"
