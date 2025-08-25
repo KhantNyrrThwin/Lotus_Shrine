@@ -3,8 +3,16 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import KoeNaWinGrades from "./KoeNaWinGrades";
 import Buddha from "../assets/KoeNaWinPagoda.png";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../data/authService";
 
 function KoeNaWin() {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(false);
+  useEffect(() => {
+    setIsLogin(authService.isAuthenticated());
+  }, []);
   const scrollToGrades = () => {
     const element = document.getElementById("koenawingrades");
     if (element) {
@@ -61,8 +69,14 @@ function KoeNaWin() {
                 >
                   ကိုးနဝင်းအဆင့်များ
                 </button>
-                <button className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white">
-                  ကိုးနဝင်းဝင်ရောက်မည်
+                <button
+                  onClick={() => {
+                    if (isLogin) navigate("/koenawin/dashboard");
+                    else navigate("/login");
+                  }}
+                  className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white"
+                >
+                  ကိုးနဝင်းဝင်မည်
                 </button>
               </div>
             </div>

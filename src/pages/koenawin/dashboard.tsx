@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   Home, 
   Info, 
   User, 
-  LogOut, 
-  Menu,
-  Calendar as CalendarIcon,
-  AlertTriangle,
-  CheckCircle,
-  Clock
+  LogOut
 } from "lucide-react";
 
 import Navbar from "../../components/navbar";
@@ -18,10 +13,6 @@ import { authService } from "../../data/authService";
 import { toast } from "sonner";
 
 // Import UI components
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Progress } from "../../components/ui/progress";
-import { Calendar } from "../../components/ui/calendar";
 import { 
   Sidebar, 
   SidebarContent, 

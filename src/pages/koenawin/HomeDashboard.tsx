@@ -12,6 +12,16 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Calendar } from "../../components/ui/calendar";
 import { Button } from "../../components/ui/button";
+import {
+  getProgramStartDate,
+  getProgramEndDate,
+  getDaysRemaining,
+  getDayIndex,
+  getDayInStage,
+  isMeatFreeDayByDayInStage,
+  isTodayCompleted as getIsTodayCompleted,
+  setTodayCompleted,
+} from "../../lib/koenawin";
 
 interface HomeDashboardProps {
   username: string;
@@ -20,10 +30,10 @@ interface HomeDashboardProps {
 const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
-  const [startDate, setStartDate] = useState<Date>(new Date('2024-01-01'));
-  const [endDate, setEndDate] = useState<Date>(new Date('2024-03-21'));
+  const [startDate, setStartDate] = useState<Date>(getProgramStartDate());
+  const [endDate, setEndDate] = useState<Date>(getProgramEndDate(getProgramStartDate()));
   const [daysRemaining, setDaysRemaining] = useState(0);
-  const [isTodayCompleted, setIsTodayCompleted] = useState(false);
+  const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
 
   // Mock motivational quotes
   const motivationalQuotes = [
@@ -44,22 +54,29 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
 
   useEffect(() => {
-    // Calculate days remaining
     const today = new Date();
-    const remaining = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    setDaysRemaining(Math.max(0, remaining));
+    setStartDate(getProgramStartDate());
+    const computedEnd = getProgramEndDate(getProgramStartDate());
+    setEndDate(computedEnd);
+    setDaysRemaining(getDaysRemaining(today, computedEnd));
 
-    // Check if today is meat-free day (Monday)
-    const dayOfWeek = today.getDay();
-    setIsMeatFreeDay(dayOfWeek === 1); // Monday = 1
+    const todayIndex = getDayIndex(today, getProgramStartDate());
+    const dayInStage = getDayInStage(todayIndex);
+    setIsMeatFreeDay(isMeatFreeDayByDayInStage(dayInStage));
+    setIsTodayCompletedState(getIsTodayCompleted(today));
 
-    // Random quote rotation
     const interval = setInterval(() => {
       setCurrentQuoteIndex((prev) => (prev + 1) % motivationalQuotes.length);
-    }, 10000); // Change quote every 10 seconds
-
+    }, 10000);
     return () => clearInterval(interval);
-  }, [endDate, motivationalQuotes.length]);
+  }, [motivationalQuotes.length]);
+
+  const toggleTodayCompleted = () => {
+    const today = new Date();
+    const next = !isTodayCompleted;
+    setTodayCompleted(today, next);
+    setIsTodayCompletedState(next);
+  };
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('my-MM', {
@@ -196,7 +213,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                   <AlertTriangle className="w-5 h-5 text-yellow-600" />
                   <div>
                     <p className="text-sm font-medium text-yellow-800">ယနေ့ သက်သက်စားနေ့လား</p>
-                    <p className="text-xs text-yellow-600">တနင်္လာနေ့ဖြစ်သောကြောင့် အသားမစားရန် သတိပေးချက်</p>
+                    <p className="text-xs text-yellow-600">ယနေ့သည် အဆင့်၌ (၅)ရက်မြောက်ဖြစ်၍ အသားမစားရန် သတိပေးချက်</p>
                   </div>
                 </div>
               )}
@@ -217,6 +234,14 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                     }
                   </p>
                 </div>
+              </div>
+              <div>
+                <Button 
+                  className="mt-2 bg-[#4f3016] hover:bg-[#3a2411] text-white"
+                  onClick={toggleTodayCompleted}
+                >
+                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ယနေ့ ပြီးဆုံးဟု မှတ်သားမည်"}
+                </Button>
               </div>
             </div>
           </CardContent>
