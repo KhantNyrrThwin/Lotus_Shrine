@@ -40,15 +40,16 @@ try {
             'success' => true,
             'message' => 'Ko Na Win vow started successfully.',
             'trackerId' => $trackerId,
-            'startDate' => $startDate
+            'startDate' => $startDate,
+            'currentDayCount' => 1, // When starting, it's day 1
+            'currentStage' => 1     // When starting, it's stage 1
         ]);
     } else {
-        // This might mean a vow already exists or another database error
         echo json_encode(['success' => false, 'message' => 'Failed to start Ko Na Win vow. User might already have an active vow.']);
     }
 
 } catch (Exception $e) {
     http_response_code(500);
+    error_log("Error in newKNWTracker.php: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }
-?>

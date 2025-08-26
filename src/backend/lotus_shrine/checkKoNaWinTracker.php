@@ -15,9 +15,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Libs\Database\MySQL;
 use Libs\Database\KoNaWinTable; // Ensure this namespace matches your KoNaWinTable.php
 
-// This is where you'd normally get the user ID from a session or JWT token.
-// For demonstration, let's assume it's passed via query parameter or POST body for now.
-// In a real application, you would authenticate the user and get their ID securely.
 $userId = null;
 
 // Attempt to get user_id from POST (if sending via fetch body)
@@ -49,6 +46,7 @@ try {
             'trackerId' => $tracker->tracker_id,
             'startDate' => $tracker->start_date,
             'currentDayCount' => $tracker->current_day_count,
+            'currentStage' => $tracker->current_stage, // Include the new column
             'isCompleted' => $tracker->is_completed
         ]);
     } else {
@@ -62,6 +60,6 @@ try {
 
 } catch (Exception $e) {
     http_response_code(500);
+    error_log("Error in checkKoNaWinTracker.php: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }
-?>
