@@ -9,9 +9,9 @@ import {
   Clock,
   Heart
 } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+import { Progress } from "../../components/ui/progress";
 import {
   getProgramStartDate,
   getProgramEndDate,
@@ -21,14 +21,15 @@ import {
   isMeatFreeDayByDayInStage,
   isTodayCompleted as getIsTodayCompleted,
   setTodayCompleted,
+  getMantraForDayIndex,
 } from "../../lib/koenawin";
+import MMCalendar from "@/components/myanmarcalendar";
 
 interface HomeDashboardProps {
   username: string;
 }
 
 const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
   const [startDate, setStartDate] = useState<Date>(getProgramStartDate());
   const [endDate, setEndDate] = useState<Date>(getProgramEndDate(getProgramStartDate()));
@@ -36,39 +37,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
 
 
-  const [quoto, setQuoto] = useState("Loading");
-  const [auth, setAuth] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost/lotus_shrine/fetchQuotes.php")
-      .then((res) => res.json())
-      .then((data) => {
-        setQuoto(data.quote_name);
-        setAuth(data.quote_author);
-      })
-      .catch((err) => {
-        setQuoto("ဖတ်ရန်မအောင်မြင်ပါ");
-        setAuth("ဖတ်ရန်မအောင်မြင်ပါ");
-        console.error(err);
-      });
-  }, []);
-  // Mock motivational quotes
-  const motivationalQuotes = [
-    {
-      text: "ကိုးနဝင်း မိုးလင်းမှသိမယ်",
-      author: "ဗုဒ္ဓဘာသာ ဆိုရိုးစကား"
-    },
-    {
-      text: "တရားဖတ်ခြင်းသည် စိတ်ကို ငြိမ်းအေးစေသည်",
-      author: "ဓမ္မပဒ"
-    },
-    {
-      text: "သီလ သမာဓိ ပညာ သုံးပါးနှင့် ပြည့်စုံသော လူသားဖြစ်ပါစေ",
-      author: "ဗုဒ္ဓဘာသာ ဆိုရိုးစကား"
-    }
-  ];
-
-  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  
 
   useEffect(() => {
     const today = new Date();
@@ -82,11 +51,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     setIsMeatFreeDay(isMeatFreeDayByDayInStage(dayInStage));
     setIsTodayCompletedState(getIsTodayCompleted(today));
 
-    const interval = setInterval(() => {
-      setCurrentQuoteIndex((prev) => (prev + 1) % motivationalQuotes.length);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [motivationalQuotes.length]);
+  }, []);
 
   const toggleTodayCompleted = () => {
     const today = new Date();
@@ -96,6 +61,9 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   };
 
   const today = new Date();
+  const start = getProgramStartDate();
+  const dayIdx = getDayIndex(today, start);
+  const mantra = getMantraForDayIndex(dayIdx);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('my-MM', {
@@ -130,6 +98,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             </CardDescription>
           </CardHeader>
         </Card>
+        
       </motion.div>
 
       <div className="flex flex-row gap-6">
@@ -139,46 +108,8 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <div className="bg-white border-[#4f3016] border-2 flex flex-col w-100">
-          <h2 className="text-2xl p-5 font-bold text-[#4f3016] flex">ပြက္ခဒိန် <CalendarIcon className="ml-3 mt-1" /></h2>  
-          <div className="flex justify-center">
-          <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="rounded-lg item-center border p-5 border-amber-950"
-  />
-          </div> 
-          </div>
-        </motion.div>
-
-        {/* Motivational Quotes Section */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Card className="bg-gradient-to-br from-[#FDE9DA] to-[#f5e6d3] border-[#4f3016] w-130">             
-            <CardContent>
-              <motion.div
-                key={currentQuoteIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-center space-y-4"
-              >
-                <h1 className="text-lg font-bold text-[#4f3016] italic mt-3">
-                  "{quoto}"
-                </h1>
-                <p className="text-md text-[#735240]">
-                  - {auth}
-                </p>
-              </motion.div>
-            </CardContent>
-
-          </Card>
-          
-          <Card className="bg-white border-[#4f3016] mt-5">
+        <MMCalendar />
+        <Card className="bg-white border-[#4f3016] mt-5">
             <CardHeader>
               <h1 className="flex items-center gap-2 text-2xl font-bold text-[#4f3016]">
                 <CalendarIcon className="w-5 h-5" />
@@ -244,9 +175,59 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                     </p>
                   </div>
                 </div>  
+                
               </div>
-
+              <Button 
+                  variant="outline" 
+                  className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
+                  onClick={onToggleToday}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်"}
+                </Button>
              
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Motivational Quotes Section */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="bg-white border-[#4f3016]">
+            <CardHeader>
+              <h1 className="flex items-center gap-2 text-2xl font-bold text-[#4f3016]">
+                <BookOpen className="w-5 h-5" />
+                လက်ရှိ မန္တရား ညွှန်ကြားချက်များ
+              </h1>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-[#FDE9DA] p-4 rounded-lg">
+                <h4 className="font-semibold text-[#4f3016] mb-2">{mantra.label}</h4>
+                <p className="text-sm text-[#735240] mb-3">ယနေ့ ဖတ်ရန် မန္တရား</p>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-[#4f3016]">ရွတ်ဖတ်ရန် အကြိမ်ရေ</span>
+                  <span className="text-sm font-bold text-[#4f3016]">{mantra.loops} ပတ်</span>
+                </div>
+                <Progress value={0} className="h-2 mb-3" />
+              </div>
+              <div>
+                <h5 className="font-medium text-[#4f3016] mb-2">ညွှန်ကြားချက်များ</h5>
+                <ul className="space-y-2">
+                  {[
+                    "အာရုံစိုက်၍ စိတ်ငြိမ်သက်စွာ ထိုင်ပါ",
+                    "ဘုရားရှိခိုးပြီး ယနေ့ မန္တရားကို ရွတ်ဖတ်ပါ",
+                    "ပုတီးပတ်ဖြင့် အကြိမ်ရေ စိပ်ပါ",
+                  ].map((instruction, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-[#735240]">
+                      <span className="w-2 h-2 bg-[#4f3016] rounded-full mt-2 flex-shrink-0"></span>
+                      {instruction}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

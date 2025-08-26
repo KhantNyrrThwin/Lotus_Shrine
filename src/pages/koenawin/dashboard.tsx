@@ -53,15 +53,7 @@ const KoeNaWinDashboard: React.FC = () => {
     checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
-    authService.logout();
-    toast.success("အကောင့်မှ ထွက်ပြီးပါပြီ", {
-      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်ရောက်နိုင်ပါသည်။",
-    });
-    navigate("/");
-  };
-
-  const handleNavigation = (view: string) => {
+   const handleNavigation = (view: string) => {
     setCurrentView(view);
   };
 
@@ -113,19 +105,11 @@ const KoeNaWinDashboard: React.FC = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
-                <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    onClick={() => navigate("/profile")}
-                    tooltip="ပရိုဖိုင်"
-                  >
-                    <User className="w-4 h-4" />
-                    <span>ပရိုဖိုင်</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              
                 
                 <SidebarMenuItem>
                   <SidebarMenuButton 
-                    onClick={handleLogout}
+                    onClick={() => navigate("/")}
                     tooltip="ထွက်ရန်"
                   >
                     <LogOut className="w-4 h-4" />
