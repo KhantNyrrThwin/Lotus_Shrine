@@ -22,12 +22,17 @@ import {
   isTodayCompleted as getIsTodayCompleted,
   setTodayCompleted,
   getMantraForDayIndex,
+  formatDateKey,
 } from "../../lib/koenawin";
 import MMCalendar from "@/components/myanmarcalendar";
+import { fetchKoeNaWinProgress, saveKoeNaWinProgress } from "@/data/koenawinApi";
 
 interface HomeDashboardProps {
   username: string;
 }
+
+const COMPLETED_DATES_KEY = "knwCompletedDates";
+const START_DATE_KEY = "knwStartDate";
 
 const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
@@ -36,28 +41,69 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [daysRemaining, setDaysRemaining] = useState(0);
   const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
 
-
-  
-
   useEffect(() => {
-    const today = new Date();
-    setStartDate(getProgramStartDate());
-    const computedEnd = getProgramEndDate(getProgramStartDate());
-    setEndDate(computedEnd);
-    setDaysRemaining(getDaysRemaining(today, computedEnd));
+    const bootstrap = async () => {
+      const email = localStorage.getItem("userEmail");
+      // Always compute UI from local storage initially
+      const today = new Date();
+      const currentStart = getProgramStartDate();
+      const computedEnd = getProgramEndDate(currentStart);
+      setStartDate(currentStart);
+      setEndDate(computedEnd);
+      setDaysRemaining(getDaysRemaining(today, computedEnd));
+      const todayIndex = getDayIndex(today, currentStart);
+      setIsMeatFreeDay(isMeatFreeDayByDayInStage(getDayInStage(todayIndex)));
+      setIsTodayCompletedState(getIsTodayCompleted(today));
 
-    const todayIndex = getDayIndex(today, getProgramStartDate());
-    const dayInStage = getDayInStage(todayIndex);
-    setIsMeatFreeDay(isMeatFreeDayByDayInStage(dayInStage));
-    setIsTodayCompletedState(getIsTodayCompleted(today));
+      if (!email) return;
 
+      try {
+        const server = await fetchKoeNaWinProgress(email);
+        if (server.start_date) {
+          // Sync server state to localStorage used by utils
+          localStorage.setItem(START_DATE_KEY, server.start_date);
+        }
+        localStorage.setItem(COMPLETED_DATES_KEY, JSON.stringify(server.completed_dates || []));
+
+        // Recompute after sync
+        const syncedStart = getProgramStartDate();
+        const syncedEnd = getProgramEndDate(syncedStart);
+        setStartDate(syncedStart);
+        setEndDate(syncedEnd);
+        setDaysRemaining(getDaysRemaining(today, syncedEnd));
+        const idx = getDayIndex(today, syncedStart);
+        setIsMeatFreeDay(isMeatFreeDayByDayInStage(getDayInStage(idx)));
+        setIsTodayCompletedState(getIsTodayCompleted(today));
+      } catch {
+        // Ignore server errors; stay with local-only
+      }
+    };
+
+    bootstrap();
   }, []);
 
-  const toggleTodayCompleted = () => {
-    const today = new Date();
-    const next = !isTodayCompleted;
-    setTodayCompleted(today, next);
-    setIsTodayCompletedState(next);
+  const persistToServer = async () => {
+    const email = localStorage.getItem("userEmail");
+    if (!email) return; // cannot persist without a user
+
+    const start = getProgramStartDate();
+    let completed: string[] = [];
+    try {
+      const raw = localStorage.getItem(COMPLETED_DATES_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) completed = parsed;
+      }
+    } catch {}
+
+    try {
+      await saveKoeNaWinProgress(email, {
+        start_date: formatDateKey(start),
+        completed_dates: completed,
+      });
+    } catch {
+      // Swallow errors to keep UI responsive
+    }
   };
 
   const today = new Date();
@@ -77,6 +123,8 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     const next = !isTodayCompleted;
     setTodayCompleted(today, next);
     setIsTodayCompletedState(next);
+    // Fire-and-forget server sync
+    void persistToServer();
   };
 
   return (
@@ -185,7 +233,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                   <CheckCircle className="w-4 h-4 mr-2" />
                   {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်"}
                 </Button>
-             
+              
             </CardContent>
           </Card>
         </motion.div>
@@ -306,7 +354,12 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
               <div>
                 <Button 
                   className="mt-2 bg-[#4f3016] hover:bg-[#3a2411] text-white"
-                  onClick={toggleTodayCompleted}
+                  onClick={() => {
+                    const next = !isTodayCompleted;
+                    setTodayCompleted(today, next);
+                    setIsTodayCompletedState(next);
+                    void persistToServer();
+                  }}
                 >
                   {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ယနေ့ ပြီးဆုံးဟု မှတ်သားမည်"}
                 </Button>

@@ -82,6 +82,20 @@ CREATE TABLE `users` (
   `reset_token_expiry` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `koenawin_progress`
+--
+
+CREATE TABLE `koenawin_progress` (
+  `user_email` varchar(255) NOT NULL,
+  `start_date` date NOT NULL,
+  `completed_dates` longtext DEFAULT NULL CHECK (json_valid(`completed_dates`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Dumping data for table `users`
 --
@@ -120,6 +134,19 @@ ALTER TABLE `rate_limits`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `koenawin_progress`
+--
+ALTER TABLE `koenawin_progress`
+  ADD UNIQUE KEY `uniq_user_email` (`user_email`),
+  ADD KEY `start_date` (`start_date`);
+
+--
+-- Constraints for table `koenawin_progress`
+--
+ALTER TABLE `koenawin_progress`
+  ADD CONSTRAINT `fk_koenawin_user_email` FOREIGN KEY (`user_email`) REFERENCES `users` (`user_email`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- AUTO_INCREMENT for dumped tables
