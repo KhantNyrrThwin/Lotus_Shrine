@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 25, 2025 at 05:40 PM
+-- Generation Time: Aug 26, 2025 at 04:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `lotus_shrine`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ko_na_win_daily_log`
+--
+
+CREATE TABLE `ko_na_win_daily_log` (
+  `log_id` int(11) NOT NULL,
+  `tracker_id` int(11) NOT NULL,
+  `log_date` date NOT NULL,
+  `day_number` int(11) NOT NULL,
+  `completion_status` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ko_na_win_tracker`
+--
+
+CREATE TABLE `ko_na_win_tracker` (
+  `tracker_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `start_date` date NOT NULL,
+  `current_day_count` int(11) NOT NULL,
+  `is_completed` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -107,11 +135,26 @@ INSERT INTO `users` (`user_id`, `user_email`, `name`, `dob`, `user_password`, `r
 (10, 'zilong52811@gmail.com', 'Raven', '0000-00-00', '$2y$10$b7HfaY7jarDTY7eVmKJgJufdf/h435gbaviAnSgs06NY.p8d9tKky', '485899', '2025-07-07 17:29:03'),
 (11, 'ravenpai@gmail.com', 'မောင်ပိုင်', '0000-00-00', '$2y$10$q5Tzu9rNA3n3bPszTGEkpuzB2rBZqK.riZIBnVs8XLO61vNHWp2Lq', NULL, NULL),
 (12, 'paiminthway13@gmail.com', 'Raven', '2005-08-18', '$2y$10$ryjyIfTQ5jAmEgFu3mBU6..C5fm9zR0PD6rvipNymve9uAAszbbaW', NULL, NULL),
-(13, 'justicforyang@gmail.com', 'Nyar Nyar', '2005-07-04', '$2y$10$Eau1TtRRm83I0WylAN889.XomXv9PvQTa.CrHeG7cRSdC9/XUWG0K', NULL, NULL);
+(13, 'justicforyang@gmail.com', 'Nyar Nyar', '2005-07-04', '$2y$10$Eau1TtRRm83I0WylAN889.XomXv9PvQTa.CrHeG7cRSdC9/XUWG0K', NULL, NULL),
+(14, 'bhonemyintmaung272@gmail.com', 'Bhone Gyi', '2005-02-27', '$2y$10$ue5GmdzyA6/o8gWPUXnZYeM6Rdmn9DQ/5XwsNDqq4Y7s5gkfxOFZa', NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `ko_na_win_daily_log`
+--
+ALTER TABLE `ko_na_win_daily_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `tracker_id` (`tracker_id`);
+
+--
+-- Indexes for table `ko_na_win_tracker`
+--
+ALTER TABLE `ko_na_win_tracker`
+  ADD PRIMARY KEY (`tracker_id`),
+  ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `quotes`
@@ -153,6 +196,18 @@ ALTER TABLE `koenawin_progress`
 --
 
 --
+-- AUTO_INCREMENT for table `ko_na_win_daily_log`
+--
+ALTER TABLE `ko_na_win_daily_log`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ko_na_win_tracker`
+--
+ALTER TABLE `ko_na_win_tracker`
+  MODIFY `tracker_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `quotes`
 --
 ALTER TABLE `quotes`
@@ -168,7 +223,23 @@ ALTER TABLE `rate_limits`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `ko_na_win_daily_log`
+--
+ALTER TABLE `ko_na_win_daily_log`
+  ADD CONSTRAINT `ko_na_win_daily_log_ibfk_1` FOREIGN KEY (`tracker_id`) REFERENCES `ko_na_win_tracker` (`tracker_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `ko_na_win_tracker`
+--
+ALTER TABLE `ko_na_win_tracker`
+  ADD CONSTRAINT `ko_na_win_tracker_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

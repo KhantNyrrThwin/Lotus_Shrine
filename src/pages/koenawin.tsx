@@ -1,3 +1,4 @@
+
 import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
@@ -6,13 +7,60 @@ import Buddha from "../assets/KoeNaWinPagoda.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
+import axios from "axios";
 
 function KoeNaWin() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
+  const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(false);
+
   useEffect(() => {
-    setIsLogin(authService.isAuthenticated());
+    const checkLoginStatus = async () => {
+      const loggedIn = authService.isAuthenticated();
+      setIsLogin(loggedIn);
+      
+      if (loggedIn) {
+        await checkKoeNaWinAccount();
+      }
+    };
+    
+    checkLoginStatus();
   }, []);
+
+  const checkKoeNaWinAccount = async () => {
+    setCheckingAccount(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        setHasKoeNaWinAccount(false);
+        return;
+      }
+
+      // Modified request to match PHP endpoint expectations
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
+        { userId: userId }, // Changed from user_id to userId
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        // Changed to match PHP response field name
+        setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      }
+    } catch (error) {
+      console.error("Error checking Koe Na Win account:", error);
+      setHasKoeNaWinAccount(false);
+    } finally {
+      setCheckingAccount(false);
+    }
+  };
+
   const scrollToGrades = () => {
     const element = document.getElementById("koenawingrades");
     if (element) {
@@ -20,6 +68,26 @@ function KoeNaWin() {
         behavior: "smooth",
         block: "start",
       });
+    }
+  };
+
+  const handleEnterKoeNaWin = () => {
+    if (!isLogin) {
+      navigate("/login");
+      return;
+    }
+
+    if (hasKoeNaWinAccount) {
+      navigate("/koenawin/dashboard");
+    } else {
+      // Show a confirmation dialog or navigate to signup page
+      const confirmSignup = window.confirm(
+        "ကျေးဇူးပြု၍ ကိုးနဝင်း အကောင့်ဖွင့်ရန် လိုအပ်ပါသည်။ ဖွင့်လိုပါသလား?"
+      );
+      
+      if (confirmSignup) {
+        navigate("/koenawin/signup");
+      }
     }
   };
 
@@ -70,13 +138,13 @@ function KoeNaWin() {
                   ကိုးနဝင်းအဆင့်များ
                 </button>
                 <button
-                  onClick={() => {
-                    if (isLogin) navigate("/koenawin/dashboard");
-                    else navigate("/login");
-                  }}
-                  className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white"
+                  onClick={handleEnterKoeNaWin}
+                  disabled={checkingAccount}
+                  className={`flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016] text-white ${
+                    checkingAccount ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 >
-                  ကိုးနဝင်းဝင်မည်
+                  {checkingAccount ? "စစ်ဆေးနေသည်..." : "ကိုးနဝင်းဝင်မည်"}
                 </button>
               </div>
             </div>
