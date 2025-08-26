@@ -40,7 +40,8 @@ try {
                 'success' => true,
                 'message' => 'Login successful',
                 'name' => $user['name'],
-                'dob' => $user['dob']
+                'dob' => $user['dob'],
+                'user_id' => $user['user_id']
             ]);
         } else {
             // Email exists but password is wrong
