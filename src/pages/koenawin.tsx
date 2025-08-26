@@ -1,4 +1,3 @@
-
 import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
@@ -8,26 +7,39 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
 import axios from "axios";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 
 function KoeNaWin() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
-  const [checkingAccount, setCheckingAccount] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(true);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
+    const checkLoginAndKoeNaWinStatus = async () => {
       const loggedIn = authService.isAuthenticated();
       setIsLogin(loggedIn);
-      
+
       if (loggedIn) {
         await checkKoeNaWinAccount();
+      } else {
+        setCheckingAccount(false);
       }
     };
-    
-    checkLoginStatus();
+
+    checkLoginAndKoeNaWinStatus();
   }, []);
 
   const checkKoeNaWinAccount = async () => {
@@ -35,14 +47,15 @@ function KoeNaWin() {
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) {
+        console.warn("User ID not found in localStorage.");
         setHasKoeNaWinAccount(false);
+        setCheckingAccount(false);
         return;
       }
 
-      // Modified request to match PHP endpoint expectations
       const response = await axios.post(
         "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
-        { userId: userId }, // Changed from user_id to userId
+        { userId: userId },
         {
           headers: {
             "Content-Type": "application/json",
@@ -52,8 +65,10 @@ function KoeNaWin() {
       );
 
       if (response.data.success) {
-        // Changed to match PHP response field name
         setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      } else {
+        console.error("Backend error checking Koe Na Win account:", response.data.message);
+        setHasKoeNaWinAccount(false);
       }
     } catch (error) {
       console.error("Error checking Koe Na Win account:", error);
@@ -73,16 +88,61 @@ function KoeNaWin() {
     }
   };
 
+  const startNewVow = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID missing to start new vow.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/newKNWTracker.php",
+        {
+          userId: userId,
+          startDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        console.log("New Ko Na Win vow started successfully!");
+        setHasKoeNaWinAccount(true);
+        navigate("/koenawin/dashboard");
+      } else {
+        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error starting new Ko Na Win vow:", error);
+      alert("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+    }
+  };
+
   const handleEnterKoeNaWin = () => {
     if (!isLogin) {
       navigate("/login");
       return;
     }
 
+    const today = new Date().getDay();
+    if (today !== 2) {
+      setInfoDialogMessage(
+        "တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။"
+      );
+      setShowInfoDialog(true);
+      return;
+    }
+
     if (hasKoeNaWinAccount) {
       navigate("/koenawin/dashboard");
     } else {
-      setConfirmOpen(true);
+      setShowConfirmDialog(true);
     }
   };
 
@@ -150,21 +210,46 @@ function KoeNaWin() {
         </section>
         <Footer />
       </div>
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+
+      {/* Info Alert Dialog */}
+      <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
         <AlertDialogContent>
-          <AlertDialogTitle>ယနေ့သည် <b>တနင်္လာနေ့</b> မဟုတ်သောကြောင့် <br /> ကိုးနဝင်းဝင်၍မရပါ </AlertDialogTitle>
-          <AlertDialogDescription>
-            ကိုးနဝင်း အဓိဋ္ဌာန်သည် <b>တနင်္လာနေ့မှသာ</b> စတင်၍ ဝင်ရောက်နိုင်မည်ဖြစ်သည်
-          </AlertDialogDescription>
-          <div className="mt-5 flex justify-end gap-3">
-            <AlertDialogCancel asChild>
-              <button className="inline-flex h-10 items-center justify-center rounded-md border border-[#4f3016] cursor-pointer px-4 text-[#4f3016] hover:bg-[#4f3016]">နားလည်ပါသည်</button>
-            </AlertDialogCancel>
-          </div>
+          <AlertDialogHeader>
+            <AlertDialogTitle>သတိပေးချက်</AlertDialogTitle>
+            <AlertDialogDescription>{infoDialogMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowInfoDialog(false)}>
+              နားလည်ပါသည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-     
+      {/* Confirm Start Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>အတည်ပြုရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာမြင့်မည်ဖြစ်ပါသည်။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
+              မစတင်ပါ
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowConfirmDialog(false);
+                startNewVow();
+              }}
+            >
+              စတင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

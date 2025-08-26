@@ -58,7 +58,7 @@ const InformationDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-242">
       {/* Progress Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -89,147 +89,9 @@ const InformationDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current Mantra Instructions */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
-                <BookOpen className="w-5 h-5" />
-                လက်ရှိ မန္တရား ညွှန်ကြားချက်များ
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-[#FDE9DA] p-4 rounded-lg">
-                <h4 className="font-semibold text-[#4f3016] mb-2">{mantra.label}</h4>
-                <p className="text-sm text-[#735240] mb-3">ယနေ့ ဖတ်ရန် မန္တရား</p>
-                
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-[#4f3016]">ရွတ်ဖတ်ရန် အကြိမ်ရေ</span>
-                  <span className="text-sm font-bold text-[#4f3016]">{mantra.loops} ပတ်</span>
-                </div>
-                
-                <Progress value={0} className="h-2 mb-3" />
-              </div>
-
-              <div>
-                <h5 className="font-medium text-[#4f3016] mb-2">ညွှန်ကြားချက်များ</h5>
-                <ul className="space-y-2">
-                  {[
-                    "အာရုံစိုက်၍ စိတ်ငြိမ်သက်စွာ ထိုင်ပါ",
-                    "ဘုရားရှိခိုးပြီး ယနေ့ မန္တရားကို ရွတ်ဖတ်ပါ",
-                    "ပုတီးပတ်ဖြင့် အကြိမ်ရေ စိပ်ပါ",
-                  ].map((instruction, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-[#735240]">
-                      <span className="w-2 h-2 bg-[#4f3016] rounded-full mt-2 flex-shrink-0"></span>
-                      {instruction}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
+       
         {/* Today's Status */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
-                <Calendar className="w-5 h-5" />
-                ယနေ့၏ အခြေအနေ
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Meat-free Day Status */}
-              <div className={`p-3 rounded-lg border ${
-                isMeatFreeDay 
-                  ? 'bg-yellow-50 border-yellow-200' 
-                  : 'bg-green-50 border-green-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isMeatFreeDay ? (
-                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  ) : (
-                    <Leaf className="w-5 h-5 text-green-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
-                    }`}>
-                      သက်သက်စားနေ့
-                    </p>
-                    <p className={`text-xs ${
-                      isMeatFreeDay ? 'text-yellow-600' : 'text-green-600'
-                    }`}>
-                      {isMeatFreeDay 
-                        ? 'ယနေ့သည် တနင်္လာနေ့ဖြစ်သောကြောင့် အသားမစားရန် သတိပေးချက်' 
-                        : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Today's Process Status */}
-              <div className={`p-3 rounded-lg border ${
-                isTodayCompleted 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-blue-50 border-blue-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isTodayCompleted ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <Clock className="w-5 h-5 text-blue-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isTodayCompleted ? 'text-green-800' : 'text-blue-800'
-                    }`}>
-                      ယနေ့၏ လုပ်ငန်းစဉ်
-                    </p>
-                    <p className={`text-xs ${
-                      isTodayCompleted ? 'text-green-600' : 'text-blue-600'
-                    }`}>
-                      {isTodayCompleted 
-                        ? 'ယနေ့အတွက် ကိုးနဝင်းတရား ပြီးဆုံးပါပြီ' 
-                        : 'ယနေ့အတွက် ကိုးနဝင်းတရား ဖတ်ရန်လိုအပ်ပါသည်'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="space-y-2">
-                <Button 
-                  className="w-full bg-[#4f3016] hover:bg-[#3a2411] text-white"
-                  onClick={() => { /* optional: route to mantra reading page */ }}
-                >
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  တရားဖတ်ရန် စတင်မည်
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                  onClick={onToggleToday}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+       </div>
 
       {/* Stage Information */}
       <motion.div
