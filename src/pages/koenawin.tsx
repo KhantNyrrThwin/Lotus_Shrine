@@ -1,10 +1,9 @@
-
 import "../App.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import KoeNaWinGrades from "./KoeNaWinGrades";
 import Buddha from "../assets/KoeNaWinPagoda.png";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
 import axios from "axios";
@@ -13,19 +12,21 @@ function KoeNaWin() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
-  const [checkingAccount, setCheckingAccount] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(true);
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
+    const checkLoginAndKoeNaWinStatus = async () => {
       const loggedIn = authService.isAuthenticated();
       setIsLogin(loggedIn);
-      
+
       if (loggedIn) {
         await checkKoeNaWinAccount();
+      } else {
+        setCheckingAccount(false);
       }
     };
-    
-    checkLoginStatus();
+
+    checkLoginAndKoeNaWinStatus();
   }, []);
 
   const checkKoeNaWinAccount = async () => {
@@ -33,14 +34,15 @@ function KoeNaWin() {
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) {
+        console.warn("User ID not found in localStorage.");
         setHasKoeNaWinAccount(false);
+        setCheckingAccount(false);
         return;
       }
 
-      // Modified request to match PHP endpoint expectations
       const response = await axios.post(
         "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
-        { userId: userId }, // Changed from user_id to userId
+        { userId: userId },
         {
           headers: {
             "Content-Type": "application/json",
@@ -50,8 +52,10 @@ function KoeNaWin() {
       );
 
       if (response.data.success) {
-        // Changed to match PHP response field name
         setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      } else {
+        console.error("Backend error checking Koe Na Win account:", response.data.message);
+        setHasKoeNaWinAccount(false);
       }
     } catch (error) {
       console.error("Error checking Koe Na Win account:", error);
@@ -71,22 +75,63 @@ function KoeNaWin() {
     }
   };
 
+  const startNewVow = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID missing to start new vow.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/newKNWTracker.php",
+        {
+          userId: userId,
+          startDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        console.log("New Ko Na Win vow started successfully!");
+        setHasKoeNaWinAccount(true);
+        navigate("/koenawin/dashboard");
+      } else {
+        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error starting new Ko Na Win vow:", error);
+      alert("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+    }
+  };
+
   const handleEnterKoeNaWin = () => {
     if (!isLogin) {
       navigate("/login");
       return;
     }
 
+    const today = new Date().getDay();
+    if (today !== 2) {
+      alert("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
+      return;
+    }
+
     if (hasKoeNaWinAccount) {
       navigate("/koenawin/dashboard");
     } else {
-      // Show a confirmation dialog or navigate to signup page
-      const confirmSignup = window.confirm(
-        "ကျေးဇူးပြု၍ ကိုးနဝင်း အကောင့်ဖွင့်ရန် လိုအပ်ပါသည်။ ဖွင့်လိုပါသလား?"
+      const confirmStart = window.confirm(
+        "ကိုးနဝင်းတရားကို စတင်ဆောက်တည်လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာမြင့်မည်ဖြစ်ပါသည်။"
       );
       
-      if (confirmSignup) {
-        navigate("/koenawin/signup");
+      if (confirmStart) {
+        startNewVow();
       }
     }
   };
