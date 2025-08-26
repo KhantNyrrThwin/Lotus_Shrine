@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
 import axios from "axios";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 function KoeNaWin() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
   const [checkingAccount, setCheckingAccount] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -80,14 +82,7 @@ function KoeNaWin() {
     if (hasKoeNaWinAccount) {
       navigate("/koenawin/dashboard");
     } else {
-      // Show a confirmation dialog or navigate to signup page
-      const confirmSignup = window.confirm(
-        "ကျေးဇူးပြု၍ ကိုးနဝင်း အကောင့်ဖွင့်ရန် လိုအပ်ပါသည်။ ဖွင့်လိုပါသလား?"
-      );
-      
-      if (confirmSignup) {
-        navigate("/koenawin/signup");
-      }
+      setConfirmOpen(true);
     }
   };
 
@@ -155,6 +150,21 @@ function KoeNaWin() {
         </section>
         <Footer />
       </div>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogTitle>ယနေ့သည် <b>တနင်္လာနေ့</b> မဟုတ်သောကြောင့် <br /> ကိုးနဝင်းဝင်၍မရပါ </AlertDialogTitle>
+          <AlertDialogDescription>
+            ကိုးနဝင်း အဓိဋ္ဌာန်သည် <b>တနင်္လာနေ့မှသာ</b> စတင်၍ ဝင်ရောက်နိုင်မည်ဖြစ်သည်
+          </AlertDialogDescription>
+          <div className="mt-5 flex justify-end gap-3">
+            <AlertDialogCancel asChild>
+              <button className="inline-flex h-10 items-center justify-center rounded-md border border-[#4f3016] cursor-pointer px-4 text-[#4f3016] hover:bg-[#4f3016]">နားလည်ပါသည်</button>
+            </AlertDialogCancel>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+     
     </>
   );
 }

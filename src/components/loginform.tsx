@@ -58,7 +58,7 @@ const LoginForm = () => {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("userName", response.data.name);
         localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("userID", response.data.userID)
+        localStorage.setItem("userId", response.data.user_id)
         
         // Store DOB if available in response
         if (response.data.dob) {
