@@ -28,11 +28,47 @@ import meditationAudio26 from "../assets/sounds/အာဋာနာဋိယသ�
 import meditationAudio27 from "../assets/sounds/အင်္ဂုလိမာလသုတ် ပါဠိတော်.mp3";
 import meditationAudio28 from "../assets/sounds/ဗောဇ္ဈင်္ဂသုတ် ပါဠိတော်.mp3";
 import meditationAudio29 from "../assets/sounds/ပုဗ္ဗဏှသုတ် ပါဠိတော်.mp3";
+import meditationAudio30 from "../assets/sounds/ပဌာန်းတရားတော်.mp3";
 
 
 
 
 export const mantras = [
+    {
+    id: "buddha1-puja",
+    section: "ဘုရားရှိခိုး",
+    title: " ပဌာန်းတရားတော်",
+    text: `
+၁။ဟေတုပစ္စယော
+ ၂။အာရမ္မဏပစ္စယော
+၃။အဓိပတိပစ္စယော
+၄။အနန္တရပစ္စယော
+၅။သမနန္တရပစ္စယော
+၆။သဟဇာတပစ္စယော
+၇။အညမညပစ္စ ပစ္စယော
+၈။နိဿယပစ္စယော
+၉။ဥပနိဿယပစ္စယော
+၁ဝ။ပုရေဇာတပစ္စယော
+၁၁။ပစ္ဆာဇာတပစ္စယော
+၁၂။အာသေဝနပစ္စယော
+၁၃။ကမ္မပစ္စယော
+၁၄။ဝိပါကပစ္စယော
+၁၅။အာဟာရပစ္စယော
+၁၆။ဣန္ဒြိယပစ္စယော
+၁၇။ဈာနပစ္စယော
+၁၈။မဂ္ဂပစ္စယော
+၁၉။သမ္ပယုတ္တပစ္စယော
+၂၀။ဝိပ္ပယုတ္တပစ္စယော
+၂၁။ အတ္တိပစ္စယော
+၂၂။ နတ္ထိပစ္စယော 
+၂၃။ ဝိဂတပစ္စယော 
+၂၄။ အဝိဂတပစ္စယောတိ
+
+`,
+    audio: meditationAudio30,
+    artist: "Unknown",
+    duration: "2:45"
+  },
   {
     id: "buddha-puja",
     section: "ဘုရားရှိခိုး",
@@ -1302,6 +1338,9 @@ export const mantras = [
     artist: "Unknown",
     duration: "2:45"
   },
+   
+
+  
    
 
   
