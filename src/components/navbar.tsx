@@ -699,36 +699,19 @@ export default function Navbar() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
               >
                 <option value="">အဆင့် ရွေးချယ်ပါ</option>
-                {Array.from({ length: 9 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    အဆင့် {i + 1}
-                  </option>
-                ))}
+                <option value="1">ပထမအဆင့်</option>
+                <option value="2">ဒုတိယအဆင့်</option>
+                <option value="3">တတိယအဆင့်</option>
+                <option value="4">စတုတ္ထအဆင့်</option>
+                <option value="5">ပဉ္စမအဆင့်</option>
+                <option value="6">ဆဋ္ဌမအဆင့်</option>
+                <option value="7">သတ္တမအဆင့်</option>
+                <option value="8">အဋ္ဌမအဆင့်</option>
+                <option value="9">နဝမအဆင့်</option>
               </select>
             </div>
 
-            {/* Mantra Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                မည်သည့်မန္တရားကို ရွတ်ဆိုနေပါသလဲ?
-              </label>
-              <select
-                value={realLifeMantra}
-                onChange={(e) => setRealLifeMantra(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
-              >
-                <option value="">မန္တရား ရွေးချယ်ပါ</option>
-                <option value="အရဟံ">အရဟံ</option>
-                <option value="သမ္မာသမ္ဗုဒ္ဓေါ">သမ္မာသမ္ဗုဒ္ဓေါ</option>
-                <option value="ဝိဇ္ဇာစရဏသမ္ပန္နော">ဝိဇ္ဇာစရဏသမ္ပန္နော</option>
-                <option value="သုဂတော">သုဂတော</option>
-                <option value="လောကဝိဒူ">လောကဝိဒူ</option>
-                <option value="အနုတ္တရောပုရိသ ဓမ္မသာရိထိ">အနုတ္တရောပုရိသ ဓမ္မသာရိထိ</option>
-                <option value="သတ္တာဒေဝမနုဿာနံ">သတ္တာဒေဝမနုဿာနံ</option>
-                <option value="ဗုဒ္ဓေါ">ဗုဒ္ဓေါ</option>
-                <option value="ဘဂဝါ">ဘဂဝါ</option>
-              </select>
-            </div>
+          
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowRealLifeInfoDialog(false)}>
