@@ -31,10 +31,19 @@ export default function Navbar() {
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
-  const [checkingKoeNaWin, setCheckingKoeNaWin] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showExistingProcessDialog, setShowExistingProcessDialog] = useState(false);
+  const [existingProcessInfo, setExistingProcessInfo] = useState({
+    currentDayCount: 0,
+    currentStage: 0,
+    startDate: ""
+  });
+  const [isCheckingProcess, setIsCheckingProcess] = useState(false);
+  const [showRealLifeProcessDialog, setShowRealLifeProcessDialog] = useState(false);
+  const [showDaysInputDialog, setShowDaysInputDialog] = useState(false);
+  const [realLifeDays, setRealLifeDays] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +59,6 @@ export default function Navbar() {
   }, []);
 
   const checkKoeNaWinAccount = async () => {
-    setCheckingKoeNaWin(true);
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) {
@@ -71,14 +79,19 @@ export default function Navbar() {
 
       if (response.data.success) {
         setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+        if (response.data.hasKoNaWinVow) {
+          setExistingProcessInfo({
+            currentDayCount: response.data.currentDayCount || 0,
+            currentStage: response.data.currentStage || 0,
+            startDate: response.data.startDate || ""
+          });
+        }
       } else {
         setHasKoeNaWinAccount(false);
       }
     } catch (error) {
       console.error("Error checking Koe Na Win account:", error);
       setHasKoeNaWinAccount(false);
-    } finally {
-      setCheckingKoeNaWin(false);
     }
   };
 
@@ -118,15 +131,73 @@ export default function Navbar() {
     }
   };
 
-  const handleKoeNaWinEntry = () => {
+  const handleKoeNaWinEntry = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID missing to check Koe Na Win process.");
+      navigate("/login");
+      return;
+    }
+
+    setIsCheckingProcess(true);
+    try {
+      // Check database for existing Koe Na Win process
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
+        { userId: userId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success && response.data.hasKoNaWinVow) {
+        // User has existing Koe Na Win process in database - go directly to dashboard
+        navigate("/koenawin/dashboard");
+        return;
+      }
+
+      // No existing process in database - ask about real-life process
+      setShowRealLifeProcessDialog(true);
+    } catch (error) {
+      console.error("Error checking Koe Na Win process:", error);
+      setInfoDialogMessage("ကိုးနဝင်းတရား စစ်ဆေးရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
+    } finally {
+      setIsCheckingProcess(false);
+    }
+  };
+
+  const handleRealLifeProcessYes = () => {
+    setShowRealLifeProcessDialog(false);
+    setShowDaysInputDialog(true);
+  };
+
+  const handleRealLifeProcessNo = () => {
+    setShowRealLifeProcessDialog(false);
+    // Check if it's Monday
     const today = new Date().getDay();
     if (today !== 1) { // 1 is Monday
       setInfoDialogMessage("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
       setShowInfoDialog(true);
       return;
     }
-
+    // It's Monday - show confirmation
     setShowConfirmDialog(true);
+  };
+
+  const handleDaysInputSubmit = () => {
+    if (!realLifeDays || isNaN(Number(realLifeDays)) || Number(realLifeDays) < 0) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော ရက်ပေါင်းကို ရိုက်ထည့်ပါ။");
+      setShowInfoDialog(true);
+      return;
+    }
+    setShowDaysInputDialog(false);
+    // TODO: Save the real-life process data and navigate to dashboard
+    // For now, just navigate to dashboard
+    navigate("/koenawin/dashboard");
   };
 
   const handleLogout = () => {
@@ -275,13 +346,19 @@ export default function Navbar() {
                       ) : (
                         <div
                           onClick={() => {
-                            setKoeNaWinOpen(false);
-                            handleKoeNaWinEntry();
+                            if (!isCheckingProcess) {
+                              setKoeNaWinOpen(false);
+                              handleKoeNaWinEntry();
+                            }
                           }}
-                          className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
+                          className={`flex items-center mx-100 px-4 py-2 font-extrabold cursor-pointer ${
+                            isCheckingProcess 
+                              ? "text-gray-400 cursor-not-allowed" 
+                              : "text-white hover:text-amber-300"
+                          }`}
                         >
                           <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                          &nbsp; ကိုးနဝင်းဝင်မည်
+                          &nbsp; {isCheckingProcess ? "စစ်ဆေးနေသည်..." : "ကိုးနဝင်းဝင်မည်"}
                         </div>
                       )
                     ) : (
@@ -504,6 +581,37 @@ export default function Navbar() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Existing Process Info Dialog */}
+      <AlertDialog open={showExistingProcessDialog} onOpenChange={setShowExistingProcessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် လက်ရှိအခြေအနေ</AlertDialogTitle>
+            <AlertDialogDescription>
+              သင်သည် ကိုးနဝင်းအဓိဌာန်ကို လက်ရှိတွင် ဆောက်တည်နေပါသည်။
+              <br /><br />
+              <strong>စတင်သည့်ရက်:</strong> {existingProcessInfo.startDate}
+              <br />
+              <strong>လက်ရှိရက်ပေါင်း:</strong> {existingProcessInfo.currentDayCount} ရက်
+              <br />
+              <strong>လက်ရှိအဆင့်:</strong> {existingProcessInfo.currentStage} / 9
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                setShowExistingProcessDialog(false);
+                navigate("/koenawin/dashboard");
+              }}
+            >
+              ဒက်ရှ်ဘုတ်သို့ သွားမည်
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowExistingProcessDialog(false)}>
+              နောက်ဆုတ်ရန်
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Confirm Start Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
@@ -524,6 +632,57 @@ export default function Navbar() {
               }}
             >
               စတင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Real Life Process Dialog */}
+      <AlertDialog open={showRealLifeProcessDialog} onOpenChange={setShowRealLifeProcessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် စစ်ဆေးရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              သင်သည် ကိုးနဝင်းအဓိဌာန်ကို လက်ရှိတွင် ဆောက်တည်နေပါသလား? (ဤအက်ပ်တွင်မဟုတ်ဘဲ လက်တွေ့ဘဝတွင်)
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleRealLifeProcessYes}>
+              ဟုတ်ကဲ့၊ ဆောက်တည်နေပါသည်
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={handleRealLifeProcessNo}>
+              မဟုတ်ပါ
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Days Input Dialog */}
+      <AlertDialog open={showDaysInputDialog} onOpenChange={setShowDaysInputDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် ရက်ပေါင်း</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကျေးဇူးပြု၍ သင်သည် ကိုးနဝင်းအဓိဌာန်ကို မည်မျှရက်ကြာ ဆောက်တည်နေပါသလဲ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <input
+              type="number"
+              value={realLifeDays}
+              onChange={(e) => setRealLifeDays(e.target.value)}
+              placeholder="ရက်ပေါင်း ရိုက်ထည့်ပါ"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              min="0"
+              max="81"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDaysInputDialog(false)}>
+              နောက်ဆုတ်ရန်
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleDaysInputSubmit}>
+              ဆက်လက်လုပ်ဆောင်မည်
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
