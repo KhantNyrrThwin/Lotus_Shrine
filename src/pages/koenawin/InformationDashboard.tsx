@@ -58,7 +58,7 @@ const InformationDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 w-242">
+    <div className="space-y-6 w-[calc(100vw-312.5px)]">
       {/* Progress Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

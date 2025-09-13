@@ -128,7 +128,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   };
 
   return (
-    <div className="space-y-6 w-242">
+    <div className="space-y-6 bg-[#FDE9DA] w-[calc(100vw-312.5px)]">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

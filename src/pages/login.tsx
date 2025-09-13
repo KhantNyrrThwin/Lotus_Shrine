@@ -18,14 +18,14 @@ export default function LoginPage() {
               <img
                 src={logo}
                 alt="logo"
-                className="ml-[10px] mt-[10px] size-[90px]"
+                className="ml-[10px] mt-[10px] size-[90px] 2xl:size-[120px]"
               />
-              <div className="w-[539px] h-[514px] ml-[695px] mt-[10px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
+              <div className="w-[539px] ml-[695px] 2xl:ml-[995px] mt-[10px] 2xl:mt-[70px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
                 <div className="flex flex-rol mt-[44px] ml-[44px] items-center">
-                  <h1 className="text-[27px] font-extrabold text-[#40320D]">
+                  <h1 className="text-[27px] font-extrabold text-[#40320D] 2xl:text-4xl">
                     LotusShrine{" "}
                   </h1>
-                  <h2 className="text-[21px] ">&nbsp; မှကြိုဆိုပါသည်</h2>
+                  <h2 className="text-[21px] 2xl:text:xl ">&nbsp; မှကြိုဆိုပါသည်</h2>
                 </div>
                 <h1 className="text-[40px] ml-[44px] mt-[10px] font-extrabold">
                   အကောင့်ဝင်ရန်
