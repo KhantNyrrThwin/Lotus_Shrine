@@ -6,8 +6,8 @@ function Footer() {
   return (
     <>
       <div className="bg-[#4f3016] text-white font-bold   h-[325px]  ">
-        <div className="flex flex-row">
-          <div className="flex flex-col w-[430px] h-[280px] ml-[58px] mt-[5px] item-left ">
+        <div className="flex flex-row gap-25 2xl:gap-50">
+          <div className="flex flex-col w-[430px] h-[280px] ml-25 mt-[5px] item-left ">
             <Link to="/">
               <div className="flex w-[300px] h-[100px]    items-center 2xl:ml-[80px]">
                 <img src={applogo} alt="LOGO" className=" size-[75px]  " />
@@ -26,7 +26,7 @@ function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-col  w-[200px] h-[280px] ml-[93px] mt-[5px] text-[14px]  items-center  ">
+          <div className="flex flex-col  w-[200px] h-[280px] mt-[5px] text-[14px]  items-center   ">
             <div className="flex flex-col w-[200px] h-[100px] mt-[30px] ">
               <h1 className="text-white text-[18px] font-bold mt-[10px] 2xl:ml-[40px] ">
                 ဝန်ဆောင်မှုများ
@@ -64,7 +64,7 @@ function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col  w-[400px] h-[280px] ml-[93px] mt-[5px] text-[14px]  ">
+          <div className="flex flex-col  h-[280px] mr-25 mt-[5px] text-[14px]   ">
             <div className="flex flex-col w-[300px] h-[100px] mt-[30px]  ">
               <h1 className="text-white text-[18px] font-bold mt-[10px] 2xl:ml-[60px]">
                 ကျွန်တော်တို့နှင့် ဆက်သွယ်ရန်

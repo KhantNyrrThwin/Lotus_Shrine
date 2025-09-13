@@ -43,9 +43,9 @@ function KoeNaWinGrades() {
   };
 
   return (
-    <div className="flex flex-col items-center h-screen bg-[#FDE9DA] 2xl:ml-[100px]">
-      <h1 className="text-[24px] font-bold mt-5">ကိုးနဝင်းအဆင့်များ</h1>
-      <div className="flex flex-rol w-full h-full mt-[17px] ">
+    <div className="flex flex-col items-center mb-30 bg-[#FDE9DA] ">
+      <h1 className="text-[24px] text-center ml-10 font-bold mt-5">ကိုးနဝင်းအဆင့်များ</h1>
+      <div className="flex flex-rol w-full h-full mt-[17px]  justify-center ">
         <div className="w-[251px] h-[508px] ml-[38px]  ">
           <button
             className={`w-[247px] h-[68px] rounded-[19px] cursor-pointer text-white text-[18px] font-bold mt-[6px] mb-[18px] transition-colors duration-200 ${

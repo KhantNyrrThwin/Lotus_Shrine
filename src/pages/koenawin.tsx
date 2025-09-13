@@ -150,14 +150,14 @@ function KoeNaWin() {
     <>
       <div className=" bg-[#FDE9DA] w-full h-full">
         <Navbar />
-        <div className="flex flex-col w-full h-[742px] mt-10 font-bold 2xl:ml-[100px]">
+        <div className="flex flex-col w-full  h-[742px] mt-10 font-bold ">
           <h1 className="text-center mt-14 text-[30px]  text-[#402916]">
             ကိုးနဝင်း
           </h1>
           <h2 className="text-center text-[20px] mt-[14px] mb-[38px] text-[#402916]">
             "ကိုးနဝင်း မိုးလင်းမှသိမယ်"
           </h2>
-          <div className="flex flex-row">
+          <div className="flex flex-row items-center justify-center">
             <img src={Buddha} alt="Description" className="size-[508px]" />
             <div className="flex flex-col">
               <div className="  flex items-center justify-center w-[639px] h-[340px] rounded-2xl bg-[#735240] ">

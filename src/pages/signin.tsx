@@ -18,16 +18,16 @@ export default function SigninPage() {
               <img
                 src={logo}
                 alt="logo"
-                className="absolute ml-[1170px] mt-[10px] size-[90px]"
+                className="absolute right-0 mt-[10px] size-[90px] 2xl:size-[120px]"
               />
-              <div className="w-[539px] h-[730px] ml-[65px] mt-[20px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
-                <div className="flex flex-rol mt-[30px] ml-[44px] items-center">
+              <div className="w-[539px]  ml-[65px] mt-[20px] 2xl:mt-[100px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
+                <div className="flex flex-rol mt-[30px] ml-[44px]  items-center">
                   <h1 className="text-[27px] font-extrabold text-[#40320D]">
                     LotusShrine{" "}
                   </h1>
                   <h2 className="text-[21px] ">&nbsp; မှကြိုဆိုပါသည်</h2>
                 </div>
-                <h1 className="text-[40px] ml-[44px] mt-[10px] font-extrabold">
+                <h1 className="text-[30px ] 2xl:text-[40px] ml-[44px] mt-[10px] font-extrabold">
                   အကောင့်ဖွင့်ရန်
                 </h1>
                 <SigninForm />

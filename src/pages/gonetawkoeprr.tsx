@@ -17,7 +17,7 @@ function Gonetawkoeprr() {
         <Navbar />
         <div className="flex flex-col items-center justify-center flex-1 px-4 py-10">
           <h1 className="text-center mt-14 text-[30px] md:text-[35px] font-extrabold text-[#402916] drop-shadow-lg tracking-wide animate-fade-in">
-            ဘုရားဂုဏ်‌ေတာ် (၉)ပါး
+            ဘုရားဂုဏ်‌တော် (၉)ပါး
           </h1>
           <div className="mt-10 w-full max-w-2xl  bg-white/50 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col gap-10 border border-[#e2c7a6] animate-fade-in">
             {/* 1 */}
