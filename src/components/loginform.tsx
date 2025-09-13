@@ -23,19 +23,17 @@ const LoginForm = () => {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.state?.fromSignup) {
+      setSuccessMessage('အကောင့်အသစ်တည်ဆောက်ပြီးပါပြီ၊ အကောင့်ပြန်ဝင်ပါ။');
+    } else if (location.state?.fromReset) {
+      setSuccessMessage('စကားဝှက် အောင်မြင်စွာ ပြောင်းပြီးပါပြီ။');
+    }
 
-  if (location.state?.fromSignup) {
-    setSuccessMessage('အကောင့်အသစ်တည်ဆောက်ပြီးပါပြီ၊ အကောင့်ပြန်ဝင်ပါ။');
-  } else if (location.state?.fromReset) {
-    setSuccessMessage('စကားဝှက် အောင်မြင်စွာ ပြောင်းပြီးပါပြီ။');
-  }
-
-  // Clear the navigation state so message won't persist on refresh
-  if (location.state?.fromSignup || location.state?.fromReset) {
-    window.history.replaceState({}, document.title);
-  }
-}, [location]);
-
+    // Clear the navigation state so message won't persist on refresh
+    if (location.state?.fromSignup || location.state?.fromReset) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -51,12 +49,22 @@ const LoginForm = () => {
           withCredentials: true,
         },
       );
+      
       console.log("Full response:", response);
       console.log("Response data:", response.data);
-      localStorage.setItem("userName", response.data.name);
+      
       if (response.data?.success) {
+        // Store user information in localStorage
         localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("userName", response.data.name);
         localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("userId", response.data.user_id)
+        
+        // Store DOB if available in response
+        if (response.data.dob) {
+          localStorage.setItem("userDob", response.data.dob);
+        }
+        
         navigate("/");
         toast.success("အကောင့်ဝင်မှူ အောင်မြင်ပါသည်", {
           description: "Lotus Shrine မှ ကြိုဆိုပါသည်",

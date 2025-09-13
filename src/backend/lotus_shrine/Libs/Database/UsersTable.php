@@ -1,7 +1,7 @@
 <?php
  namespace Libs\Database;
  use PDOException;
-use PDO;
+ use PDO;
  class UsersTable
  {
     private $db = null;
@@ -11,13 +11,13 @@ use PDO;
     public function insert($data){
         try {
             $query = "
-                INSERT INTO users (name, user_email, age, user_password) 
-                VALUES ( :name, :email, :age, :password)";
+                INSERT INTO users (name, user_email, dob, user_password) 
+                VALUES ( :name, :email, :dob, :password)";
             $statement = $this->db->prepare($query);
             $statement->execute([
             ':name' => $data['name'],
             ':email' => $data['email'],
-            ':age' => $data['age'],
+            ':dob' => $data['dob'],
             ':password' => $data['password']
             ]);
             return $this->db->lastInsertId();
@@ -27,7 +27,7 @@ use PDO;
     }
     public function getAll(){
         try{
-            $statement = $this->db->query("SELECT user_id, name, user_email, age FROM users");
+            $statement = $this->db->query("SELECT user_id, name, user_email, dob FROM users");
         return $statement->fetchAll();
         }catch (PDOException $e) {
             return $e->getMessage();
@@ -70,6 +70,27 @@ use PDO;
             ':email' => $email,
             ':password' => $hashedPassword
         ]);
+    }
+
+    public function updateUserInfo($email, $name, $dob) {
+        try {
+            $query = "
+                UPDATE users 
+                SET name = :name, dob = :dob 
+                WHERE user_email = :email";
+            
+            $statement = $this->db->prepare($query);
+            $statement->execute([
+                ':name' => $name,
+                ':dob' => $dob,
+                ':email' => $email
+            ]);
+            
+            return $statement->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Update user info error: " . $e->getMessage());
+            return false;
+        }
     }
 
 }

@@ -39,7 +39,9 @@ try {
             echo json_encode([
                 'success' => true,
                 'message' => 'Login successful',
-                'name' => $user['name']
+                'name' => $user['name'],
+                'dob' => $user['dob'],
+                'user_id' => $user['user_id']
             ]);
         } else {
             // Email exists but password is wrong

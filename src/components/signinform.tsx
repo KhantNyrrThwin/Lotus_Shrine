@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react";
 type FormData = {
   name: string;
   email: string;
-  age: number;
+  dob: string;
   password: string;
   confirm_password: string;
 };
@@ -186,30 +186,42 @@ const signinForm = () => {
           <div className="flex flex-col items-start w-full gap-2">
             <div className="flex flex-col items-start w-full">
               <label
-                htmlFor="age"
+                htmlFor="dob"
                 className="text-[#4f3016] text-left text-[16px] font-bold"
               >
-                အသက်
+                မွေးနေ့သက္ကရာဇ်
               </label>
             </div>
             <input
-              type="number"
-              placeholder="အသက်"
-              {...register("age", {
-                required: "အသက်လိုအပ်ပါသည်",
-                min: {
-                  value: 10,
-                  message: "အနည်းဆုံး ၁၀ နှစ်ရှိရပါမည်",
-                },
-                max: {
-                  value: 120,
-                  message: "မှန်ကန်သော အသက်ဖြစ်ရပါမည်",
+              type="date"
+              placeholder="မွေးသက္ကရာဇ်"
+              {...register("dob", {
+                required: "မွေးသက္ကရာဇ် လိုအပ်ပါသည်",
+                validate: {
+                  minAge: (value) => {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const monthDiff = today.getMonth() - dob.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                      age--;
+                    }
+                    
+                    return age >= 10 || "အနည်းဆုံး ၁၀ နှစ်ရှိရပါမည်";
+                  },
+                  notFuture: (value) => {
+                    const dob = new Date(value);
+                    const today = new Date();
+                    return dob <= today || "အနာဂတ်ရက် မဖြစ်ရပါ";
+                  },
                 },
               })}
               className="w-full h-[57px] bg-[#ffffff] border border-[#4f3016] rounded-[9px] p-2"
             />
-            {errors.age && (
-              <p className="text-red-500 text-sm -mt-2">{errors.age.message}</p>
+
+            {errors.dob && (
+              <p className="text-red-500 text-sm -mt-2">{errors.dob.message}</p>
             )}
           </div>
         </div>

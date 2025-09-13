@@ -3,8 +3,81 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import KoeNaWinGrades from "./KoeNaWinGrades";
 import Buddha from "../assets/KoeNaWinPagoda.png";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../data/authService";
+import axios from "axios";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 
 function KoeNaWin() {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(false);
+  const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(true);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  useEffect(() => {
+    const checkLoginAndKoeNaWinStatus = async () => {
+      const loggedIn = authService.isAuthenticated();
+      setIsLogin(loggedIn);
+
+      if (loggedIn) {
+        await checkKoeNaWinAccount();
+      } else {
+        setCheckingAccount(false);
+      }
+    };
+
+    checkLoginAndKoeNaWinStatus();
+  }, []);
+
+  const checkKoeNaWinAccount = async () => {
+    setCheckingAccount(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.warn("User ID not found in localStorage.");
+        setHasKoeNaWinAccount(false);
+        setCheckingAccount(false);
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
+        { userId: userId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      } else {
+        console.error("Backend error checking Koe Na Win account:", response.data.message);
+        setHasKoeNaWinAccount(false);
+      }
+    } catch (error) {
+      console.error("Error checking Koe Na Win account:", error);
+      setHasKoeNaWinAccount(false);
+    } finally {
+      setCheckingAccount(false);
+    }
+  };
+
   const scrollToGrades = () => {
     const element = document.getElementById("koenawingrades");
     if (element) {
@@ -12,6 +85,64 @@ function KoeNaWin() {
         behavior: "smooth",
         block: "start",
       });
+    }
+  };
+
+  const startNewVow = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID missing to start new vow.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/newKNWTracker.php",
+        {
+          userId: userId,
+          startDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        console.log("New Ko Na Win vow started successfully!");
+        setHasKoeNaWinAccount(true);
+        navigate("/koenawin/dashboard");
+      } else {
+        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error starting new Ko Na Win vow:", error);
+      alert("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+    }
+  };
+
+  const handleEnterKoeNaWin = () => {
+    if (!isLogin) {
+      navigate("/login");
+      return;
+    }
+
+    const today = new Date().getDay();
+    if (today !== 2) {
+      setInfoDialogMessage(
+        "တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။"
+      );
+      setShowInfoDialog(true);
+      return;
+    }
+
+    if (hasKoeNaWinAccount) {
+      navigate("/koenawin/dashboard");
+    } else {
+      setShowConfirmDialog(true);
     }
   };
 
@@ -61,8 +192,14 @@ function KoeNaWin() {
                 >
                   ကိုးနဝင်းအဆင့်များ
                 </button>
-                <button className=" flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016]  text-white">
-                  ကိုးနဝင်းဝင်ရောက်မည်
+                <button
+                  onClick={handleEnterKoeNaWin}
+                  disabled={checkingAccount}
+                  className={`flex items-center justify-center w-[260px] h-[73px] rounded-2xl bg-[#4F3016] text-white ${
+                    checkingAccount ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {checkingAccount ? "စစ်ဆေးနေသည်..." : "ကိုးနဝင်းဝင်မည်"}
                 </button>
               </div>
             </div>
@@ -73,6 +210,46 @@ function KoeNaWin() {
         </section>
         <Footer />
       </div>
+
+      {/* Info Alert Dialog */}
+      <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>သတိပေးချက်</AlertDialogTitle>
+            <AlertDialogDescription>{infoDialogMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowInfoDialog(false)}>
+              နားလည်ပါသည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Start Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>အတည်ပြုရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာမြင့်မည်ဖြစ်ပါသည်။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
+              မစတင်ပါ
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowConfirmDialog(false);
+                startNewVow();
+              }}
+            >
+              စတင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

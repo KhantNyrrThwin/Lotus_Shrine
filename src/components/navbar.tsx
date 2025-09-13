@@ -8,6 +8,18 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { authService } from "../data/authService";
+import axios from "axios";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
@@ -18,34 +30,116 @@ export default function Navbar() {
   const [isAccountOpen, setAccountOpen] = useState(false);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
+  const [checkingKoeNaWin, setCheckingKoeNaWin] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAu = localStorage.getItem("isAuthenticated") === "true";
+    const isAu = authService.isAuthenticated();
     const storedName = localStorage.getItem("userName") || "ဧည့်သည်";
 
     setIsLogin(isAu);
     setUser(isAu ? storedName : "ဧည့်သည်");
+    
+    if (isAu) {
+      checkKoeNaWinAccount();
+    }
   }, []);
 
+  const checkKoeNaWinAccount = async () => {
+    setCheckingKoeNaWin(true);
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        setHasKoeNaWinAccount(false);
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
+        { userId: userId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      } else {
+        setHasKoeNaWinAccount(false);
+      }
+    } catch (error) {
+      console.error("Error checking Koe Na Win account:", error);
+      setHasKoeNaWinAccount(false);
+    } finally {
+      setCheckingKoeNaWin(false);
+    }
+  };
+
+  const startNewVow = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID missing to start new vow.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost/lotus_shrine/newKNWTracker.php",
+        {
+          userId: userId,
+          startDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        console.log("New Ko Na Win vow started successfully!");
+        setHasKoeNaWinAccount(true);
+        navigate("/koenawin/dashboard");
+      } else {
+        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error starting new Ko Na Win vow:", error);
+      alert("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+    }
+  };
+
+  const handleKoeNaWinEntry = () => {
+    const today = new Date().getDay();
+    if (today !== 1) { // 1 is Monday
+      setInfoDialogMessage("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
+      setShowInfoDialog(true);
+      return;
+    }
+
+    setShowConfirmDialog(true);
+  };
+
   const handleLogout = () => {
-    // Show toast notification
     toast.success("အကောင့်မှ ထွက်ပြီးပါပြီ", {
-      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်ရောက်နိုင်ပါသည်။",
+      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်�ရောက်နိုင်ပါသည်။",
       duration: 3000,
     });
 
-    // Clear authentication data
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName");
-
-    // Update state
+    authService.logout();
     setIsLogin(false);
     setUser("ဧည့်သည်");
     setAccountOpen(false);
-
-    // Redirect to home page
+    setHasKoeNaWinAccount(false);
     navigate("/");
   };
 
@@ -168,20 +262,40 @@ export default function Navbar() {
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
                       &nbsp; ဘုရား ဂုဏ်တော် (၉)ပါး
                     </Link>
-                    <div
-                      onClick={() => {
-                        setKoeNaWinOpen(false);
-                        if (isLogin) {
-                          setComingSoonOpen(true);
-                        } else {
+                    {isLogin ? (
+                      hasKoeNaWinAccount ? (
+                        <Link
+                          to="/koenawin/dashboard"
+                          onClick={() => setKoeNaWinOpen(false)}
+                          className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                        >
+                          <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                          &nbsp; ဒက်ရှ်ဘုတ်ဝင်မည်
+                        </Link>
+                      ) : (
+                        <div
+                          onClick={() => {
+                            setKoeNaWinOpen(false);
+                            handleKoeNaWinEntry();
+                          }}
+                          className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
+                        >
+                          <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                          &nbsp; ကိုးနဝင်းဝင်မည်
+                        </div>
+                      )
+                    ) : (
+                      <div
+                        onClick={() => {
+                          setKoeNaWinOpen(false);
                           setLoginPromptOpen(true);
-                        }
-                      }}
-                      className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
-                    >
-                      <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                      &nbsp; ကိုးနဝင်းဝင်မည်
-                    </div>
+                        }}
+                        className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold cursor-pointer"
+                      >
+                        <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                        &nbsp; ကိုးနဝင်းဝင်မည်
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -334,7 +448,7 @@ export default function Navbar() {
                 }}
                 className="inline-flex h-10 items-center justify-center rounded-md bg-[#4f3016] px-4 text-white hover:bg-[#3a2411]"
               >
-                အကောင့်ဝင်ရန်
+                အကောင့်ဝင်�ရန်
               </button>
               <button
                 onClick={() => {
@@ -362,7 +476,7 @@ export default function Navbar() {
               </Dialog.Close>
             </div>
             <Dialog.Description className="mt-2 text-sm text-gray-600">
-              ကိုးနဝင်းဝင်မည် လုပ်ဆောင်ချက်ကို mid-term seminar ပြီးဆုံးပြီးနောက် ထည့်သွင်းပေးမည်ဖြစ်ပါသည်။ ကျေးဇူးတင်ပါသည်။
+              ကိုးနဝင်းဝင်�မည် လုပ်ဆောင်ချက်ကို mid-term seminar ပြီးဆုံးပြီးနောက် ထည့်သွင်းပေးမည်ဖြစ်ပါသည်။ ကျေးဇူးတင်ပါသည်။
             </Dialog.Description>
             <div className="mt-5 flex justify-end">
               <Dialog.Close asChild>
@@ -374,6 +488,46 @@ export default function Navbar() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+
+      {/* Info Alert Dialog */}
+      <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>သတိပေးချက်</AlertDialogTitle>
+            <AlertDialogDescription>{infoDialogMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowInfoDialog(false)}>
+              နားလည်ပါသည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Start Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>အတည်ပြုရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်�လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာ�မြင့်�မည်ဖြစ်ပါသည်။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
+              မစတင်ပါ
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowConfirmDialog(false);
+                startNewVow();
+              }}
+            >
+              စတင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
