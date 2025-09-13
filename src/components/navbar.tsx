@@ -42,8 +42,10 @@ export default function Navbar() {
   });
   const [isCheckingProcess, setIsCheckingProcess] = useState(false);
   const [showRealLifeProcessDialog, setShowRealLifeProcessDialog] = useState(false);
-  const [showDaysInputDialog, setShowDaysInputDialog] = useState(false);
+  const [showRealLifeInfoDialog, setShowRealLifeInfoDialog] = useState(false);
   const [realLifeDays, setRealLifeDays] = useState("");
+  const [realLifeStage, setRealLifeStage] = useState("");
+  const [realLifeMantra, setRealLifeMantra] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -172,7 +174,7 @@ export default function Navbar() {
 
   const handleRealLifeProcessYes = () => {
     setShowRealLifeProcessDialog(false);
-    setShowDaysInputDialog(true);
+    setShowRealLifeInfoDialog(true);
   };
 
   const handleRealLifeProcessNo = () => {
@@ -188,13 +190,13 @@ export default function Navbar() {
     setShowConfirmDialog(true);
   };
 
-  const handleDaysInputSubmit = () => {
-    if (!realLifeDays || isNaN(Number(realLifeDays)) || Number(realLifeDays) < 0) {
-      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော ရက်ပေါင်းကို ရိုက်ထည့်ပါ။");
+  const handleRealLifeInfoSubmit = () => {
+    if (!realLifeDays || !realLifeStage || !realLifeMantra) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ အားလုံးကို ရွေးချယ်ပါ။");
       setShowInfoDialog(true);
       return;
     }
-    setShowDaysInputDialog(false);
+    setShowRealLifeInfoDialog(false);
     // TODO: Save the real-life process data and navigate to dashboard
     // For now, just navigate to dashboard
     navigate("/koenawin/dashboard");
@@ -643,45 +645,96 @@ export default function Navbar() {
           <AlertDialogHeader>
             <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် စစ်ဆေးရန်</AlertDialogTitle>
             <AlertDialogDescription>
-              သင်သည် ကိုးနဝင်းအဓိဌာန်ကို လက်ရှိတွင် ဆောက်တည်နေပါသလား? (ဤအက်ပ်တွင်မဟုတ်ဘဲ လက်တွေ့ဘဝတွင်)
+              သင်သည် ကိုးနဝင်းအဓိဌာန်ကို လက်ရှိတွင် ဆောက်တည်နေပါသလား? 
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleRealLifeProcessYes}>
-              ဟုတ်ကဲ့၊ ဆောက်တည်နေပါသည်
+               ဆောက်တည်နေလျက်ရှိပါသည်
             </AlertDialogAction>
             <AlertDialogCancel onClick={handleRealLifeProcessNo}>
-              မဟုတ်ပါ
+              ယခု စတင်မည်
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Days Input Dialog */}
-      <AlertDialog open={showDaysInputDialog} onOpenChange={setShowDaysInputDialog}>
-        <AlertDialogContent>
+      {/* Real Life Process Info Dialog - All questions in one */}
+      <AlertDialog open={showRealLifeInfoDialog} onOpenChange={setShowRealLifeInfoDialog}>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် ရက်ပေါင်း</AlertDialogTitle>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် လက်ရှိအခြေအနေ</AlertDialogTitle>
             <AlertDialogDescription>
-              ကျေးဇူးပြု၍ သင်သည် ကိုးနဝင်းအဓိဌာန်ကို မည်မျှရက်ကြာ ဆောက်တည်နေပါသလဲ?
+              ကျေးဇူးပြု၍ သင့်လက်ရှိ ကိုးနဝင်းအဓိဌာန် အခြေအနေကို ရွေးချယ်ပါ။
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="py-4">
-            <input
-              type="number"
-              value={realLifeDays}
-              onChange={(e) => setRealLifeDays(e.target.value)}
-              placeholder="ရက်ပေါင်း ရိုက်ထည့်ပါ"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
-              min="0"
-              max="81"
-            />
+          <div className="py-4 space-y-4">
+            {/* Days Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                မည်မျှရက်ကြာ ဆောက်တည်နေပါသလဲ?
+              </label>
+              <select
+                value={realLifeDays}
+                onChange={(e) => setRealLifeDays(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">ရက်ပေါင်း ရွေးချယ်ပါ</option>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1} ရက်
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Stage Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                မည်သည့်အဆင့်တွင် ရှိနေပါသလဲ?
+              </label>
+              <select
+                value={realLifeStage}
+                onChange={(e) => setRealLifeStage(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">အဆင့် ရွေးချယ်ပါ</option>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    အဆင့် {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Mantra Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                မည်သည့်မန္တရားကို ရွတ်ဆိုနေပါသလဲ?
+              </label>
+              <select
+                value={realLifeMantra}
+                onChange={(e) => setRealLifeMantra(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">မန္တရား ရွေးချယ်ပါ</option>
+                <option value="အရဟံ">အရဟံ</option>
+                <option value="သမ္မာသမ္ဗုဒ္ဓေါ">သမ္မာသမ္ဗုဒ္ဓေါ</option>
+                <option value="ဝိဇ္ဇာစရဏသမ္ပန္နော">ဝိဇ္ဇာစရဏသမ္ပန္နော</option>
+                <option value="သုဂတော">သုဂတော</option>
+                <option value="လောကဝိဒူ">လောကဝိဒူ</option>
+                <option value="အနုတ္တရောပုရိသ ဓမ္မသာရိထိ">အနုတ္တရောပုရိသ ဓမ္မသာရိထိ</option>
+                <option value="သတ္တာဒေဝမနုဿာနံ">သတ္တာဒေဝမနုဿာနံ</option>
+                <option value="ဗုဒ္ဓေါ">ဗုဒ္ဓေါ</option>
+                <option value="ဘဂဝါ">ဘဂဝါ</option>
+              </select>
+            </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDaysInputDialog(false)}>
+            <AlertDialogCancel onClick={() => setShowRealLifeInfoDialog(false)}>
               နောက်ဆုတ်ရန်
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDaysInputSubmit}>
+            <AlertDialogAction onClick={handleRealLifeInfoSubmit}>
               ဆက်လက်လုပ်ဆောင်မည်
             </AlertDialogAction>
           </AlertDialogFooter>

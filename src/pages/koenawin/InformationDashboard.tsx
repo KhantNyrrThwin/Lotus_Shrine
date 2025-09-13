@@ -17,6 +17,7 @@ import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
+import { getTodaysReading, getCurrentDayOfWeek } from "../../data/koeNaWinReadingSchedule";
 
 const InformationDashboard: React.FC = () => {
   const [progressData, setProgressData] = useState<KoNaWinProgress | null>(null);
@@ -75,22 +76,6 @@ const InformationDashboard: React.FC = () => {
     }
   };
 
-  const getMantraForStage = (stage: number): { label: string; loops: number } => {
-    const mantras = [
-      { label: '', loops: 0 }, // Stage 0
-      { label: 'အရဟံ', loops: 108 }, // Stage 1
-      { label: 'သမ္မာသမ္ဗုဒ္ဓေါ', loops: 108 }, // Stage 2
-      { label: 'ဝိဇ္ဇာစရဏသမ္ပန္နော', loops: 108 }, // Stage 3
-      { label: 'သုဂတော', loops: 108 }, // Stage 4
-      { label: 'လောကဝိဒူ', loops: 108 }, // Stage 5
-      { label: 'အနုတ္တရော ပုရိသဒမ္မသာရထိ', loops: 108 }, // Stage 6
-      { label: 'သတ္ထာ ဒေဝမနုဿာနံ', loops: 108 }, // Stage 7
-      { label: 'ဗုဒ္ဓေါ', loops: 108 }, // Stage 8
-      { label: 'ဘဂဝါ', loops: 108 } // Stage 9
-    ];
-    
-    return mantras[stage] || { label: '', loops: 0 };
-  };
 
   if (loading) {
     return (
@@ -127,7 +112,6 @@ const InformationDashboard: React.FC = () => {
   const isTodayCompleted = progressData.dailyLogs.some(log => 
     log.logDate === new Date().toISOString().split('T')[0] && log.completionStatus
   );
-  const mantra = getMantraForStage(progressData.tracker.currentStage);
 
   return (
     <div className="space-y-6 w-[calc(100vw-312.5px)]">
@@ -158,6 +142,115 @@ const InformationDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Current Stage and Day Information */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="bg-white border-[#4f3016]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
+                <Target className="w-5 h-5" />
+                လက်ရှိအဆင့်နှင့် ရက်ပေါင်း
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-sm font-medium text-blue-800">လက်ရှိအဆင့်</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {progressData.tracker.currentStage} / 9
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <p className="text-sm font-medium text-green-800">အဆင့်အတွင်း ရက်ပေါင်း</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {progressData.progress.dayNumberInStage} ရက်
+                  </p>
+                </div>
+              </div>
+              
+              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <p className="text-sm font-medium text-amber-800">ယနေ့၏ နေ့အမည်</p>
+                <p className="text-lg font-semibold text-amber-700">
+                  {getCurrentDayOfWeek()}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Today's Reading Instructions */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="bg-white border-[#4f3016]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
+                <BookOpen className="w-5 h-5" />
+                ယနေ့ဖတ်ရမည့် မန္တရား
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(() => {
+                const todaysReading = getTodaysReading(
+                  progressData.tracker.currentStage, 
+                  progressData.progress.dayNumberInStage
+                );
+                
+                if (!todaysReading) {
+                  return (
+                    <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-sm text-gray-600">ဖတ်ရမည့် မန္တရားကို ရယူ၍ မရပါ။</p>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <>
+                    <div className="p-3 rounded-lg bg-purple-50 border border-purple-200">
+                      <p className="text-sm font-medium text-purple-800">မန္တရား</p>
+                      <p className="text-xl font-bold text-purple-700 mb-2">
+                        {todaysReading.mantra}
+                      </p>
+                      <p className="text-sm text-purple-600">
+                        {todaysReading.weeks} ပတ်ကြာ ဖတ်ရမည်
+                      </p>
+                    </div>
+                    
+                    <div className={`p-3 rounded-lg border ${
+                      todaysReading.isMeatFreeDay 
+                        ? 'bg-yellow-50 border-yellow-200' 
+                        : 'bg-green-50 border-green-200'
+                    }`}>
+                      <div className="flex items-center gap-2">
+                        {todaysReading.isMeatFreeDay ? (
+                          <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                        ) : (
+                          <Leaf className="w-4 h-4 text-green-600" />
+                        )}
+                        <p className={`text-sm font-medium ${
+                          todaysReading.isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
+                        }`}>
+                          {todaysReading.isMeatFreeDay 
+                            ? 'ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်ပါသည်' 
+                            : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current Mantra Instructions */}
