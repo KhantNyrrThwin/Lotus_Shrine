@@ -6,7 +6,7 @@ import Buddha from "../assets/KoeNaWinPagoda.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
-import axios from "axios";
+import { koNaWinApi } from "../data/koenawinApi";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +26,7 @@ function KoeNaWin() {
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showStartingDialog, setShowStartingDialog] = useState(false);
 
   useEffect(() => {
     const checkLoginAndKoeNaWinStatus = async () => {
@@ -45,29 +46,12 @@ function KoeNaWin() {
   const checkKoeNaWinAccount = async () => {
     setCheckingAccount(true);
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.warn("User ID not found in localStorage.");
-        setHasKoeNaWinAccount(false);
-        setCheckingAccount(false);
-        return;
-      }
+      const response = await koNaWinApi.checkKoNaWinTracker();
 
-      const response = await axios.post(
-        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
-        { userId: userId },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (response.data.success) {
-        setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      if (response.success) {
+        setHasKoeNaWinAccount(response.hasKoNaWinVow);
       } else {
-        console.error("Backend error checking Koe Na Win account:", response.data.message);
+        console.error("Backend error checking Koe Na Win account:", response.message);
         setHasKoeNaWinAccount(false);
       }
     } catch (error) {
@@ -89,34 +73,15 @@ function KoeNaWin() {
   };
 
   const startNewVow = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.error("User ID missing to start new vow.");
-      navigate("/login");
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        "http://localhost/lotus_shrine/newKNWTracker.php",
-        {
-          userId: userId,
-          startDate: new Date().toISOString().split('T')[0]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await koNaWinApi.startNewVow();
 
-      if (response.data.success) {
+      if (response.success) {
         console.log("New Ko Na Win vow started successfully!");
         setHasKoeNaWinAccount(true);
         navigate("/koenawin/dashboard");
       } else {
-        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+        alert("Failed to start new Ko Na Win vow: " + (response.message || "Unknown error"));
       }
     } catch (error) {
       console.error("Error starting new Ko Na Win vow:", error);
@@ -130,8 +95,15 @@ function KoeNaWin() {
       return;
     }
 
+    // First show "Starting Koe Na Win" dialog
+    setShowStartingDialog(true);
+  };
+
+  const handleStartingDialogConfirm = () => {
+    setShowStartingDialog(false);
+    
     const today = new Date().getDay();
-    if (today !== 2) {
+    if (today !== 6) { // Monday = 1, not 7
       setInfoDialogMessage(
         "တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။"
       );
@@ -139,6 +111,7 @@ function KoeNaWin() {
       return;
     }
 
+    // If it's Monday, proceed with the flow
     if (hasKoeNaWinAccount) {
       navigate("/koenawin/dashboard");
     } else {
@@ -210,6 +183,26 @@ function KoeNaWin() {
         </section>
         <Footer />
       </div>
+
+      {/* Starting Koe Na Win Dialog */}
+      <AlertDialog open={showStartingDialog} onOpenChange={setShowStartingDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုနဝင်းစတင်ဝင်မည်</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာမြင့်မည်ဖြစ်ပါသည်။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowStartingDialog(false)}>
+              မစတင်ပါ
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleStartingDialogConfirm}>
+              စတင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Info Alert Dialog */}
       <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>

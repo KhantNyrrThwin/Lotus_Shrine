@@ -18,7 +18,7 @@ function KoeNaWinGrades() {
   };
 
   const renderGradeContent = () => {
-    switch (selectedGrade) {
+    switch (selectedGrade) {  
       case "first":
         return <First />;
       case "second":

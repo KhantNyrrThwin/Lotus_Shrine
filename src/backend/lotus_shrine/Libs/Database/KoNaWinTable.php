@@ -28,6 +28,19 @@ class KoNaWinTable
         }
     }
 
+    // Method to find tracker by tracker ID
+    public function findTrackerById($trackerId)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT * FROM ko_na_win_tracker WHERE tracker_id = :tracker_id");
+            $statement->execute([':tracker_id' => $trackerId]);
+            return $statement->fetch();
+        } catch (PDOException $e) {
+            error_log("Error in findTrackerById: " . $e->getMessage());
+            return null;
+        }
+    }
+
     // Method to create a new Koe Na Win vow for a user
     public function startNewVow($userId, $startDate)
     {
@@ -51,31 +64,74 @@ class KoNaWinTable
         }
     }
 
-    // Method to log daily completion
-    public function logDailyCompletion($trackerId, $dayNumber)
+    // Method to log daily completion (one-time only)
+    public function logDailyCompletion($trackerId, $dayNumber, $logDate = null)
     {
         try {
-            $logDate = date('Y-m-d'); // Current date
-            // Using INSERT IGNORE to prevent duplicate entries if the user tries to log twice for the same day
-            // Or, using ON DUPLICATE KEY UPDATE completion_status = 1 (if you add a UNIQUE constraint on (tracker_id, log_date))
-            // For now, let's assume we want to prevent re-logging if already exists for the day
-            $query = "INSERT INTO ko_na_win_daily_log (tracker_id, log_date, day_number, completion_status) VALUES (:tracker_id, :log_date, :day_number, 1)";
-            $statement = $this->db->prepare($query);
+            $logDate = $logDate ?: date('Y-m-d'); // Use provided date or current date
+            
+            // Check if entry already exists for this date
+            $existingEntry = $this->getDailyLogByDate($trackerId, $logDate);
+            
+            if ($existingEntry) {
+                // Day already completed, return success without action
+                return ['success' => true, 'action' => 'already_completed', 'status' => 1];
+            } else {
+                // Calculate the correct day number based on current progress
+                $correctDayNumber = $this->calculateNextDayNumber($trackerId);
+                
+                // Insert new entry with the calculated day number
+                $query = "INSERT INTO ko_na_win_daily_log (tracker_id, log_date, day_number, completion_status) VALUES (:tracker_id, :log_date, :day_number, 1)";
+                $statement = $this->db->prepare($query);
+                $statement->execute([
+                    ':tracker_id' => $trackerId,
+                    ':log_date' => $logDate,
+                    ':day_number' => $correctDayNumber
+                ]);
+                return ['success' => true, 'action' => 'completed', 'status' => 1, 'calculatedDayNumber' => $correctDayNumber];
+            }
+        } catch (PDOException $e) {
+            error_log("Error in logDailyCompletion: " . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    // Method to calculate the next day number based on current progress
+    public function calculateNextDayNumber($trackerId)
+    {
+        try {
+            // Get count of completed days
+            $statement = $this->db->prepare("SELECT COUNT(*) as completed_count FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id AND completion_status = 1");
+            $statement->execute([':tracker_id' => $trackerId]);
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            $completedDays = (int)$result['completed_count'];
+            
+            // Calculate the next day number (1-9 within each stage)
+            $nextDayNumber = ($completedDays % 9) + 1;
+            
+            error_log("calculateNextDayNumber - trackerId: $trackerId, completedDays: $completedDays, nextDayNumber: $nextDayNumber");
+            
+            return $nextDayNumber;
+        } catch (PDOException $e) {
+            error_log("Error in calculateNextDayNumber: " . $e->getMessage());
+            return 1; // Default to day 1 if there's an error
+        }
+    }
+
+    // Method to get daily log entry by date
+    public function getDailyLogByDate($trackerId, $logDate)
+    {
+        try {
+            $statement = $this->db->prepare("SELECT * FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id AND log_date = :log_date");
             $statement->execute([
                 ':tracker_id' => $trackerId,
-                ':log_date' => $logDate,
-                ':day_number' => $dayNumber // This dayNumber is the day within the stage (1-9)
+                ':log_date' => $logDate
             ]);
-            return true;
+            return $statement->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            // Handle error, e.g., if a user tries to complete the same day twice.
-            // If you get a duplicate key error, it means the day was already logged.
-            if ($e->getCode() == 23000) { // SQLSTATE for integrity constraint violation
-                 error_log("Attempt to log already completed day for tracker_id {$trackerId} on {$logDate}");
-                 return true; // Consider it successful if it was already logged
-            }
-            error_log("Error in logDailyCompletion: " . $e->getMessage());
-            return false;
+            error_log("Error in getDailyLogByDate: " . $e->getMessage());
+            return null;
         }
     }
 
@@ -83,17 +139,79 @@ class KoNaWinTable
     public function updateTrackerProgress($trackerId, $newCurrentDayCount, $newCurrentStage, $isCompleted)
     {
         try {
+            // First, get current values to compare
+            $currentTracker = $this->findTrackerById($trackerId);
+            if (!$currentTracker) {
+                error_log("updateTrackerProgress: Tracker with ID $trackerId not found");
+                return false;
+            }
+            
+            // Check if values are actually different
+            $hasChanges = (
+                $currentTracker->current_day_count != $newCurrentDayCount ||
+                $currentTracker->current_stage != $newCurrentStage ||
+                $currentTracker->is_completed != $isCompleted
+            );
+            
+            if (!$hasChanges) {
+                error_log("updateTrackerProgress: No changes needed for trackerId: $trackerId");
+                return true; // No changes needed, consider it successful
+            }
+            
             $query = "UPDATE ko_na_win_tracker SET current_day_count = :current_day_count, current_stage = :current_stage, is_completed = :is_completed WHERE tracker_id = :tracker_id";
             $statement = $this->db->prepare($query);
-            $statement->execute([
+            $result = $statement->execute([
                 ':current_day_count' => $newCurrentDayCount,
                 ':current_stage' => $newCurrentStage,
                 ':is_completed' => $isCompleted,
                 ':tracker_id' => $trackerId
             ]);
-            return $statement->rowCount() > 0;
+            
+            if (!$result) {
+                error_log("updateTrackerProgress: Execute failed for trackerId: $trackerId");
+                return false;
+            }
+            
+            $rowCount = $statement->rowCount();
+            error_log("updateTrackerProgress - trackerId: $trackerId, rowCount: $rowCount, newValues: dayCount=$newCurrentDayCount, stage=$newCurrentStage, completed=$isCompleted");
+            
+            return $rowCount > 0;
         } catch (PDOException $e) {
             error_log("Error in updateTrackerProgress: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Method to recalculate and update tracker progress based on actual completed days
+    public function recalculateTrackerProgress($trackerId)
+    {
+        try {
+            // First, verify the tracker exists
+            $tracker = $this->findTrackerById($trackerId);
+            if (!$tracker) {
+                error_log("recalculateTrackerProgress: Tracker with ID $trackerId not found");
+                return false;
+            }
+            
+            // Get all completed daily logs for this tracker
+            $statement = $this->db->prepare("SELECT COUNT(*) as completed_count FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id AND completion_status = 1");
+            $statement->execute([':tracker_id' => $trackerId]);
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            $completedDays = (int)$result['completed_count'];
+            $currentStage = (int)ceil($completedDays / 9); // Calculate stage based on completed days
+            $isCompleted = ($completedDays >= 81) ? 1 : 0;
+            
+            // Calculate the actual day count (total days completed)
+            $currentDayCount = $completedDays;
+            
+            // Debug logging
+            error_log("recalculateTrackerProgress - trackerId: $trackerId, completedDays: $completedDays, currentStage: $currentStage, currentDayCount: $currentDayCount, isCompleted: $isCompleted");
+            
+            // Update the tracker with recalculated values
+            return $this->updateTrackerProgress($trackerId, $currentDayCount, $currentStage, $isCompleted);
+        } catch (PDOException $e) {
+            error_log("Error in recalculateTrackerProgress: " . $e->getMessage());
             return false;
         }
     }
