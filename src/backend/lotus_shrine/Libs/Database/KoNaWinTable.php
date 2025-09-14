@@ -103,11 +103,15 @@ class KoNaWinTable
         try {
             $logDate = $logDate ?: date('Y-m-d'); // Use provided date or current date
             
+            // Debug logging
+            error_log("logDailyCompletion - trackerId: $trackerId, logDate: $logDate, dayNumber: $dayNumber");
+            
             // Check if entry already exists for this date
             $existingEntry = $this->getDailyLogByDate($trackerId, $logDate);
             
             if ($existingEntry) {
                 // Day already completed, return success without action
+                error_log("logDailyCompletion - Day already completed for date: $logDate");
                 return ['success' => true, 'action' => 'already_completed', 'status' => 1];
             } else {
                 // Calculate the correct day number based on current progress
@@ -116,11 +120,14 @@ class KoNaWinTable
                 // Insert new entry with the calculated day number
                 $query = "INSERT INTO ko_na_win_daily_log (tracker_id, log_date, day_number, completion_status) VALUES (:tracker_id, :log_date, :day_number, 1)";
                 $statement = $this->db->prepare($query);
-                $statement->execute([
+                $result = $statement->execute([
                     ':tracker_id' => $trackerId,
                     ':log_date' => $logDate,
                     ':day_number' => $correctDayNumber
                 ]);
+                
+                error_log("logDailyCompletion - Insert result: " . ($result ? 'success' : 'failed') . ", logDate: $logDate, dayNumber: $correctDayNumber");
+                
                 return ['success' => true, 'action' => 'completed', 'status' => 1, 'calculatedDayNumber' => $correctDayNumber];
             }
         } catch (PDOException $e) {
@@ -281,9 +288,17 @@ class KoNaWinTable
     public function getDailyLogs($trackerId)
     {
         try {
-            $statement = $this->db->prepare("SELECT * FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id ORDER BY log_date ASC"); // Order by log_date for chronological order
+            $statement = $this->db->prepare("SELECT log_id, tracker_id, log_date, day_number, completion_status FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id ORDER BY log_date ASC"); // Order by log_date for chronological order
             $statement->execute([':tracker_id' => $trackerId]);
-            return $statement->fetchAll();
+            $logs = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Debug logging
+            error_log("getDailyLogs - trackerId: $trackerId, logs count: " . count($logs));
+            foreach ($logs as $log) {
+                error_log("Daily log: " . json_encode($log));
+            }
+            
+            return $logs;
         } catch (PDOException $e) {
             error_log("Error in getDailyLogs: " . $e->getMessage());
             return [];
