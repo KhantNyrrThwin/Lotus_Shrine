@@ -110,7 +110,7 @@ export default function ForgotPassword() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 1 }}
         >
-            <div className="flex bg-[url('./assets/forgot_password.png')] w-full h-screen items-center justify-center 2xl:h-[800px]">
+            <div className="flex bg-[url('./assets/forgot_password.png')] w-full h-screen items-center justify-center bg-cover ">
                 <div className="w-[489px] h-[446px] bg-[#E2E2E2B3] rounded-2xl flex flex-col justify-center">
                     <h2 className="ml-5 mt-5 text-[20px] font-extrabold text-[#40320D]">စကားဝှက်မေ့သွားပါသည်</h2>
                     <p className="ml-5 mt-5 text-[18px] font-bold text-[#40320D]">
