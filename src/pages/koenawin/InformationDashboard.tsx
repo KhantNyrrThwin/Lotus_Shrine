@@ -9,7 +9,11 @@ import {
   Leaf,
   TrendingUp,
   Calendar,
-  Loader2
+  Loader2,
+  CheckSquare,
+  CrossIcon,
+  Crosshair,
+  XCircle
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
@@ -240,7 +244,15 @@ const InformationDashboard: React.FC = () => {
               })()}
             </CardContent>
           </Card>
+           <Button 
+             className="bg-gradient-to-r mt-4 from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg cursor-pointer"
+             size="lg"
+           >
+             <XCircle className="w-5 h-5 mr-2" />
+             ကိုးနဝင်း အဓိဌာန် ဖျက်မည်  
+           </Button>
         </motion.div>
+        
       </div>
 
         {/* Current Mantra Instructions */}

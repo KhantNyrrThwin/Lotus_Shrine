@@ -8,7 +8,8 @@ import {
   CheckCircle,
   Clock,
   Heart,
-  Loader2
+  Loader2,
+  TrendingUp
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -244,6 +245,35 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
           </CardHeader>
         </Card>
       </motion.div>
+
+      {/* ---------------Connect with Database ------------- */}
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
+          <CardHeader>
+            <h1 className="flex items-center gap-2 text-2xl font-extrabold">
+              <CheckCircle className="w-6 h-6" />
+                သာဓု ၊ သာဓု ၊ သာဓု  သင်၏ ကိုးနဝင်း အဓိဌာန် အောင်မြင်စွာ ပြီးမြောက်သွားပါပြီ ။
+            </h1>
+            <CardDescription className="text-[#e0e0e0]">
+              <Button 
+                className="bg-gradient-to-r mt-4   from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg"
+                size="lg"
+              >
+                <BookOpen className="w-5 h-5 mr-2 " />
+                ကိုးနဝင်း မှတ်တမ်း သိမ်းဆည်းမည်  
+              </Button> 
+            </CardDescription>
+          </CardHeader>
+          
+        </Card>
+      </motion.div>
+      {/* ---------------Connect with Database ------------- */}
+
 
       <div className="flex flex-row gap-6">
         {/* Calendar Section */}
