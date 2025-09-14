@@ -29,7 +29,6 @@ function KoeNaWin() {
   const [showRealLifeInfoDialog, setShowRealLifeInfoDialog] = useState(false);
   const [realLifeDays, setRealLifeDays] = useState("");
   const [realLifeStage, setRealLifeStage] = useState("");
-  const [realLifeMantra, setRealLifeMantra] = useState("");
 
   useEffect(() => {
     const checkLoginAndKoeNaWinStatus = async () => {
@@ -123,7 +122,7 @@ function KoeNaWin() {
     setShowRealLifeProcessDialog(false);
     // Check if it's Monday
     const today = new Date().getDay();
-    if (today !== 1) { // 1 is Monday
+    if (today !== 0) { // 1 is Monday
       setInfoDialogMessage("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
       setShowInfoDialog(true);
       return;
@@ -132,16 +131,47 @@ function KoeNaWin() {
     setShowConfirmDialog(true);
   };
 
-  const handleRealLifeInfoSubmit = () => {
-    if (!realLifeDays || !realLifeStage || !realLifeMantra) {
+  const handleRealLifeInfoSubmit = async () => {
+    if (!realLifeDays || !realLifeStage) {
       setInfoDialogMessage("ကျေးဇူးပြု၍ အားလုံးကို ရွေးချယ်ပါ။");
       setShowInfoDialog(true);
       return;
     }
+
+    const stage = parseInt(realLifeStage);
+    const dayInStage = parseInt(realLifeDays);
+
+    // Validate inputs
+    if (stage < 1 || stage > 9 || dayInStage < 1 || dayInStage > 9) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော အဆင့်နှင့် နေ့ရက်ကို ရွေးချယ်ပါ။");
+      setShowInfoDialog(true);
+      return;
+    }
+
     setShowRealLifeInfoDialog(false);
-    // TODO: Save the real-life process data and navigate to dashboard
-    // For now, just navigate to dashboard
-    navigate("/koenawin/dashboard");
+
+    try {
+      // Calculate expected current_day_count for debugging
+      const expectedCurrentDayCount = (stage - 1) * 9 + dayInStage - 1;
+      console.log(`Creating tracker for Stage ${stage}, Day ${dayInStage} in stage`);
+      console.log(`Expected current_day_count: ${expectedCurrentDayCount}`);
+      console.log(`This means the user has completed ${expectedCurrentDayCount} days and is on day ${expectedCurrentDayCount + 1}`);
+      
+      const response = await koNaWinApi.startNewVowWithRealLifeProgress(stage, dayInStage);
+
+      if (response.success) {
+        console.log("Real-life Koe Na Win vow started successfully!");
+        console.log(`Current day count: ${response.currentDayCount}, Current stage: ${response.currentStage}`);
+        navigate("/koenawin/dashboard");
+      } else {
+        setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ " + (response.message || "Unknown error"));
+        setShowInfoDialog(true);
+      }
+    } catch (error) {
+      console.error("Error starting real-life Koe Na Win vow:", error);
+      setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
+    }
   };
 
   return (
@@ -254,25 +284,6 @@ function KoeNaWin() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4 space-y-4">
-            {/* Days Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                မည်မျှရက်ကြာ ဆောက်တည်နေပါသလဲ?
-              </label>
-              <select
-                value={realLifeDays}
-                onChange={(e) => setRealLifeDays(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
-              >
-                <option value="">ရက်ပေါင်း ရွေးချယ်ပါ</option>
-                {Array.from({ length: 9 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1} ရက်
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Stage Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -293,6 +304,24 @@ function KoeNaWin() {
                 <option value="7">သတ္တမအဆင့်</option>
                 <option value="8">အဋ္ဌမအဆင့်</option>
                 <option value="9">နဝမအဆင့်</option>
+              </select>
+            </div>
+            {/* Days Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ထိုအဆင့်တွင် ‌ရောက်ရှိနေသည့် နေ့ရက်ကို ရွေးချယ်ပါ?
+              </label>
+              <select
+                value={realLifeDays}
+                onChange={(e) => setRealLifeDays(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">နေ့ရက်ရွေးချယ်ရန်</option>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1} ရက်မြောက်
+                  </option>
+                ))}
               </select>
             </div>
 

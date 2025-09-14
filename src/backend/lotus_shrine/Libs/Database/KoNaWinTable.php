@@ -64,6 +64,39 @@ class KoNaWinTable
         }
     }
 
+    // Method to create a new Koe Na Win vow with real-life progress
+    public function startNewVowWithRealLifeProgress($userId, $startDate, $currentDayCount, $currentStage)
+    {
+        try {
+            // Check if user already has an active vow
+            if ($this->findTrackerByUserId($userId)) {
+                return false; // Vow already exists
+            }
+
+            // Calculate if the vow is completed
+            $isCompleted = ($currentDayCount >= 81) ? 1 : 0;
+
+            // Insert new vow with the provided progress
+            $query = "INSERT INTO ko_na_win_tracker (user_id, start_date, current_day_count, current_stage, is_completed) VALUES (:user_id, :start_date, :current_day_count, :current_stage, :is_completed)";
+            $statement = $this->db->prepare($query);
+            $result = $statement->execute([
+                ':user_id' => $userId,
+                ':start_date' => $startDate,
+                ':current_day_count' => $currentDayCount,
+                ':current_stage' => $currentStage,
+                ':is_completed' => $isCompleted
+            ]);
+            
+            $trackerId = $this->db->lastInsertId();
+            error_log("startNewVowWithRealLifeProgress - Inserted tracker with ID: $trackerId, current_day_count: $currentDayCount, current_stage: $currentStage, is_completed: $isCompleted");
+            
+            return $trackerId;
+        } catch (PDOException $e) {
+            error_log("Error in startNewVowWithRealLifeProgress: " . $e->getMessage());
+            return false;
+        }
+    }
+
     // Method to log daily completion (one-time only)
     public function logDailyCompletion($trackerId, $dayNumber, $logDate = null)
     {
@@ -199,17 +232,28 @@ class KoNaWinTable
             $result = $statement->fetch(PDO::FETCH_ASSOC);
             
             $completedDays = (int)$result['completed_count'];
-            $currentStage = (int)ceil($completedDays / 9); // Calculate stage based on completed days
-            $isCompleted = ($completedDays >= 81) ? 1 : 0;
             
-            // Calculate the actual day count (total days completed)
-            $currentDayCount = $completedDays;
-            
-            // Debug logging
-            error_log("recalculateTrackerProgress - trackerId: $trackerId, completedDays: $completedDays, currentStage: $currentStage, currentDayCount: $currentDayCount, isCompleted: $isCompleted");
-            
-            // Update the tracker with recalculated values
-            return $this->updateTrackerProgress($trackerId, $currentDayCount, $currentStage, $isCompleted);
+            // For real-life continuation, preserve the original current_day_count and increment it
+            // Check if this is a real-life continuation (current_day_count > completedDays)
+            if ($tracker->current_day_count > $completedDays) {
+                // This is a real-life continuation - increment the current_day_count
+                $newCurrentDayCount = $tracker->current_day_count + 1;
+                $newCurrentStage = (int)ceil($newCurrentDayCount / 9);
+                $isCompleted = ($newCurrentDayCount >= 81) ? 1 : 0;
+                
+                error_log("recalculateTrackerProgress (real-life) - trackerId: $trackerId, originalDayCount: {$tracker->current_day_count}, newDayCount: $newCurrentDayCount, newStage: $newCurrentStage");
+                
+                return $this->updateTrackerProgress($trackerId, $newCurrentDayCount, $newCurrentStage, $isCompleted);
+            } else {
+                // Regular calculation for normal users
+                $currentStage = (int)ceil($completedDays / 9);
+                $isCompleted = ($completedDays >= 81) ? 1 : 0;
+                $currentDayCount = $completedDays;
+                
+                error_log("recalculateTrackerProgress (regular) - trackerId: $trackerId, completedDays: $completedDays, currentStage: $currentStage, currentDayCount: $currentDayCount");
+                
+                return $this->updateTrackerProgress($trackerId, $currentDayCount, $currentStage, $isCompleted);
+            }
         } catch (PDOException $e) {
             error_log("Error in recalculateTrackerProgress: " . $e->getMessage());
             return false;
@@ -243,6 +287,44 @@ class KoNaWinTable
         } catch (PDOException $e) {
             error_log("Error in getDailyLogs: " . $e->getMessage());
             return [];
+        }
+    }
+
+    // Method to log only the previous day for real-life progress continuation
+    public function logPreviousDayForRealLifeProgress($trackerId, $currentDayCount, $startDate)
+    {
+        try {
+            // If currentDayCount is 0, no previous day to log
+            if ($currentDayCount <= 0) {
+                return true;
+            }
+
+            // Calculate the previous day's date (currentDayCount days from start)
+            $previousDayDate = date('Y-m-d', strtotime($startDate . ' +' . ($currentDayCount - 1) . ' days'));
+            
+            // Calculate the day number within the stage for the previous day
+            $previousDayNumber = (($currentDayCount - 1) % 9) + 1;
+            
+            // Check if this day is already logged
+            $existingEntry = $this->getDailyLogByDate($trackerId, $previousDayDate);
+            
+            if (!$existingEntry) {
+                // Insert only the previous day as completed
+                $query = "INSERT INTO ko_na_win_daily_log (tracker_id, log_date, day_number, completion_status) VALUES (:tracker_id, :log_date, :day_number, 1)";
+                $statement = $this->db->prepare($query);
+                $statement->execute([
+                    ':tracker_id' => $trackerId,
+                    ':log_date' => $previousDayDate,
+                    ':day_number' => $previousDayNumber
+                ]);
+                
+                error_log("logPreviousDayForRealLifeProgress - trackerId: $trackerId, previousDayDate: $previousDayDate, dayNumber: $previousDayNumber");
+            }
+            
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error in logPreviousDayForRealLifeProgress: " . $e->getMessage());
+            return false;
         }
     }
 }

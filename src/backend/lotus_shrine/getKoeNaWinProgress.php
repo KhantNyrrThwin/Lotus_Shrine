@@ -44,16 +44,28 @@ try {
         // Calculate progress statistics
         $totalDays = 81;
         $completedDays = count($dailyLogs);
-        $remainingDays = $totalDays - $completedDays;
-        $progressPercentage = round(($completedDays / $totalDays) * 100, 2);
+        
+        // For real-life continuation, use current_day_count as the base for progress
+        // This ensures progress reflects the actual stage the user is in
+        if($tracker->current_day_count > 1){
+            $actualProgress = max($completedDays, $tracker->current_day_count);
+        }  
+        else $actualProgress = $completedDays;
+        $remainingDays = $totalDays - $actualProgress;
+        $progressPercentage = round(($actualProgress / $totalDays) * 100, 2);
+        
+        // Debug logging
+        error_log("getKoeNaWinProgress - trackerId: {$tracker->tracker_id}, current_day_count: {$tracker->current_day_count}, completedDays: $completedDays, actualProgress: $actualProgress, progressPercentage: $progressPercentage");
         
         // Calculate current stage progress
         $currentStageDays = (($tracker->current_stage - 1) * 9) + 1;
         $stageProgress = $tracker->current_day_count - $currentStageDays + 1;
         
         // Calculate day number within current stage (1-9)
-        // Day 5 of each stage is the meat-free day
-        $dayNumberInStage = (($tracker->current_day_count - 1) % 9)+1;
+        // For real-life continuation, we need to calculate based on the current day within the stage
+        // The current day is the day after current_day_count
+        $currentDay = $tracker->current_day_count + 1;
+        $dayNumberInStage = (($currentDay - 1) % 9) + 1;
         
         echo json_encode([
             'success' => true,
@@ -65,7 +77,8 @@ try {
                 'isCompleted' => $tracker->is_completed
             ],
             'progress' => [
-                'completedDays' => $completedDays,
+                'completedDays' => $actualProgress, // Use actualProgress for display
+                'actualProgress' => $actualProgress,
                 'remainingDays' => $remainingDays,
                 'progressPercentage' => $progressPercentage,
                 'stageProgress' => $stageProgress,

@@ -44,6 +44,14 @@ class KoNaWinApiService {
     return localStorage.getItem('userId');
   }
 
+  /**
+   * Calculate current_day_count based on stage and day in stage
+   * Each stage has 9 days, so current_day_count = (stage - 1) * 9 + dayInStage - 1
+   */
+  private calculateCurrentDayCount(stage: number, dayInStage: number): number {
+    return (stage - 1) * 9 + dayInStage - 1;
+  }
+
   private async makeRequest<T>(endpoint: string, data?: any): Promise<T> {
     try {
       const response = await axios.post(`${API_BASE_URL}/${endpoint}`, data, {
@@ -102,6 +110,36 @@ class KoNaWinApiService {
     };
 
     return this.makeRequest('newKNWTracker.php', requestData);
+  }
+
+  /**
+   * Start a new Koe Na Win vow with real-life continuation
+   */
+  async startNewVowWithRealLifeProgress(stage: number, dayInStage: number): Promise<{
+    success: boolean;
+    message: string;
+    trackerId?: number;
+    startDate?: string;
+    currentDayCount?: number;
+    currentStage?: number;
+  }> {
+    const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found in localStorage');
+    }
+
+    // Calculate current_day_count based on stage and day
+    const currentDayCount = this.calculateCurrentDayCount(stage, dayInStage);
+
+    const requestData = {
+      userId,
+      startDate: new Date().toISOString().split('T')[0],
+      currentDayCount,
+      currentStage: stage,
+      dayInStage
+    };
+
+    return this.makeRequest('newKNWTrackerWithRealLife.php', requestData);
   }
 
   /**
