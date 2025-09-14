@@ -117,7 +117,7 @@ try {
             'startDate' => $startDate,
             'currentDayCount' => $currentDayCount,
             'currentStage' => $currentStage,
-            'dayInStage' => $dayInStage
+            'dayInStage' => $dayInStage+1
         ]);
     } else {
         error_log("newKNWTrackerWithRealLife.php - Failed to create tracker for user $userId");

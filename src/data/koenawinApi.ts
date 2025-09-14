@@ -8,6 +8,7 @@ export interface KoNaWinTracker {
   currentDayCount: number;
   currentStage: number;
   isCompleted: boolean;
+  dayNumberInStage?: number;
 }
 
 export interface DailyLog {
@@ -54,16 +55,27 @@ class KoNaWinApiService {
 
   private async makeRequest<T>(endpoint: string, data?: any): Promise<T> {
     try {
+      console.log(`Making API request to ${API_BASE_URL}/${endpoint}`, data);
       const response = await axios.post(`${API_BASE_URL}/${endpoint}`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true,
+        timeout: 10000, // 10 second timeout
       });
+      console.log(`API response from ${endpoint}:`, response.data);
       return response.data;
     } catch (error) {
       console.error(`API Error for ${endpoint}:`, error);
-      throw error;
+      if (error.code === 'ECONNREFUSED') {
+        throw new Error('Cannot connect to backend server. Please ensure the PHP server is running.');
+      } else if (error.code === 'ENOTFOUND') {
+        throw new Error('Backend server not found. Please check the server configuration.');
+      } else if (error.response) {
+        throw new Error(`Backend error: ${error.response.status} - ${error.response.data?.message || error.response.statusText}`);
+      } else {
+        throw error;
+      }
     }
   }
 
