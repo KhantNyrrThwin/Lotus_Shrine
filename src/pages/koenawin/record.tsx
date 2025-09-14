@@ -37,9 +37,7 @@ export default function RecordDashboard() {
 
   const historyData: HistoryRecord[] = useMemo(
     () => [
-      { id: "2025-07", username: "User Name", startDate: "2025-07-01", endDate: "2025-09-20" },
-      { id: "2024-11", username: "User Name", startDate: "2024-11-05", endDate: "2025-01-24" },
-      { id: "2024-03", username: "User Name", startDate: "2024-03-10", endDate: "2024-05-29" },
+      { id: "2025-07", username: "ခန့်ညားသွင်", startDate: "2025-07-01", endDate: "2025-09-20" },
     ],
     []
   );
@@ -62,60 +60,186 @@ export default function RecordDashboard() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Background gradient (brand colors)
-      const gradient = ctx.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, "#735240");
-      gradient.addColorStop(1, "#4f3016");
-      ctx.fillStyle = gradient;
+      // Load and draw background image
+      const backgroundImage = new Image();
+      await new Promise((resolve, reject) => {
+        backgroundImage.onload = resolve;
+        backgroundImage.onerror = reject;
+        backgroundImage.src = "/src/assets/Certi BG.jpg";
+      });
+      
+      // Draw background image to fill entire canvas
+      ctx.drawImage(backgroundImage, 0, 0, width, height);
+
+      // Add subtle overlay for better text readability
+      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
       ctx.fillRect(0, 0, width, height);
 
-      // Inner light panel
-      const padding = 80;
-      ctx.fillStyle = "#FDE9DA";
-      ctx.fillRect(padding, padding, width - padding * 2, height - padding * 2);
+      // Add elegant border frame
+      const borderPadding = 60;
+      ctx.strokeStyle = "#8B5A3C";
+      ctx.lineWidth = 8;
+      ctx.strokeRect(borderPadding, borderPadding, width - borderPadding * 2, height - borderPadding * 2);
+      
+      // Inner decorative border
+      ctx.strokeStyle = "#D4AF37";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(borderPadding + 20, borderPadding + 20, width - (borderPadding + 20) * 2, height - (borderPadding + 20) * 2);
 
-      // Decorative border
-      ctx.strokeStyle = "#8B4513";
-      ctx.lineWidth = 6;
-      ctx.strokeRect(padding + 10, padding + 10, width - (padding + 10) * 2, height - (padding + 10) * 2);
+      // Load and draw logo with shadow effect
+      const logoImage = new Image();
+      await new Promise((resolve, reject) => {
+        logoImage.onload = resolve;
+        logoImage.onerror = reject;
+        logoImage.src = "/src/assets/logo.png";
+      });
+      
+      // Draw logo with shadow
+      const logoSize = 140;
+      const logoX = (width - logoSize) / 2;
+      const logoY = 100;
+      
+      // Logo shadow
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+      
+      // Reset shadow
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
 
-      // Title
-      ctx.fillStyle = "#4f3016";
+      // Project title with elegant styling (smaller size)
       ctx.textAlign = "center";
-      ctx.font = "bold 64px Georgia, 'Times New Roman', serif";
-      ctx.fillText("ကိုးနဝင်း အောင်မြင်မှု လက်မှတ်", width / 2, padding + 160);
+      ctx.font = "bold 36px 'Playfair Display', Georgia, 'Times New Roman', serif";
+      
+      // Title shadow
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = "#f3f2f2";
+      ctx.fillText("Lotus Shrine", width / 2, logoY + logoSize + 50);
+      
+      // Reset shadow
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
 
-      // Subtitle
-      ctx.font = "28px 'Noto Sans Myanmar', system-ui, sans-serif";
-      ctx.fillStyle = "#735240";
-      ctx.fillText("သင်၏ ကိုးနဝင်း အဓိဌာန်ကို အောင်မြင်စွာ ပြီးမြောက်ခဲ့သည်", width / 2, padding + 220);
+      // Decorative line under title
+      ctx.strokeStyle = "#D4AF37";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(width / 2 - 150, logoY + logoSize + 80);
+      ctx.lineTo(width / 2 + 150, logoY + logoSize + 80);
+      ctx.stroke();
 
-      // Award emblem text
-      ctx.font = "bold 40px Georgia, 'Times New Roman', serif";
-      ctx.fillStyle = "#4f3016";
-      ctx.fillText("သာဓု ၊ သာဓု ၊ သာဓု", width / 2, padding + 290);
+      // Subtitle with elegant styling (bigger size)
+      ctx.font = "bold 40px 'Noto Sans Myanmar', system-ui, sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText("ကိုးနဝင်း အဓိဌာန် အောင်မြင်ခြင်း", width / 2, logoY + logoSize + 150);
 
-      // Username
-      ctx.font = "bold 54px 'Noto Sans Myanmar', system-ui, sans-serif";
-      ctx.fillStyle = "#4f3016";
-      ctx.fillText(record.username, width / 2, padding + 380);
+      // Username with special styling
+      ctx.font = "bold 58px 'Noto Sans Myanmar', system-ui, sans-serif";
+      ctx.fillStyle = "#1A0E08";
+      
+      // Username background highlight
+      const usernameMetrics = ctx.measureText(record.username);
+      const usernameWidth = usernameMetrics.width;
+      const usernameY = logoY + logoSize + 240;
+      
+    
+      
+      // Username text
+      ctx.fillStyle = "#f8d9ad";
+      ctx.fillText(`" ${(record.username)} "`, width / 2, usernameY);
 
-      // Dates row
-      ctx.font = "28px 'Noto Sans Myanmar', system-ui, sans-serif";
-      ctx.fillStyle = "#735240";
-      ctx.fillText(`စတင်နေ့စွဲ: ${formatDate(record.startDate)}`, width / 2, padding + 450);
-      ctx.fillText(`ပြီးဆုံးနေ့စွဲ: ${formatDate(record.endDate)}`, width / 2, padding + 490);
+      // Dates with elegant styling
+      ctx.font = "32px 'Noto Sans Myanmar', system-ui, sans-serif";
+      ctx.fillStyle = "#f3f2f2";
+      
+      // Start date
+      ctx.fillText(`စတင်နေ့စွဲ: ${formatDate(record.startDate)}`, width / 2, usernameY + 90);
+      
+      // End date
+      ctx.fillText(`ပြီးဆုံးနေ့စွဲ: ${formatDate(record.endDate)}`, width / 2, usernameY + 140);
 
-      // Footer note
+      // Decorative element before footer
+      ctx.strokeStyle = "#D4AF37";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(width / 2 - 150, usernameY + 200);
+      ctx.lineTo(width / 2 + 150, usernameY + 200);
+      ctx.stroke();
+
+      // Footer recognition text with elegant styling
       ctx.font = "22px 'Noto Sans Myanmar', system-ui, sans-serif";
-      ctx.fillStyle = "#735240";
-      ctx.fillText("ကိုးနဝင်းစိတ်ဓာတ်ဖြင့် နေ့စဉ်ဘဝကို ဖြတ်သန်းနိုင်ပါစေ", width / 2, height - padding - 80);
+      ctx.fillStyle = "#ffffff";
+      const footerText = "အဆိုပါအသုံးပြုသူသည် \"ကိုးနဝင်း\" လုပ်ငန်းစဉ် ကို အောင်မြင်စွာ ပြီးမြောက်ခဲ့ကြောင်း ✨ Lotus Shrine Project အဖွဲ့မှ ✨အသိအမှတ်ပြုပါသည်။";
+      
+      // Split long text into multiple lines if needed
+      const maxWidth = width - 600;
+      const words = footerText.split(' ');
+      let line = '';
+      let y = height - 160;
+      
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line, width / 2, y);
+          line = words[n] + ' ';
+          y += 35;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, width / 2, y);
+
+      // Add subtle corner decorations
+      const cornerSize = 40;
+      ctx.strokeStyle = "#D4AF37";
+      ctx.lineWidth = 3;
+      
+      // Top-left corner
+      ctx.beginPath();
+      ctx.moveTo(borderPadding + 30, borderPadding + 30);
+      ctx.lineTo(borderPadding + 30, borderPadding + 30 + cornerSize);
+      ctx.lineTo(borderPadding + 30 + cornerSize, borderPadding + 30);
+      ctx.stroke();
+      
+      // Top-right corner
+      ctx.beginPath();
+      ctx.moveTo(width - borderPadding - 30, borderPadding + 30);
+      ctx.lineTo(width - borderPadding - 30 - cornerSize, borderPadding + 30);
+      ctx.lineTo(width - borderPadding - 30, borderPadding + 30 + cornerSize);
+      ctx.stroke();
+      
+      // Bottom-left corner
+      ctx.beginPath();
+      ctx.moveTo(borderPadding + 30, height - borderPadding - 30);
+      ctx.lineTo(borderPadding + 30 + cornerSize, height - borderPadding - 30);
+      ctx.lineTo(borderPadding + 30, height - borderPadding - 30 - cornerSize);
+      ctx.stroke();
+      
+      // Bottom-right corner
+      ctx.beginPath();
+      ctx.moveTo(width - borderPadding - 30, height - borderPadding - 30);
+      ctx.lineTo(width - borderPadding - 30, height - borderPadding - 30 - cornerSize);
+      ctx.lineTo(width - borderPadding - 30 - cornerSize, height - borderPadding - 30);
+      ctx.stroke();
 
       const url = canvas.toDataURL("image/png");
       setCertificateUrl(url);
       toast.success("လက်မှတ် ပြင်ဆင်ပြီးပါပြီ။");
     } catch (e) {
-      toast.error("လက်မှတ် ထုတ်ပြန်ရာတွင် ပြဿနာ ဖြစ်ပွားပါသည်");
+      toast.error("လက်�မှတ် ထုတ်ပြန်ရာတွင် ပြဿနာ ဖြစ်ပွားပါသည်");
     }
   };
 
