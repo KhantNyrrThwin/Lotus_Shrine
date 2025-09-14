@@ -36,48 +36,41 @@ try {
     $result = $koNaWinTable->logDailyCompletion($trackerId, null);
     
     if ($result['success']) {
-        // Recalculate tracker progress based on actual completed days
-        $recalculateSuccess = $koNaWinTable->recalculateTrackerProgress($trackerId);
+        // Only recalculate if this was a new completion (not already completed)
+        if ($result['action'] === 'completed') {
+            $recalculateSuccess = $koNaWinTable->recalculateTrackerProgress($trackerId);
+            error_log("recalculateTrackerProgress result: " . ($recalculateSuccess ? 'true' : 'false'));
+        }
         
-        // Debug logging
-        error_log("recalculateTrackerProgress result: " . ($recalculateSuccess ? 'true' : 'false'));
-        error_log("logDailyCompletion - trackerId: $trackerId, logResult: " . json_encode($result));
+        // Get updated tracker info by trackerId
+        $tracker = $koNaWinTable->findTrackerById($trackerId);
         
-        if ($recalculateSuccess) {
-            // Get updated tracker info by trackerId
-            $tracker = $koNaWinTable->findTrackerById($trackerId);
+        if ($tracker) {
+            $message = $result['action'] === 'completed' 
+                ? 'Daily completion logged successfully.' 
+                : 'This day has already been completed.';
             
-            if ($tracker) {
-                $message = $result['action'] === 'completed' 
-                    ? 'Daily completion logged successfully.' 
-                    : 'This day has already been completed.';
-                
-                echo json_encode([
-                    'success' => true,
-                    'message' => $message,
-                    'action' => $result['action'],
-                    'status' => $result['status'],
-                    'newDayCount' => $tracker->current_day_count,
-                    'newStage' => $tracker->current_stage,
-                    'isCompleted' => $tracker->is_completed
-                ]);
-            } else {
-                $message = $result['action'] === 'completed' 
-                    ? 'Daily completion logged successfully.' 
-                    : 'This day has already been completed.';
-                
-                echo json_encode([
-                    'success' => true,
-                    'message' => $message,
-                    'action' => $result['action'],
-                    'status' => $result['status']
-                ]);
-            }
-        } else {
-            error_log("Failed to recalculate tracker progress for trackerId: $trackerId");
             echo json_encode([
-                'success' => false,
-                'message' => 'Daily completion updated but failed to recalculate tracker progress. Please try refreshing the page.'
+                'success' => true,
+                'message' => $message,
+                'action' => $result['action'],
+                'status' => $result['status'],
+                'newDayCount' => $tracker->current_day_count,
+                'newStage' => $tracker->current_stage,
+                'isCompleted' => $tracker->is_completed,
+                'calculatedDayNumber' => $result['calculatedDayNumber'] ?? null
+            ]);
+        } else {
+            $message = $result['action'] === 'completed' 
+                ? 'Daily completion logged successfully.' 
+                : 'This day has already been completed.';
+            
+            echo json_encode([
+                'success' => true,
+                'message' => $message,
+                'action' => $result['action'],
+                'status' => $result['status'],
+                'calculatedDayNumber' => $result['calculatedDayNumber'] ?? null
             ]);
         }
     } else {

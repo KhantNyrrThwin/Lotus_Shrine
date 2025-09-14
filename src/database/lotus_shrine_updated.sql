@@ -147,7 +147,8 @@ INSERT INTO `users` (`user_id`, `user_email`, `name`, `dob`, `user_password`, `r
 --
 ALTER TABLE `ko_na_win_daily_log`
   ADD PRIMARY KEY (`log_id`),
-  ADD KEY `tracker_id` (`tracker_id`);
+  ADD KEY `tracker_id` (`tracker_id`),
+  ADD UNIQUE KEY `unique_tracker_date` (`tracker_id`, `log_date`);
 
 --
 -- Indexes for table `ko_na_win_tracker`

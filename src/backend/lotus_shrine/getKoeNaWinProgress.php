@@ -74,7 +74,8 @@ try {
                 'startDate' => $tracker->start_date,
                 'currentDayCount' => $tracker->current_day_count,
                 'currentStage' => $tracker->current_stage,
-                'isCompleted' => $tracker->is_completed
+                'isCompleted' => $tracker->is_completed,
+                'dayNumberInStage' => $dayNumberInStage
             ],
             'progress' => [
                 'completedDays' => $actualProgress, // Use actualProgress for display

@@ -9,7 +9,11 @@ import {
   Leaf,
   TrendingUp,
   Calendar,
-  Loader2
+  Loader2,
+  CheckSquare,
+  CrossIcon,
+  Crosshair,
+  XCircle
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
@@ -17,7 +21,7 @@ import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
-import { getTodaysReading, getCurrentDayOfWeek } from "../../data/koeNaWinReadingSchedule";
+import { getMantraForStageAndDay, isMeatFreeDay as checkMeatFreeDay } from "../../data/koeNaWinStages";
 
 const InformationDashboard: React.FC = () => {
   const [progressData, setProgressData] = useState<KoNaWinProgress | null>(null);
@@ -53,7 +57,7 @@ const InformationDashboard: React.FC = () => {
     try {
       const response = await koNaWinApi.logDailyCompletion(
         progressData.tracker.trackerId, 
-        progressData.progress.dayNumberInStage
+        progressData.tracker.dayNumberInStage || 1
       );
       
       if (response.success) {
@@ -108,10 +112,6 @@ const InformationDashboard: React.FC = () => {
     );
   }
 
-  const isMeatFreeDay = progressData.progress.dayNumberInStage === 5;
-  const isTodayCompleted = progressData.dailyLogs.some(log => 
-    log.logDate === new Date().toISOString().split('T')[0] && log.completionStatus
-  );
 
   return (
     <div className="space-y-6 w-[calc(100vw-312.5px)]">
@@ -166,9 +166,9 @@ const InformationDashboard: React.FC = () => {
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                  <p className="text-sm font-medium text-green-800">အဆင့်အတွင်း ရက်ပေါင်း</p>
+                  <p className="text-sm font-medium text-green-800">အဆင့်အတွင်း ပြီးမြောက်သည့် ရက်ပေါင်း</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {progressData.progress.dayNumberInStage} ရက်
+                  {((progressData.tracker.dayNumberInStage || 1) - 1 || 9)} ရက်
                   </p>
                 </div>
               </div>
@@ -176,7 +176,13 @@ const InformationDashboard: React.FC = () => {
               <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
                 <p className="text-sm font-medium text-amber-800">ယနေ့၏ နေ့အမည်</p>
                 <p className="text-lg font-semibold text-amber-700">
-                  {getCurrentDayOfWeek()}
+                  {(() => {
+                    const todaysMantra = getMantraForStageAndDay(
+                      progressData.tracker.currentStage, 
+                      progressData.tracker.dayNumberInStage || 1
+                    );
+                    return todaysMantra ? todaysMantra.dayName : 'မသိရပါ';
+                  })()}
                 </p>
               </div>
             </CardContent>
@@ -198,12 +204,12 @@ const InformationDashboard: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {(() => {
-                const todaysReading = getTodaysReading(
+                const todaysMantra = getMantraForStageAndDay(
                   progressData.tracker.currentStage, 
-                  progressData.progress.dayNumberInStage
+                  progressData.tracker.dayNumberInStage || 1
                 );
                 
-                if (!todaysReading) {
+                if (!todaysMantra) {
                   return (
                     <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
                       <p className="text-sm text-gray-600">ဖတ်ရမည့် မန္တရားကို ရယူ၍ မရပါ။</p>
@@ -216,14 +222,14 @@ const InformationDashboard: React.FC = () => {
                     <div className="p-3 rounded-lg bg-purple-50 border border-purple-200">
                       <p className="text-sm font-medium text-purple-800">မန္တရား</p>
                       <p className="text-xl font-bold text-purple-700 mb-2">
-                        {todaysReading.mantra}
+                        {todaysMantra.mantra}
                       </p>
                       <p className="text-sm text-purple-600">
-                        {todaysReading.weeks} ပတ်ကြာ ဖတ်ရမည်
+                        {todaysMantra.loops} ပတ်ကြာ ဖတ်ရမည်
                       </p>
                     </div>
                     
-                    {todaysReading.isMeatFreeDay && (
+                    {todaysMantra.isMeatFreeDay && (
                       <div className="p-3 rounded-lg border bg-yellow-50 border-yellow-200">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="w-4 h-4 text-yellow-600" />
@@ -238,7 +244,15 @@ const InformationDashboard: React.FC = () => {
               })()}
             </CardContent>
           </Card>
+           <Button 
+             className="bg-gradient-to-r mt-4 from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg cursor-pointer"
+             size="lg"
+           >
+             <XCircle className="w-5 h-5 mr-2" />
+             ကိုးနဝင်း အဓိဌာန် ဖျက်မည်  
+           </Button>
         </motion.div>
+        
       </div>
 
         {/* Current Mantra Instructions */}
@@ -260,8 +274,10 @@ const InformationDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 9 }, (_, index) => {
                 const stageNumber = index + 1;
-                const isCompleted = stageNumber < progressData.tracker.currentStage;
-                const isCurrent = stageNumber === progressData.tracker.currentStage;
+                const dayNumber = progressData.tracker.dayNumberInStage || 1;
+                const isCompleted = stageNumber < progressData.tracker.currentStage || stageNumber === progressData.tracker.currentStage && ( ((dayNumber - 1) || 9) === 9);
+                console.log(stageNumber);
+                const isCurrent = stageNumber === progressData.tracker.currentStage && ((dayNumber - 1) || 9)  < 9;
                 
                 return (
                   <div
