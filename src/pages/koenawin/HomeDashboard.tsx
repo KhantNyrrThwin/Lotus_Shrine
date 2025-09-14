@@ -13,6 +13,17 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../components/ui/alert-dialog";
 import { toast } from "sonner";
 import MMCalendar from "@/components/myanmarcalendar";
 import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
@@ -27,6 +38,8 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
 
   useEffect(() => {
     const loadProgress = async () => {
@@ -44,6 +57,14 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
         }
         
         setProgress(progressData);
+        setJustCompleted(false); // Reset just completed state on data load
+        
+        // Debug logging for progress data
+        console.log('Progress data loaded:', {
+          dailyLogs: progressData.dailyLogs,
+          today: new Date().toISOString().split('T')[0],
+          trackerId: progressData.tracker?.trackerId
+        });
       } catch (err) {
         console.error('Error loading progress:', err);
         setError('ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။');
@@ -56,10 +77,16 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     loadProgress();
   }, []);
 
-  const onToggleToday = async () => {
+  const onToggleToday = () => {
+    if (!progress || isButtonDisabled) return;
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmCompletion = async () => {
     if (!progress || updating) return;
     
     setUpdating(true);
+    setShowConfirmDialog(false);
     
     try {
       // Log today's completion with correct day number (1-9)
@@ -72,6 +99,26 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
         // Reload progress to get updated data
         const updatedProgress = await koNaWinApi.getKoeNaWinProgress();
         setProgress(updatedProgress);
+        
+        // Debug logging for updated progress
+        console.log('Progress updated after completion:', {
+          dailyLogs: updatedProgress.dailyLogs,
+          today: new Date().toISOString().split('T')[0],
+          action: response.action,
+          response: response
+        });
+        
+        // Check if today is completed in the updated progress
+        const today = new Date().toISOString().split('T')[0];
+        const isTodayCompletedAfterUpdate = updatedProgress.dailyLogs.some(log => 
+          log.logDate === today && log.completionStatus
+        );
+        console.log('Is today completed after update:', isTodayCompletedAfterUpdate);
+        
+        // Set just completed state
+        if (response.action === 'completed') {
+          setJustCompleted(true);
+        }
         
         // Show appropriate message based on action
         if (response.action === 'completed') {
@@ -114,9 +161,35 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   };
 
   const isMeatFreeDay = progress ? checkMeatFreeDay(progress.tracker.currentStage, progress.progress.dayNumberInStage) : false;
-  const isTodayCompleted = progress ? progress.dailyLogs.some(log => 
-    log.logDate === new Date().toISOString().split('T')[0] && log.completionStatus
-  ) : false;
+  
+  // Check if today is completed by looking at daily logs
+  const isTodayCompleted = progress ? progress.dailyLogs.some(log => {
+    const today = new Date().toISOString().split('T')[0];
+    const isCompleted = log.logDate === today && log.completionStatus;
+    
+    // Debug logging
+    console.log('Checking completion for today:', {
+      today,
+      logDate: log.logDate,
+      completionStatus: log.completionStatus,
+      isCompleted
+    });
+    
+    return isCompleted;
+  }) : false;
+
+  // Also consider the justCompleted state
+  const isButtonDisabled = updating || isTodayCompleted || justCompleted;
+
+  // Additional debug logging for button state
+  console.log('Button state debug:', {
+    isTodayCompleted,
+    updating,
+    justCompleted,
+    buttonDisabled: isButtonDisabled,
+    progressExists: !!progress,
+    dailyLogsCount: progress?.dailyLogs?.length || 0
+  });
 
   if (loading) {
     return (
@@ -188,35 +261,22 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
               </h1>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Meat-free Day Status */}
-              <div className={`p-3 rounded-lg border ${
-                isMeatFreeDay 
-                  ? 'bg-yellow-50 border-yellow-200' 
-                  : 'bg-green-50 border-green-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isMeatFreeDay ? (
+              {/* Meat-free Day Status - Only show on meat-free days */}
+              {isMeatFreeDay && (
+                <div className="p-3 rounded-lg border bg-yellow-50 border-yellow-200">
+                  <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  ) : (
-                    <Leaf className="w-5 h-5 text-green-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
-                    }`}>
-                      သားသတ်လွတ်နေ့
-                    </p>
-                    <p className={`text-xs ${
-                      isMeatFreeDay ? 'text-yellow-600' : 'text-green-600'
-                    }`}>
-                      {isMeatFreeDay 
-                        ? 'သတိပေးချက်' 
-                        : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
-                      }
-                    </p>
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">
+                        သားသတ်လွတ်နေ့
+                      </p>
+                      <p className="text-xs text-yellow-600">
+                        သတိပေးချက်
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Today's Process Status */}
               <div className={`p-3 rounded-lg border ${
@@ -248,19 +308,47 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 </div>  
                 
               </div>
-              <Button 
-                  variant="outline" 
-                  className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                  onClick={onToggleToday}
-                  disabled={updating}
-                >
-                  {updating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                  )}
-                  {updating ? "မှတ်သားနေပါသည်..." : (isTodayCompleted ? "ပြီးဆုံးပါပြီ" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်")}
-                </Button>
+              <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className={`w-full ${
+                      isButtonDisabled 
+                        ? 'border-green-500 text-green-600 bg-green-50 cursor-not-allowed opacity-75' 
+                        : 'border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white'
+                    }`}
+                    disabled={isButtonDisabled}
+                    onClick={onToggleToday}
+                  >
+                    {updating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                    )}
+                    {updating ? "မှတ်သားနေပါသည်..." : (isButtonDisabled ? "ပြီးဆုံးပါပြီ" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-[#4f3016]">အတည်ပြုခြင်း</AlertDialogTitle>
+                    <AlertDialogDescription className="text-[#735240]">
+                      ယနေ့အတွက် ကိုးနဝင်းတရား ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်လား? 
+                      ဤလုပ်ဆောင်ချက်ကို ပြန်လည်ပြုပြင်နိုင်မည်မဟုတ်ပါ။
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white">
+                      ပယ်ဖျက်မည်
+                    </AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleConfirmCompletion}
+                      className="bg-[#4f3016] hover:bg-[#3d2410] text-white"
+                    >
+                      အတည်ပြုမည်
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               
             </CardContent>
           </Card>
@@ -398,18 +486,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 </div>
               </div>
               <div>
-                <Button 
-                  className="mt-2 bg-[#4f3016] hover:bg-[#3a2411] text-white"
-                  onClick={onToggleToday}
-                  disabled={updating}
-                >
-                  {updating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                  )}
-                  {updating ? "မှတ်သားနေပါသည်..." : (isTodayCompleted ? "ပြီးဆုံးပါပြီ" : "ယနေ့ ပြီးဆုံးဟု မှတ်သားမည်")}
-                </Button>
+              
               </div>
             </div>
           </CardContent>

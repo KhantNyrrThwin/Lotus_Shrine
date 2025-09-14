@@ -152,10 +152,10 @@ const InformationDashboard: React.FC = () => {
         >
           <Card className="bg-white border-[#4f3016]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
+              <h1 className="flex items-center text-2xl font-extrabold gap-2 text-[#4f3016]">
                 <Target className="w-5 h-5" />
                 လက်ရှိအဆင့်နှင့် ရက်ပေါင်း
-              </CardTitle>
+              </h1>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -191,10 +191,10 @@ const InformationDashboard: React.FC = () => {
         >
           <Card className="bg-white border-[#4f3016]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
+              <h1 className="flex text-2xl font-extrabold items-center gap-2 text-[#4f3016]">
                 <BookOpen className="w-5 h-5" />
                 ယနေ့ဖတ်ရမည့် မန္တရား
-              </CardTitle>
+              </h1>
             </CardHeader>
             <CardContent className="space-y-4">
               {(() => {
@@ -223,27 +223,16 @@ const InformationDashboard: React.FC = () => {
                       </p>
                     </div>
                     
-                    <div className={`p-3 rounded-lg border ${
-                      todaysReading.isMeatFreeDay 
-                        ? 'bg-yellow-50 border-yellow-200' 
-                        : 'bg-green-50 border-green-200'
-                    }`}>
-                      <div className="flex items-center gap-2">
-                        {todaysReading.isMeatFreeDay ? (
+                    {todaysReading.isMeatFreeDay && (
+                      <div className="p-3 rounded-lg border bg-yellow-50 border-yellow-200">
+                        <div className="flex items-center gap-2">
                           <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                        ) : (
-                          <Leaf className="w-4 h-4 text-green-600" />
-                        )}
-                        <p className={`text-sm font-medium ${
-                          todaysReading.isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
-                        }`}>
-                          {todaysReading.isMeatFreeDay 
-                            ? 'ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်ပါသည်' 
-                            : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
-                          }
-                        </p>
+                          <p className="text-sm font-medium text-yellow-800">
+                            ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်ပါသည်
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </>
                 );
               })()}
@@ -252,100 +241,10 @@ const InformationDashboard: React.FC = () => {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current Mantra Instructions */}
        
         {/* Today's Status */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#4f3016]">
-                <Calendar className="w-5 h-5" />
-                ယနေ့၏ အခြေအနေ
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Meat-free Day Status */}
-              <div className={`p-3 rounded-lg border ${
-                isMeatFreeDay 
-                  ? 'bg-yellow-50 border-yellow-200' 
-                  : 'bg-green-50 border-green-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isMeatFreeDay ? (
-                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  ) : (
-                    <Leaf className="w-5 h-5 text-green-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
-                    }`}>
-                      သားသတ်လွတ်နေ့
-                    </p>
-                    <p className={`text-xs ${
-                      isMeatFreeDay ? 'text-yellow-600' : 'text-green-600'
-                    }`}>
-                      {isMeatFreeDay 
-                        ? 'ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်သောကြောင့် အသားမစားရန် သတိပေးချက်' 
-                        : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Today's Process Status */}
-              <div className={`p-3 rounded-lg border ${
-                isTodayCompleted 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-blue-50 border-blue-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isTodayCompleted ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <Clock className="w-5 h-5 text-blue-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isTodayCompleted ? 'text-green-800' : 'text-blue-800'
-                    }`}>
-                      ယနေ့၏ လုပ်ငန်းစဉ်
-                    </p>
-                    <p className={`text-xs ${
-                      isTodayCompleted ? 'text-green-600' : 'text-blue-600'
-                    }`}>
-                      {isTodayCompleted 
-                        ? 'ယနေ့အတွက် ကိုးနဝင်းတရား ပြီးဆုံးပါပြီ' 
-                        : 'ယနေ့အတွက် ကိုးနဝင်းတရား ဖတ်ရန်လိုအပ်ပါသည်'
-                      }
-                    </p>
-                  </div>
-                </div>  
-              </div>
-              
-              <Button 
-                variant="outline" 
-                className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                onClick={onToggleToday}
-                disabled={updating}
-              >
-                {updating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                )}
-                {updating ? "မှတ်သားနေပါသည်..." : (isTodayCompleted ? "ပြီးဆုံးပါပြီ" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်")}
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+       
 
       {/* Stage Information */}
       <motion.div
