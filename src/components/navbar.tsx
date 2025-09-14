@@ -181,7 +181,7 @@ export default function Navbar() {
     setShowRealLifeProcessDialog(false);
     // Check if it's Monday
     const today = new Date().getDay();
-    if (today !== 1) { // 1 is Monday
+    if (today !== 7) { // 1 is Monday
       setInfoDialogMessage("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
       setShowInfoDialog(true);
       return;
