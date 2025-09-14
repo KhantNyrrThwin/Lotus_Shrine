@@ -7,111 +7,140 @@ import {
   Leaf,
   CheckCircle,
   Clock,
-  Heart
+  Heart,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import {
-  getProgramStartDate,
-  getProgramEndDate,
-  getDaysRemaining,
-  getDayIndex,
-  getDayInStage,
-  isMeatFreeDayByDayInStage,
-  isTodayCompleted as getIsTodayCompleted,
-  setTodayCompleted,
-  getMantraForDayIndex,
-  formatDateKey,
-} from "../../lib/koenawin";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../components/ui/alert-dialog";
+import { toast } from "sonner";
 import MMCalendar from "@/components/myanmarcalendar";
-import { fetchKoeNaWinProgress, saveKoeNaWinProgress } from "@/data/koenawinApi";
+import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
+import { getMantraForStageAndDay, isMeatFreeDay as checkMeatFreeDay } from "../../data/koeNaWinStages";
 
 interface HomeDashboardProps {
   username: string;
 }
 
-const COMPLETED_DATES_KEY = "knwCompletedDates";
-const START_DATE_KEY = "knwStartDate";
-
 const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
-  const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
-  const [startDate, setStartDate] = useState<Date>(getProgramStartDate());
-  const [endDate, setEndDate] = useState<Date>(getProgramEndDate(getProgramStartDate()));
-  const [daysRemaining, setDaysRemaining] = useState(0);
-  const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
+  const [progress, setProgress] = useState<KoNaWinProgress | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
 
   useEffect(() => {
-    const bootstrap = async () => {
-      const email = localStorage.getItem("userEmail");
-      // Always compute UI from local storage initially
-      const today = new Date();
-      const currentStart = getProgramStartDate();
-      const computedEnd = getProgramEndDate(currentStart);
-      setStartDate(currentStart);
-      setEndDate(computedEnd);
-      setDaysRemaining(getDaysRemaining(today, computedEnd));
-      const todayIndex = getDayIndex(today, currentStart);
-      setIsMeatFreeDay(isMeatFreeDayByDayInStage(getDayInStage(todayIndex)));
-      setIsTodayCompletedState(getIsTodayCompleted(today));
-
-      if (!email) return;
-
+    const loadProgress = async () => {
+      setLoading(true);
+      setError(null);
+      
       try {
-        const server = await fetchKoeNaWinProgress(email);
-        if (server.start_date) {
-          // Sync server state to localStorage used by utils
-          localStorage.setItem(START_DATE_KEY, server.start_date);
+        const progressData = await koNaWinApi.getKoeNaWinProgress();
+        
+        // Check if the API call was successful
+        if (progressData.success === false) {
+          setError(progressData.message || 'ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။');
+          toast.error(progressData.message || 'ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။');
+          return;
         }
-        localStorage.setItem(COMPLETED_DATES_KEY, JSON.stringify(server.completed_dates || []));
-
-        // Recompute after sync
-        const syncedStart = getProgramStartDate();
-        const syncedEnd = getProgramEndDate(syncedStart);
-        setStartDate(syncedStart);
-        setEndDate(syncedEnd);
-        setDaysRemaining(getDaysRemaining(today, syncedEnd));
-        const idx = getDayIndex(today, syncedStart);
-        setIsMeatFreeDay(isMeatFreeDayByDayInStage(getDayInStage(idx)));
-        setIsTodayCompletedState(getIsTodayCompleted(today));
-      } catch {
-        // Ignore server errors; stay with local-only
+        
+        setProgress(progressData);
+        setJustCompleted(false); // Reset just completed state on data load
+        
+        // Debug logging for progress data
+        console.log('Progress data loaded:', {
+          dailyLogs: progressData.dailyLogs,
+          today: new Date().toISOString().split('T')[0],
+          trackerId: progressData.tracker?.trackerId
+        });
+      } catch (err) {
+        console.error('Error loading progress:', err);
+        setError('ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။');
+        toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+      } finally {
+        setLoading(false);
       }
     };
 
-    bootstrap();
+    loadProgress();
   }, []);
 
-  const persistToServer = async () => {
-    const email = localStorage.getItem("userEmail");
-    if (!email) return; // cannot persist without a user
+  const onToggleToday = () => {
+    if (!progress || isButtonDisabled) return;
+    setShowConfirmDialog(true);
+  };
 
-    const start = getProgramStartDate();
-    let completed: string[] = [];
+  const handleConfirmCompletion = async () => {
+    if (!progress || updating) return;
+    
+    setUpdating(true);
+    setShowConfirmDialog(false);
+    
     try {
-      const raw = localStorage.getItem(COMPLETED_DATES_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) completed = parsed;
+      // Log today's completion with correct day number (1-9)
+      const response = await koNaWinApi.logDailyCompletion(
+        progress.tracker.trackerId, 
+        progress.progress.dayNumberInStage
+      );
+      
+      if (response.success) {
+        // Reload progress to get updated data
+        const updatedProgress = await koNaWinApi.getKoeNaWinProgress();
+        setProgress(updatedProgress);
+        
+        // Debug logging for updated progress
+        console.log('Progress updated after completion:', {
+          dailyLogs: updatedProgress.dailyLogs,
+          today: new Date().toISOString().split('T')[0],
+          action: response.action,
+          response: response
+        });
+        
+        // Check if today is completed in the updated progress
+        const today = new Date().toISOString().split('T')[0];
+        const isTodayCompletedAfterUpdate = updatedProgress.dailyLogs.some(log => 
+          log.logDate === today && log.completionStatus
+        );
+        console.log('Is today completed after update:', isTodayCompletedAfterUpdate);
+        
+        // Set just completed state
+        if (response.action === 'completed') {
+          setJustCompleted(true);
+        }
+        
+        // Show appropriate message based on action
+        if (response.action === 'completed') {
+          toast.success('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပါပြီ။');
+        } else if (response.action === 'already_completed') {
+          toast.info('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပြီးပါပြီ။');
+        } else {
+          toast.success(response.message);
+        }
+      } else {
+        toast.error(response.message || 'မှတ်သားရာတွင် အမှားတစ်ခုခု ဖြစ်ပွားပါသည်။');
       }
-    } catch {}
-
-    try {
-      await saveKoeNaWinProgress(email, {
-        start_date: formatDateKey(start),
-        completed_dates: completed,
-      });
-    } catch {
-      // Swallow errors to keep UI responsive
+    } catch (err) {
+      console.error('Error toggling today completion:', err);
+      toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+    } finally {
+      setUpdating(false);
     }
   };
 
-  const today = new Date();
-  const start = getProgramStartDate();
-  const dayIdx = getDayIndex(today, start);
-  const mantra = getMantraForDayIndex(dayIdx);
-
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     return date.toLocaleDateString('my-MM', {
       year: 'numeric',
       month: 'long',
@@ -119,13 +148,81 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
     });
   };
 
-  const onToggleToday = () => {
-    const next = !isTodayCompleted;
-    setTodayCompleted(today, next);
-    setIsTodayCompletedState(next);
-    // Fire-and-forget server sync
-    void persistToServer();
+  // Get mantra for current stage and day using the new data structure
+  const getCurrentMantra = () => {
+    if (!progress) return { label: '', loops: 0 };
+    
+    const mantra = getMantraForStageAndDay(
+      progress.tracker.currentStage, 
+      progress.progress.dayNumberInStage
+    );
+    
+    return mantra ? { label: mantra.mantra, loops: mantra.loops } : { label: '', loops: 0 };
   };
+
+  const isMeatFreeDay = progress ? checkMeatFreeDay(progress.tracker.currentStage, progress.progress.dayNumberInStage) : false;
+  
+  // Check if today is completed by looking at daily logs
+  const isTodayCompleted = progress ? progress.dailyLogs.some(log => {
+    const today = new Date().toISOString().split('T')[0];
+    const isCompleted = log.logDate === today && log.completionStatus;
+    
+    // Debug logging
+    console.log('Checking completion for today:', {
+      today,
+      logDate: log.logDate,
+      completionStatus: log.completionStatus,
+      isCompleted
+    });
+    
+    return isCompleted;
+  }) : false;
+
+  // Also consider the justCompleted state
+  const isButtonDisabled = updating || isTodayCompleted || justCompleted;
+
+  // Additional debug logging for button state
+  console.log('Button state debug:', {
+    isTodayCompleted,
+    updating,
+    justCompleted,
+    buttonDisabled: isButtonDisabled,
+    progressExists: !!progress,
+    dailyLogsCount: progress?.dailyLogs?.length || 0
+  });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-[#4f3016]" />
+          <p className="text-[#4f3016]">ကိုးနဝင်းတိုးတက်မှုကို ရယူနေပါသည်...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !progress) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-6 text-center">
+            <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-red-800 mb-2">အမှားတစ်ခုခု ဖြစ်ပွားပါသည်</h3>
+            <p className="text-red-600 mb-4">{error || 'ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။'}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-red-600 hover:bg-red-700"
+            >
+              ပြန်လည်ကြိုးစားမည်
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const mantra = getCurrentMantra();
 
   return (
     <div className="space-y-6 bg-[#FDE9DA] w-[calc(100vw-312.5px)]">
@@ -137,7 +234,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
       >
         <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
           <CardHeader>
-          <h1 className="text-2xl font-extrabold flex items-center gap-2">
+            <h1 className="text-2xl font-extrabold flex items-center gap-2">
               <Heart className="w-6 h-6" />
               မင်္ဂလာပါ {username}
             </h1>
@@ -146,7 +243,6 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             </CardDescription>
           </CardHeader>
         </Card>
-        
       </motion.div>
 
       <div className="flex flex-row gap-6">
@@ -165,35 +261,22 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
               </h1>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Meat-free Day Status */}
-              <div className={`p-3 rounded-lg border ${
-                isMeatFreeDay 
-                  ? 'bg-yellow-50 border-yellow-200' 
-                  : 'bg-green-50 border-green-200'
-              }`}>
-                <div className="flex items-center gap-3">
-                  {isMeatFreeDay ? (
+              {/* Meat-free Day Status - Only show on meat-free days */}
+              {isMeatFreeDay && (
+                <div className="p-3 rounded-lg border bg-yellow-50 border-yellow-200">
+                  <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  ) : (
-                    <Leaf className="w-5 h-5 text-green-600" />
-                  )}
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      isMeatFreeDay ? 'text-yellow-800' : 'text-green-800'
-                    }`}>
-                      သားသတ်လွတ်နေ့
-                    </p>
-                    <p className={`text-xs ${
-                      isMeatFreeDay ? 'text-yellow-600' : 'text-green-600'
-                    }`}>
-                      {isMeatFreeDay 
-                        ? 'ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်သောကြောင့် အသားမစားရန် သတိပေးချက်' 
-                        : 'ယနေ့သည် အသားစားနိုင်သောနေ့ဖြစ်ပါသည်'
-                      }
-                    </p>
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">
+                        သားသတ်လွတ်နေ့
+                      </p>
+                      <p className="text-xs text-yellow-600">
+                        သတိပေးချက်
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Today's Process Status */}
               <div className={`p-3 rounded-lg border ${
@@ -225,14 +308,47 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 </div>  
                 
               </div>
-              <Button 
-                  variant="outline" 
-                  className="w-full border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                  onClick={onToggleToday}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်"}
-                </Button>
+              <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className={`w-full ${
+                      isButtonDisabled 
+                        ? 'border-green-500 text-green-600 bg-green-50 cursor-not-allowed opacity-75' 
+                        : 'border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white'
+                    }`}
+                    disabled={isButtonDisabled}
+                    onClick={onToggleToday}
+                  >
+                    {updating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                    )}
+                    {updating ? "မှတ်သားနေပါသည်..." : (isButtonDisabled ? "ပြီးဆုံးပါပြီ" : "ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-[#4f3016]">အတည်ပြုခြင်း</AlertDialogTitle>
+                    <AlertDialogDescription className="text-[#735240]">
+                      ယနေ့အတွက် ကိုးနဝင်းတရား ပြီးဆုံးပါပြီ ဟု မှတ်သားမည်လား? 
+                      ဤလုပ်ဆောင်ချက်ကို ပြန်လည်ပြုပြင်နိုင်မည်မဟုတ်ပါ။
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white">
+                      ပယ်ဖျက်မည်
+                    </AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleConfirmCompletion}
+                      className="bg-[#4f3016] hover:bg-[#3d2410] text-white"
+                    >
+                      အတည်ပြုမည်
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               
             </CardContent>
           </Card>
@@ -292,22 +408,31 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             <CardTitle className="text-[#4f3016]">ကိုးနဝင်း လုပ်ငန်းစဉ် အချက်အလက်</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Start Date */}
               <div className="flex items-center gap-3 p-3 bg-[#FDE9DA] rounded-lg">
                 <Clock className="w-5 h-5 text-[#4f3016]" />
                 <div>
                   <p className="text-sm font-medium text-[#4f3016]">ကိုးနဝင်း စတင်သောနေ့</p>
-                  <p className="text-xs text-[#735240]">{formatDate(startDate)}</p>
+                  <p className="text-xs text-[#735240]">{formatDate(progress.tracker.startDate)}</p>
                 </div>
               </div>
 
-              {/* End Date */}
+              {/* Current Stage */}
+              <div className="flex items-center gap-3 p-3 bg-[#FDE9DA] rounded-lg">
+                <BookOpen className="w-5 h-5 text-[#4f3016]" />
+                <div>
+                  <p className="text-sm font-medium text-[#4f3016]">လက်ရှိအဆင့်</p>
+                  <p className="text-xs text-[#735240]">အဆင့် {progress.tracker.currentStage} / 9</p>
+                </div>
+              </div>
+
+              {/* Days Completed */}
               <div className="flex items-center gap-3 p-3 bg-[#FDE9DA] rounded-lg">
                 <CheckCircle className="w-5 h-5 text-[#4f3016]" />
                 <div>
                   <p className="text-sm font-medium text-[#4f3016]">ပြီးဆုံးသောနေ့</p>
-                  <p className="text-xs text-[#735240]">{formatDate(endDate)}</p>
+                  <p className="text-xs text-[#735240]">{progress.progress.completedDays} / 81 ရက်</p>
                 </div>
               </div>
 
@@ -316,9 +441,18 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 <Clock className="w-5 h-5 text-[#4f3016]" />
                 <div>
                   <p className="text-sm font-medium text-[#4f3016]">လက်ကျန်နေ့</p>
-                  <p className="text-xs text-[#735240]">{daysRemaining} ရက်</p>
+                  <p className="text-xs text-[#735240]">{progress.progress.remainingDays} ရက်</p>
                 </div>
               </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-[#4f3016]">အလုံးစုံတိုးတက်မှု</span>
+                <span className="text-[#4f3016] font-semibold">{progress.progress.progressPercentage}%</span>
+              </div>
+              <Progress value={progress.progress.progressPercentage} className="h-3" />
             </div>
 
             {/* Today's Status */}
@@ -352,17 +486,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
                 </div>
               </div>
               <div>
-                <Button 
-                  className="mt-2 bg-[#4f3016] hover:bg-[#3a2411] text-white"
-                  onClick={() => {
-                    const next = !isTodayCompleted;
-                    setTodayCompleted(today, next);
-                    setIsTodayCompletedState(next);
-                    void persistToServer();
-                  }}
-                >
-                  {isTodayCompleted ? "ပြီးဆုံးမှတ်သားမှု ဖျက်မည်" : "ယနေ့ ပြီးဆုံးဟု မှတ်သားမည်"}
-                </Button>
+              
               </div>
             </div>
           </CardContent>
@@ -373,3 +497,4 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
 };
 
 export default HomeDashboard;
+

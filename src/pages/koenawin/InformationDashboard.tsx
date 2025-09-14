@@ -8,54 +8,110 @@ import {
   AlertTriangle,
   Leaf,
   TrendingUp,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
-import {
-  getProgramStartDate,
-  getDayIndex,
-  getProgressPercentage,
-  getDayInStage,
-  isMeatFreeDayByDayInStage,
-  isTodayCompleted as getIsTodayCompleted,
-  setTodayCompleted,
-  getMantraForDayIndex,
-  TOTAL_STAGES
-} from "../../lib/koenawin";
+import { toast } from "sonner";
+import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
+import { getTodaysReading, getCurrentDayOfWeek } from "../../data/koeNaWinReadingSchedule";
 
 const InformationDashboard: React.FC = () => {
-  const [progress, setProgress] = useState(0);
-  const [isMeatFreeDay, setIsMeatFreeDay] = useState(false);
-  const [isTodayCompleted, setIsTodayCompletedState] = useState(false);
-  const [currentStage, setCurrentStage] = useState(1);
-  const [totalStages] = useState(TOTAL_STAGES);
-
-  // Removed mock mantra data in favor of computed mantra from utilities
+  const [progressData, setProgressData] = useState<KoNaWinProgress | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const today = new Date();
-    const start = getProgramStartDate();
-    const dayIdx = getDayIndex(today, start);
-    const dayInStage = getDayInStage(dayIdx);
-    setIsMeatFreeDay(isMeatFreeDayByDayInStage(dayInStage));
-    setProgress(getProgressPercentage(dayIdx));
-    setCurrentStage(Math.ceil((dayIdx + 1) / 9));
-    setIsTodayCompletedState(getIsTodayCompleted(today));
+    const loadProgress = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const data = await koNaWinApi.getKoeNaWinProgress();
+        setProgressData(data);
+      } catch (err) {
+        console.error('Error loading progress:', err);
+        setError('ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။');
+        toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProgress();
   }, []);
 
-  const today = new Date();
-  const start = getProgramStartDate();
-  const dayIdx = getDayIndex(today, start);
-  const mantra = getMantraForDayIndex(dayIdx);
-
-  const onToggleToday = () => {
-    const next = !isTodayCompleted;
-    setTodayCompleted(today, next);
-    setIsTodayCompletedState(next);
+  const onToggleToday = async () => {
+    if (!progressData || updating) return;
+    
+    setUpdating(true);
+    
+    try {
+      const response = await koNaWinApi.logDailyCompletion(
+        progressData.tracker.trackerId, 
+        progressData.progress.dayNumberInStage
+      );
+      
+      if (response.success) {
+        const updatedProgress = await koNaWinApi.getKoeNaWinProgress();
+        setProgressData(updatedProgress);
+        
+        if (response.action === 'completed') {
+          toast.success('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပါပြီ။');
+        } else if (response.action === 'already_completed') {
+          toast.info('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပြီးပါပြီ။');
+        }
+      } else {
+        toast.error(response.message || 'မှတ်သားရာတွင် အမှားတစ်ခုခု ဖြစ်ပွားပါသည်။');
+      }
+    } catch (err) {
+      console.error('Error toggling today completion:', err);
+      toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+    } finally {
+      setUpdating(false);
+    }
   };
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-[#4f3016]" />
+          <p className="text-[#4f3016]">ကိုးနဝင်းတိုးတက်မှုကို ရယူနေပါသည်...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !progressData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-6 text-center">
+            <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-red-800 mb-2">အမှားတစ်ခုခု ဖြစ်ပွားပါသည်</h3>
+            <p className="text-red-600 mb-4">{error || 'ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။'}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-red-600 hover:bg-red-700"
+            >
+              ပြန်လည်ကြိုးစားမည်
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const isMeatFreeDay = progressData.progress.dayNumberInStage === 5;
+  const isTodayCompleted = progressData.dailyLogs.some(log => 
+    log.logDate === new Date().toISOString().split('T')[0] && log.completionStatus
+  );
 
   return (
     <div className="space-y-6 w-[calc(100vw-312.5px)]">
@@ -72,26 +128,123 @@ const InformationDashboard: React.FC = () => {
               ကိုးနဝင်း လုပ်ငန်းစဉ် တိုးတက်မှု
             </CardTitle>
             <CardDescription className="text-[#e0e0e0]">
-              လက်ရှိအဆင့် {currentStage} / {totalStages}
+              လက်ရှိအဆင့် {progressData.tracker.currentStage} / 9
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm">ပြီးဆုံးမှုရာခိုင်နှုန်း</span>
-                <span className="text-sm font-bold">{progress}%</span>
+                <span className="text-sm font-bold">{progressData.progress.progressPercentage}%</span>
               </div>
-              <Progress value={progress} className="h-3" />
+              <Progress value={progressData.progress.progressPercentage} className="h-3" />
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Current Stage and Day Information */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="bg-white border-[#4f3016]">
+            <CardHeader>
+              <h1 className="flex items-center text-2xl font-extrabold gap-2 text-[#4f3016]">
+                <Target className="w-5 h-5" />
+                လက်ရှိအဆင့်နှင့် ရက်ပေါင်း
+              </h1>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-sm font-medium text-blue-800">လက်ရှိအဆင့်</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {progressData.tracker.currentStage} / 9
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <p className="text-sm font-medium text-green-800">အဆင့်အတွင်း ရက်ပေါင်း</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {progressData.progress.dayNumberInStage} ရက်
+                  </p>
+                </div>
+              </div>
+              
+              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <p className="text-sm font-medium text-amber-800">ယနေ့၏ နေ့အမည်</p>
+                <p className="text-lg font-semibold text-amber-700">
+                  {getCurrentDayOfWeek()}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Today's Reading Instructions */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="bg-white border-[#4f3016]">
+            <CardHeader>
+              <h1 className="flex text-2xl font-extrabold items-center gap-2 text-[#4f3016]">
+                <BookOpen className="w-5 h-5" />
+                ယနေ့ဖတ်ရမည့် မန္တရား
+              </h1>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(() => {
+                const todaysReading = getTodaysReading(
+                  progressData.tracker.currentStage, 
+                  progressData.progress.dayNumberInStage
+                );
+                
+                if (!todaysReading) {
+                  return (
+                    <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                      <p className="text-sm text-gray-600">ဖတ်ရမည့် မန္တရားကို ရယူ၍ မရပါ။</p>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <>
+                    <div className="p-3 rounded-lg bg-purple-50 border border-purple-200">
+                      <p className="text-sm font-medium text-purple-800">မန္တရား</p>
+                      <p className="text-xl font-bold text-purple-700 mb-2">
+                        {todaysReading.mantra}
+                      </p>
+                      <p className="text-sm text-purple-600">
+                        {todaysReading.weeks} ပတ်ကြာ ဖတ်ရမည်
+                      </p>
+                    </div>
+                    
+                    {todaysReading.isMeatFreeDay && (
+                      <div className="p-3 rounded-lg border bg-yellow-50 border-yellow-200">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                          <p className="text-sm font-medium text-yellow-800">
+                            ယနေ့သည် သားသတ်လွတ်နေ့ဖြစ်ပါသည်
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
         {/* Current Mantra Instructions */}
        
         {/* Today's Status */}
-       </div>
+       
 
       {/* Stage Information */}
       <motion.div
@@ -105,10 +258,10 @@ const InformationDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {Array.from({ length: totalStages }, (_, index) => {
+              {Array.from({ length: 9 }, (_, index) => {
                 const stageNumber = index + 1;
-                const isCompleted = stageNumber < currentStage;
-                const isCurrent = stageNumber === currentStage;
+                const isCompleted = stageNumber < progressData.tracker.currentStage;
+                const isCurrent = stageNumber === progressData.tracker.currentStage;
                 
                 return (
                   <div

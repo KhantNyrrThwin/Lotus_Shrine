@@ -6,7 +6,7 @@ import Buddha from "../assets/KoeNaWinPagoda.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../data/authService";
-import axios from "axios";
+import { koNaWinApi } from "../data/koenawinApi";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +21,14 @@ import {
 function KoeNaWin() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
-  const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
   const [checkingAccount, setCheckingAccount] = useState(true);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showRealLifeProcessDialog, setShowRealLifeProcessDialog] = useState(false);
+  const [showRealLifeInfoDialog, setShowRealLifeInfoDialog] = useState(false);
+  const [realLifeDays, setRealLifeDays] = useState("");
+  const [realLifeStage, setRealLifeStage] = useState("");
 
   useEffect(() => {
     const checkLoginAndKoeNaWinStatus = async () => {
@@ -45,34 +48,15 @@ function KoeNaWin() {
   const checkKoeNaWinAccount = async () => {
     setCheckingAccount(true);
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.warn("User ID not found in localStorage.");
-        setHasKoeNaWinAccount(false);
-        setCheckingAccount(false);
-        return;
-      }
+      const response = await koNaWinApi.checkKoNaWinTracker();
 
-      const response = await axios.post(
-        "http://localhost/lotus_shrine/checkKoNaWinTracker.php",
-        { userId: userId },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (response.data.success) {
-        setHasKoeNaWinAccount(response.data.hasKoNaWinVow);
+      if (response.success) {
+        // Account status checked, but we handle the flow in handleEnterKoeNaWin
       } else {
-        console.error("Backend error checking Koe Na Win account:", response.data.message);
-        setHasKoeNaWinAccount(false);
+        console.error("Backend error checking Koe Na Win account:", response.message);
       }
     } catch (error) {
       console.error("Error checking Koe Na Win account:", error);
-      setHasKoeNaWinAccount(false);
     } finally {
       setCheckingAccount(false);
     }
@@ -89,34 +73,14 @@ function KoeNaWin() {
   };
 
   const startNewVow = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.error("User ID missing to start new vow.");
-      navigate("/login");
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        "http://localhost/lotus_shrine/newKNWTracker.php",
-        {
-          userId: userId,
-          startDate: new Date().toISOString().split('T')[0]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await koNaWinApi.startNewVow();
 
-      if (response.data.success) {
+      if (response.success) {
         console.log("New Ko Na Win vow started successfully!");
-        setHasKoeNaWinAccount(true);
         navigate("/koenawin/dashboard");
       } else {
-        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+        alert("Failed to start new Ko Na Win vow: " + (response.message || "Unknown error"));
       }
     } catch (error) {
       console.error("Error starting new Ko Na Win vow:", error);
@@ -124,25 +88,89 @@ function KoeNaWin() {
     }
   };
 
-  const handleEnterKoeNaWin = () => {
+  const handleEnterKoeNaWin = async () => {
     if (!isLogin) {
       navigate("/login");
       return;
     }
 
+    // Check database for existing Koe Na Win process
+    try {
+      const response = await koNaWinApi.checkKoNaWinTracker();
+
+      if (response.success && response.hasKoNaWinVow) {
+        // User has existing Koe Na Win process in database - go directly to dashboard
+        navigate("/koenawin/dashboard");
+        return;
+      }
+
+      // No existing process in database - ask about real-life process
+      setShowRealLifeProcessDialog(true);
+    } catch (error) {
+      console.error("Error checking Koe Na Win process:", error);
+      setInfoDialogMessage("ကိုးနဝင်းတရား စစ်ဆေးရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
+    }
+  };
+
+  const handleRealLifeProcessYes = () => {
+    setShowRealLifeProcessDialog(false);
+    setShowRealLifeInfoDialog(true);
+  };
+
+  const handleRealLifeProcessNo = () => {
+    setShowRealLifeProcessDialog(false);
+    // Check if it's Monday
     const today = new Date().getDay();
-    if (today !== 2) {
-      setInfoDialogMessage(
-        "တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။"
-      );
+    if (today !== 0) { // 1 is Monday
+      setInfoDialogMessage("တနင်္လာနေ့မှသာ ကိုးနဝင်းအဓိဌာန် စတင်ဆောက်တည်လို့ ရပါမည်။");
+      setShowInfoDialog(true);
+      return;
+    }
+    // It's Monday - show confirmation
+    setShowConfirmDialog(true);
+  };
+
+  const handleRealLifeInfoSubmit = async () => {
+    if (!realLifeDays || !realLifeStage) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ အားလုံးကို ရွေးချယ်ပါ။");
       setShowInfoDialog(true);
       return;
     }
 
-    if (hasKoeNaWinAccount) {
-      navigate("/koenawin/dashboard");
-    } else {
-      setShowConfirmDialog(true);
+    const stage = parseInt(realLifeStage);
+    const dayInStage = parseInt(realLifeDays);
+
+    // Validate inputs
+    if (stage < 1 || stage > 9 || dayInStage < 1 || dayInStage > 9) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော အဆင့်နှင့် နေ့ရက်ကို ရွေးချယ်ပါ။");
+      setShowInfoDialog(true);
+      return;
+    }
+
+    setShowRealLifeInfoDialog(false);
+
+    try {
+      // Calculate expected current_day_count for debugging
+      const expectedCurrentDayCount = (stage - 1) * 9 + dayInStage - 1;
+      console.log(`Creating tracker for Stage ${stage}, Day ${dayInStage} in stage`);
+      console.log(`Expected current_day_count: ${expectedCurrentDayCount}`);
+      console.log(`This means the user has completed ${expectedCurrentDayCount} days and is on day ${expectedCurrentDayCount + 1}`);
+      
+      const response = await koNaWinApi.startNewVowWithRealLifeProgress(stage, dayInStage);
+
+      if (response.success) {
+        console.log("Real-life Koe Na Win vow started successfully!");
+        console.log(`Current day count: ${response.currentDayCount}, Current stage: ${response.currentStage}`);
+        navigate("/koenawin/dashboard");
+      } else {
+        setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ " + (response.message || "Unknown error"));
+        setShowInfoDialog(true);
+      }
+    } catch (error) {
+      console.error("Error starting real-life Koe Na Win vow:", error);
+      setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
     }
   };
 
@@ -211,6 +239,7 @@ function KoeNaWin() {
         <Footer />
       </div>
 
+
       {/* Info Alert Dialog */}
       <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
         <AlertDialogContent>
@@ -221,6 +250,89 @@ function KoeNaWin() {
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowInfoDialog(false)}>
               နားလည်ပါသည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Real Life Process Dialog */}
+      <AlertDialog open={showRealLifeProcessDialog} onOpenChange={setShowRealLifeProcessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် စစ်ဆေးရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              သင်သည် ကိုးနဝင်းအဓိဌာန်ကို လက်ရှိတွင် ဆောက်တည်နေပါသလား? (ဤအက်ပ်တွင်မဟုတ်ဘဲ လက်တွေ့ဘဝတွင်)
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleRealLifeProcessYes}>
+            ဆောက်တည်နေလျက်ရှိပါသည်            </AlertDialogAction>
+            <AlertDialogCancel onClick={handleRealLifeProcessNo}>
+              ယခု စတင်မည်
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Real Life Process Info Dialog - All questions in one */}
+      <AlertDialog open={showRealLifeInfoDialog} onOpenChange={setShowRealLifeInfoDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် လက်ရှိအခြေအနေ</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကျေးဇူးပြု၍ သင့်လက်ရှိ ကိုးနဝင်းအဓိဌာန် အခြေအနေကို ရွေးချယ်ပါ။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4 space-y-4">
+            {/* Stage Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                မည်သည့်အဆင့်တွင် ရှိနေပါသလဲ?
+              </label>
+              <select
+                value={realLifeStage}
+                onChange={(e) => setRealLifeStage(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">အဆင့် ရွေးချယ်ပါ</option>
+                <option value="1">ပထမအဆင့်</option>
+                <option value="2">ဒုတိယအဆင့်</option>
+                <option value="3">တတိယအဆင့်</option>
+                <option value="4">စတုတ္ထအဆင့်</option>
+                <option value="5">ပဉ္စမအဆင့်</option>
+                <option value="6">ဆဋ္ဌမအဆင့်</option>
+                <option value="7">သတ္တမအဆင့်</option>
+                <option value="8">အဋ္ဌမအဆင့်</option>
+                <option value="9">နဝမအဆင့်</option>
+              </select>
+            </div>
+            {/* Days Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ထိုအဆင့်တွင် ‌ရောက်ရှိနေသည့် နေ့ရက်ကို ရွေးချယ်ပါ?
+              </label>
+              <select
+                value={realLifeDays}
+                onChange={(e) => setRealLifeDays(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">နေ့ရက်ရွေးချယ်ရန်</option>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1} ရက်မြောက်
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowRealLifeInfoDialog(false)}>
+              နောက်ဆုတ်ရန်
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleRealLifeInfoSubmit}>
+              ဆက်လက်လုပ်ဆောင်မည်
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { authService } from "../data/authService";
+import { koNaWinApi } from "../data/koenawinApi";
 import axios from "axios";
 import {
   AlertDialog,
@@ -29,7 +30,7 @@ export default function Navbar() {
   const [isKoeNaWinOpen, setKoeNaWinOpen] = useState(false);
   const [isAccountOpen, setAccountOpen] = useState(false);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
-  const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  // const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [hasKoeNaWinAccount, setHasKoeNaWinAccount] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
@@ -42,8 +43,9 @@ export default function Navbar() {
   });
   const [isCheckingProcess, setIsCheckingProcess] = useState(false);
   const [showRealLifeProcessDialog, setShowRealLifeProcessDialog] = useState(false);
-  const [showDaysInputDialog, setShowDaysInputDialog] = useState(false);
+  const [showRealLifeInfoDialog, setShowRealLifeInfoDialog] = useState(false);
   const [realLifeDays, setRealLifeDays] = useState("");
+  const [realLifeStage, setRealLifeStage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,38 +98,21 @@ export default function Navbar() {
   };
 
   const startNewVow = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.error("User ID missing to start new vow.");
-      navigate("/login");
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        "http://localhost/lotus_shrine/newKNWTracker.php",
-        {
-          userId: userId,
-          startDate: new Date().toISOString().split('T')[0]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await koNaWinApi.startNewVow();
 
-      if (response.data.success) {
+      if (response.success) {
         console.log("New Ko Na Win vow started successfully!");
         setHasKoeNaWinAccount(true);
         navigate("/koenawin/dashboard");
       } else {
-        alert("Failed to start new Ko Na Win vow: " + (response.data.message || "Unknown error"));
+        setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ " + (response.message || "Unknown error"));
+        setShowInfoDialog(true);
       }
     } catch (error) {
       console.error("Error starting new Ko Na Win vow:", error);
-      alert("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
     }
   };
 
@@ -172,7 +157,7 @@ export default function Navbar() {
 
   const handleRealLifeProcessYes = () => {
     setShowRealLifeProcessDialog(false);
-    setShowDaysInputDialog(true);
+    setShowRealLifeInfoDialog(true);
   };
 
   const handleRealLifeProcessNo = () => {
@@ -188,16 +173,47 @@ export default function Navbar() {
     setShowConfirmDialog(true);
   };
 
-  const handleDaysInputSubmit = () => {
-    if (!realLifeDays || isNaN(Number(realLifeDays)) || Number(realLifeDays) < 0) {
-      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော ရက်ပေါင်းကို ရိုက်ထည့်ပါ။");
+  const handleRealLifeInfoSubmit = async () => {
+    if (!realLifeDays || !realLifeStage) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ အားလုံးကို ရွေးချယ်ပါ။");
       setShowInfoDialog(true);
       return;
     }
-    setShowDaysInputDialog(false);
-    // TODO: Save the real-life process data and navigate to dashboard
-    // For now, just navigate to dashboard
-    navigate("/koenawin/dashboard");
+
+    const stage = parseInt(realLifeStage);
+    const dayInStage = parseInt(realLifeDays);
+
+    // Validate inputs
+    if (stage < 1 || stage > 9 || dayInStage < 1 || dayInStage > 9) {
+      setInfoDialogMessage("ကျေးဇူးပြု၍ မှန်ကန်သော အဆင့်နှင့် နေ့ရက်ကို ရွေးချယ်ပါ။");
+      setShowInfoDialog(true);
+      return;
+    }
+
+    setShowRealLifeInfoDialog(false);
+
+    try {
+      // Calculate expected current_day_count for debugging
+      const expectedCurrentDayCount = (stage - 1) * 9 + dayInStage - 1;
+      console.log(`Creating tracker for Stage ${stage}, Day ${dayInStage} in stage`);
+      console.log(`Expected current_day_count: ${expectedCurrentDayCount}`);
+      console.log(`This means the user has completed ${expectedCurrentDayCount} days and is on day ${expectedCurrentDayCount + 1}`);
+      
+      const response = await koNaWinApi.startNewVowWithRealLifeProgress(stage, dayInStage);
+
+      if (response.success) {
+        console.log("Real-life Koe Na Win vow started successfully!");
+        console.log(`Current day count: ${response.currentDayCount}, Current stage: ${response.currentStage}`);
+        navigate("/koenawin/dashboard");
+      } else {
+        setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ " + (response.message || "Unknown error"));
+        setShowInfoDialog(true);
+      }
+    } catch (error) {
+      console.error("Error starting real-life Koe Na Win vow:", error);
+      setInfoDialogMessage("ကိုးနဝင်းတရား စတင်ရန် ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။");
+      setShowInfoDialog(true);
+    }
   };
 
   const handleLogout = () => {
@@ -541,7 +557,7 @@ export default function Navbar() {
         </Dialog.Portal>
       </Dialog.Root>
 
-      {/* Coming Soon Dialog for Logged-in Users */}
+      {/* Coming Soon Dialog for Logged-in Users
       <Dialog.Root open={comingSoonOpen} onOpenChange={setComingSoonOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
@@ -564,7 +580,7 @@ export default function Navbar() {
             </div>
           </Dialog.Content>
         </Dialog.Portal>
-      </Dialog.Root>
+      </Dialog.Root> */}
 
       {/* Info Alert Dialog */}
       <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
@@ -591,7 +607,7 @@ export default function Navbar() {
               <br /><br />
               <strong>စတင်သည့်ရက်:</strong> {existingProcessInfo.startDate}
               <br />
-              <strong>လက်ရှိရက်ပေါင်း:</strong> {existingProcessInfo.currentDayCount} ရက်
+              <strong>လက်ရှိရက်ပေါင်း:</strong> {existingProcessInfo.currentDayCount}
               <br />
               <strong>လက်ရှိအဆင့်:</strong> {existingProcessInfo.currentStage} / 9
             </AlertDialogDescription>
@@ -612,26 +628,16 @@ export default function Navbar() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Confirm Start Dialog */}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+      {/* Info Alert Dialog */}
+      <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>အတည်ပြုရန်</AlertDialogTitle>
-            <AlertDialogDescription>
-              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်�လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာ�မြင့်�မည်ဖြစ်ပါသည်။
-            </AlertDialogDescription>
+            <AlertDialogTitle>သတိပေးချက်</AlertDialogTitle>
+            <AlertDialogDescription>{infoDialogMessage}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
-              မစတင်ပါ
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setShowConfirmDialog(false);
-                startNewVow();
-              }}
-            >
-              စတင်မည်
+            <AlertDialogAction onClick={() => setShowInfoDialog(false)}>
+              နားလည်ပါသည်
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -648,41 +654,98 @@ export default function Navbar() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleRealLifeProcessYes}>
-              ဟုတ်ကဲ့၊ ဆောက်တည်နေပါသည်
-            </AlertDialogAction>
+            ဆောက်တည်နေလျက်ရှိပါသည်            </AlertDialogAction>
             <AlertDialogCancel onClick={handleRealLifeProcessNo}>
-              မဟုတ်ပါ
+              ယခု စတင်မည်
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Days Input Dialog */}
-      <AlertDialog open={showDaysInputDialog} onOpenChange={setShowDaysInputDialog}>
-        <AlertDialogContent>
+      {/* Real Life Process Info Dialog - All questions in one */}
+      <AlertDialog open={showRealLifeInfoDialog} onOpenChange={setShowRealLifeInfoDialog}>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် ရက်ပေါင်း</AlertDialogTitle>
+            <AlertDialogTitle>ကိုးနဝင်းအဓိဌာန် လက်ရှိအခြေအနေ</AlertDialogTitle>
             <AlertDialogDescription>
-              ကျေးဇူးပြု၍ သင်သည် ကိုးနဝင်းအဓိဌာန်ကို မည်မျှရက်ကြာ ဆောက်တည်နေပါသလဲ?
+              ကျေးဇူးပြု၍ သင့်လက်ရှိ ကိုးနဝင်းအဓိဌာန် အခြေအနေကို ရွေးချယ်ပါ။
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="py-4">
-            <input
-              type="number"
-              value={realLifeDays}
-              onChange={(e) => setRealLifeDays(e.target.value)}
-              placeholder="ရက်ပေါင်း ရိုက်ထည့်ပါ"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
-              min="0"
-              max="81"
-            />
+          <div className="py-4 space-y-4">
+            {/* Stage Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                မည်သည့်အဆင့်တွင် ရှိနေပါသလဲ?
+              </label>
+              <select
+                value={realLifeStage}
+                onChange={(e) => setRealLifeStage(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">အဆင့် ရွေးချယ်ပါ</option>
+                <option value="1">ပထမအဆင့်</option>
+                <option value="2">ဒုတိယအဆင့်</option>
+                <option value="3">တတိယအဆင့်</option>
+                <option value="4">စတုတ္ထအဆင့်</option>
+                <option value="5">ပဉ္စမအဆင့်</option>
+                <option value="6">ဆဋ္ဌမအဆင့်</option>
+                <option value="7">သတ္တမအဆင့်</option>
+                <option value="8">အဋ္ဌမအဆင့်</option>
+                <option value="9">နဝမအဆင့်</option>
+              </select>
+            </div>
+            {/* Days Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ထိုအဆင့်တွင် ‌ရောက်ရှိနေသည့် နေ့ရက်ကို ရွေးချယ်ပါ?
+              </label>
+              <select
+                value={realLifeDays}
+                onChange={(e) => setRealLifeDays(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4f3016]"
+              >
+                <option value="">နေ့ရက်ရွေးချယ်ရန်</option>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1} ရက်မြောက်
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDaysInputDialog(false)}>
+            <AlertDialogCancel onClick={() => setShowRealLifeInfoDialog(false)}>
               နောက်ဆုတ်ရန်
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDaysInputSubmit}>
+            <AlertDialogAction onClick={handleRealLifeInfoSubmit}>
               ဆက်လက်လုပ်ဆောင်မည်
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Start Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>အတည်ပြုရန်</AlertDialogTitle>
+            <AlertDialogDescription>
+              ကိုးနဝင်းတရားကို စတင်ဆောက်တည်လိုပါသလား? ဤအဓိဌာန်ဝင်ရောက်ခြင်းသည် ၈၁ ရက်ကြာမြင့်မည်ဖြစ်ပါသည်။
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
+              မစတင်ပါ
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowConfirmDialog(false);
+                startNewVow();
+              }}
+            >
+              စတင်မည်
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
