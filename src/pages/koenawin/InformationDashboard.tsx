@@ -4,15 +4,9 @@ import {
   BookOpen,
   Target,
   CheckCircle,
-  Clock,
   AlertTriangle,
-  Leaf,
   TrendingUp,
-  Calendar,
   Loader2,
-  CheckSquare,
-  CrossIcon,
-  Crosshair,
   XCircle
 } from "lucide-react";
 
@@ -21,7 +15,7 @@ import { Progress } from "../../components/ui/progress";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { koNaWinApi, KoNaWinProgress } from "../../data/koenawinApi";
-import { getMantraForStageAndDay, isMeatFreeDay as checkMeatFreeDay } from "../../data/koeNaWinStages";
+import { getMantraForStageAndDay } from "../../data/koeNaWinStages";
 
 const InformationDashboard: React.FC = () => {
   const [progressData, setProgressData] = useState<KoNaWinProgress | null>(null);
@@ -49,31 +43,25 @@ const InformationDashboard: React.FC = () => {
     loadProgress();
   }, []);
 
-  const onToggleToday = async () => {
+  
+
+  const onDeleteTracker = async () => {
     if (!progressData || updating) return;
-    
+    const confirmed = window.confirm('ကိုးနဝင်း အဓိဌာန်ကို အပြီးတိုင်ဖျက်လိုသည်မှာ သေချာပါသလား?');
+    if (!confirmed) return;
+
     setUpdating(true);
-    
     try {
-      const response = await koNaWinApi.logDailyCompletion(
-        progressData.tracker.trackerId, 
-        progressData.tracker.dayNumberInStage || 1
-      );
-      
+      const response = await koNaWinApi.deleteKoNaWinTracker(progressData.tracker.trackerId);
       if (response.success) {
-        const updatedProgress = await koNaWinApi.getKoeNaWinProgress();
-        setProgressData(updatedProgress);
-        
-        if (response.action === 'completed') {
-          toast.success('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပါပြီ။');
-        } else if (response.action === 'already_completed') {
-          toast.info('ယနေ့အတွက် ပြီးဆုံးပါပြီ ဟု မှတ်သားပြီးပါပြီ။');
-        }
+        toast.success('အဓိဌာန်နှင့် မှတ်တမ်းများကို ဖျက်လိုက်ပါပြီ။');
+        // Refresh the dashboard state
+        window.location.reload();
       } else {
-        toast.error(response.message || 'မှတ်သားရာတွင် အမှားတစ်ခုခု ဖြစ်ပွားပါသည်။');
+        toast.error(response.message || 'ဖျက်ရာတွင် အမှားတစ်ခုခု ဖြစ်ပွားပါသည်။');
       }
     } catch (err) {
-      console.error('Error toggling today completion:', err);
+      console.error('Error deleting tracker:', err);
       toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
     } finally {
       setUpdating(false);
@@ -247,9 +235,15 @@ const InformationDashboard: React.FC = () => {
            <Button 
              className="bg-gradient-to-r mt-4 from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg cursor-pointer"
              size="lg"
+             onClick={onDeleteTracker}
+             disabled={updating}
            >
-             <XCircle className="w-5 h-5 mr-2" />
-             ကိုးနဝင်း အဓိဌာန် ဖျက်မည်  
+             {updating ? (
+               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+             ) : (
+               <XCircle className="w-5 h-5 mr-2" />
+             )}
+             {updating ? 'ဖျက်နေပါသည်...' : 'ကိုးနဝင်း အဓိဌာန် ဖျက်မည်'}
            </Button>
         </motion.div>
         

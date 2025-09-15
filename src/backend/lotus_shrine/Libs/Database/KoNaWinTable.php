@@ -367,4 +367,113 @@ class KoNaWinTable
             return false;
         }
     }
+
+    // Updated: saveCompletion (no tracker_id in insert)
+    public function saveCompletion($trackerId)
+    {
+        try {
+            // Fetch tracker to validate and copy data
+            $tracker = $this->findTrackerById($trackerId);
+            if (!$tracker || $tracker->is_completed != 1) {
+                return ['success' => false, 'error' => 'Tracker not completed.'];
+            }
+
+            // Check if already saved (by user_id + start_date, since tracker will be deleted)
+            $existingCompletion = $this->db->prepare("
+                SELECT completion_id FROM ko_na_win_completions 
+                WHERE user_id = :user_id AND start_date = :start_date
+            ");
+            $existingCompletion->execute([
+                ':user_id' => $tracker->user_id,
+                ':start_date' => $tracker->start_date
+            ]);
+            if ($existingCompletion->fetch()) {
+                return ['success' => false, 'error' => 'Already saved for this vow.'];
+            }
+
+            // Insert completion (no tracker_id)
+            $query = "INSERT INTO ko_na_win_completions (user_id, start_date, end_date) 
+                    VALUES (:user_id, :start_date, CURDATE())";
+            $statement = $this->db->prepare($query);
+            $result = $statement->execute([
+                ':user_id' => $tracker->user_id,
+                ':start_date' => $tracker->start_date,
+            ]);
+
+            if (!$result) {
+                return ['success' => false, 'error' => 'Insert failed.'];
+            }
+
+            $completionId = $this->db->lastInsertId();
+            $endDate = date('Y-m-d');
+            error_log("saveCompletion - Saved completion ID: $completionId for user: {$tracker->user_id}, start_date: {$tracker->start_date}");
+
+            return [
+                'success' => true,
+                'completion_id' => (int)$completionId,
+                'end_date' => $endDate
+            ];
+
+        } catch (PDOException $e) {
+            error_log("Error in saveCompletion: " . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+    // Updated: getUserCompletions (simpler, no JOIN to tracker)
+    public function getUserCompletions($userId)
+    {
+        try {
+            $statement = $this->db->prepare("
+                SELECT * FROM ko_na_win_completions 
+                WHERE user_id = :user_id 
+                ORDER BY completed_at DESC
+            ");
+            $statement->execute([':user_id' => $userId]);
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error in getUserCompletions: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Delete KoNaWinTable 
+    public function deleteTrackerById($trackerId)
+    {
+        try {
+            // Start transaction so partial deletes don't leave inconsistent state
+            $this->db->beginTransaction();
+
+            // 1) Delete related daily logs
+            $stmtLogs = $this->db->prepare("DELETE FROM ko_na_win_daily_log WHERE tracker_id = :tracker_id");
+            $stmtLogs->execute([':tracker_id' => $trackerId]);
+            $deletedLogs = $stmtLogs->rowCount();
+
+            // 2) Delete the tracker row
+            $stmtTracker = $this->db->prepare("DELETE FROM ko_na_win_tracker WHERE tracker_id = :tracker_id");
+            $stmtTracker->execute([':tracker_id' => $trackerId]);
+            $deletedTracker = $stmtTracker->rowCount();
+
+            if ($deletedTracker === 0) {
+                // Nothing deleted for tracker -> rollback and report not found
+                $this->db->rollBack();
+                error_log("deleteTrackerById: Tracker with ID {$trackerId} not found.");
+                return ['success' => false, 'error' => 'Tracker not found', 'deleted_logs' => $deletedLogs, 'deleted_tracker' => 0];
+            }
+
+            // Commit changes
+            $this->db->commit();
+            error_log("deleteTrackerById: Deleted tracker {$trackerId} and {$deletedLogs} related log(s).");
+
+            return ['success' => true, 'deleted_logs' => $deletedLogs, 'deleted_tracker' => $deletedTracker];
+        } catch (PDOException $e) {
+            // Rollback on error
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Error in deleteTrackerById: " . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+
 }

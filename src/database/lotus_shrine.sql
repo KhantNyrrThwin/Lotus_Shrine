@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 26, 2025 at 04:46 PM
+-- Generation Time: Sep 15, 2025 at 09:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ko_na_win_completions`
+--
+
+CREATE TABLE `ko_na_win_completions` (
+  `completion_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `completed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `total_days` int(11) NOT NULL DEFAULT 81
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ko_na_win_completions`
+--
+
+INSERT INTO `ko_na_win_completions` (`completion_id`, `user_id`, `start_date`, `end_date`, `completed_at`, `total_days`) VALUES
+(5, 15, '2025-07-15', '2025-09-17', '2025-09-15 18:59:06', 81),
+(6, 15, '2025-09-15', '2025-09-17', '2025-09-15 19:11:14', 81);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ko_na_win_daily_log`
 --
 
@@ -34,6 +57,16 @@ CREATE TABLE `ko_na_win_daily_log` (
   `day_number` int(11) NOT NULL,
   `completion_status` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ko_na_win_daily_log`
+--
+
+INSERT INTO `ko_na_win_daily_log` (`log_id`, `tracker_id`, `log_date`, `day_number`, `completion_status`) VALUES
+(62, 25, '2025-09-13', 8, 1),
+(63, 25, '2025-09-14', 9, 1),
+(68, 29, '2025-09-14', 8, 1),
+(69, 29, '2025-09-15', 9, 1);
 
 -- --------------------------------------------------------
 
@@ -46,8 +79,17 @@ CREATE TABLE `ko_na_win_tracker` (
   `user_id` int(11) NOT NULL,
   `start_date` date NOT NULL,
   `current_day_count` int(11) NOT NULL,
+  `current_stage` int(11) NOT NULL DEFAULT 1,
   `is_completed` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ko_na_win_tracker`
+--
+
+INSERT INTO `ko_na_win_tracker` (`tracker_id`, `user_id`, `start_date`, `current_day_count`, `current_stage`, `is_completed`) VALUES
+(25, 8, '2025-09-14', 81, 9, 1),
+(29, 15, '2025-09-15', 81, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -75,7 +117,7 @@ INSERT INTO `quotes` (`quote_ID`, `quote_name`, `quote_author`) VALUES
 (7, 'ကမ္မအကျိုးသည် မလွတ်နိုင်သော အမှန်တရားတစ်ခု ဖြစ်သည်', 'မင်းတရား အရှင်'),
 (8, 'စိတ်ငြိမ်းချမ်းမှသာ တကယ့်ပျော်ရွှင်မှုကို ရနိုင်သည်', 'အရှင် သာရနန္ဒ'),
 (9, 'သန့်ရှင်းသောစိတ်သည် ကံအကျိုးအားလုံးထက် တန်ဖိုးကြီးသည်', 'ဆရာတော် ဦးဇောတိကာ'),
-(10, 'တရားနာခြင်းသည် သမိုင်းတလျှောက် တန်ဖိုးအမြဲတည်မည့် ဥစ္စာဖြစ်သည်', 'ဆရာတော် ဦးအာနန္ဒ'),
+(10, 'တရားနာခြင်းသည် သမိုင်းတလျှောက် တန်ဖအမြဲတည်မည့် ဥစ္စာဖြစ်သည်', 'ဆရာတော် ဦးအာနန္ဒ'),
 (11, 'မိမိကိုယ်ကို အမြဲလေ့လာခြင်းက အခြားသူကို နားလည်စေသည်', 'ဆရာတော် ဦးဝိပဿနာ'),
 (12, 'အကျိုးပြုမည့်စကားသာ ပြောပါ၊ အကျိုးမဲ့စကားကို အားလုံးက မေ့လျော့ကြသည်', 'ဗုဒ္ဓ'),
 (13, 'မိမိစိတ်ကို မသိရင် လောကကို သိတတ်မည်မဟုတ်ပါ', 'ဆရာတော် ဦးအရဟံ'),
@@ -103,7 +145,8 @@ CREATE TABLE `rate_limits` (
 INSERT INTO `rate_limits` (`id`, `email`, `ip`, `attempts`, `created_at`) VALUES
 (23, 'justicforyang@gmail.com', '::1', 2, '2025-07-08 14:05:49'),
 (24, 'nini@gmail.com', '::1', 1, '2025-07-07 21:53:03'),
-(29, 'ttube5020@gmail.com', '::1', 4, '2025-07-09 10:41:05');
+(29, 'ttube5020@gmail.com', '::1', 4, '2025-07-09 10:41:05'),
+(34, 'khantsihein2004@gmail.com', '::1', 1, '2025-09-14 21:40:16');
 
 -- --------------------------------------------------------
 
@@ -133,17 +176,26 @@ INSERT INTO `users` (`user_id`, `user_email`, `name`, `dob`, `user_password`, `r
 (11, 'ravenpai@gmail.com', 'မောင်ပိုင်', '0000-00-00', '$2y$10$q5Tzu9rNA3n3bPszTGEkpuzB2rBZqK.riZIBnVs8XLO61vNHWp2Lq', NULL, NULL),
 (12, 'paiminthway13@gmail.com', 'Raven', '2005-08-18', '$2y$10$ryjyIfTQ5jAmEgFu3mBU6..C5fm9zR0PD6rvipNymve9uAAszbbaW', NULL, NULL),
 (13, 'justicforyang@gmail.com', 'Nyar Nyar', '2005-07-04', '$2y$10$Eau1TtRRm83I0WylAN889.XomXv9PvQTa.CrHeG7cRSdC9/XUWG0K', NULL, NULL),
-(14, 'bhonemyintmaung272@gmail.com', 'Bhone Gyi', '2005-02-27', '$2y$10$ue5GmdzyA6/o8gWPUXnZYeM6Rdmn9DQ/5XwsNDqq4Y7s5gkfxOFZa', NULL, NULL);
+(14, 'bhonemyintmaung272@gmail.com', 'Bhone Gyi', '2005-02-27', '$2y$10$ue5GmdzyA6/o8gWPUXnZYeM6Rdmn9DQ/5XwsNDqq4Y7s5gkfxOFZa', NULL, NULL),
+(15, 'khantsihein2004@gmail.com', 'Khant Si Hein', '2004-04-29', '$2y$10$cI8g4C/E5iJ2aGfXlLU0Q.DNi4loGXHOqBgEnhCBRwwHzpVehcCPu', NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `ko_na_win_completions`
+--
+ALTER TABLE `ko_na_win_completions`
+  ADD PRIMARY KEY (`completion_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `ko_na_win_daily_log`
 --
 ALTER TABLE `ko_na_win_daily_log`
   ADD PRIMARY KEY (`log_id`),
+  ADD UNIQUE KEY `unique_tracker_date` (`tracker_id`,`log_date`),
   ADD KEY `tracker_id` (`tracker_id`);
 
 --
@@ -180,38 +232,50 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `ko_na_win_completions`
+--
+ALTER TABLE `ko_na_win_completions`
+  MODIFY `completion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `ko_na_win_daily_log`
 --
 ALTER TABLE `ko_na_win_daily_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `ko_na_win_tracker`
 --
 ALTER TABLE `ko_na_win_tracker`
-  MODIFY `tracker_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tracker_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `quotes`
 --
 ALTER TABLE `quotes`
-  MODIFY `quote_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `quote_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `rate_limits`
 --
 ALTER TABLE `rate_limits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `ko_na_win_completions`
+--
+ALTER TABLE `ko_na_win_completions`
+  ADD CONSTRAINT `ko_na_win_completions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `ko_na_win_daily_log`

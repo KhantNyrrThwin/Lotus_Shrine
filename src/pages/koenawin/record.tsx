@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
+import { koNaWinApi, KNWCompletion } from "../../data/koenawinApi";
+import { authService } from "../../data/authService";
 import {
   Award,
   CalendarRange,
@@ -34,13 +36,34 @@ export default function RecordDashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [historyData, setHistoryData] = useState<HistoryRecord[]>([]);
 
-  const historyData: HistoryRecord[] = useMemo(
-    () => [
-      { id: "2025-07", username: "ခန့်ညားသွင်", startDate: "2025-07-01", endDate: "2025-09-20" },
-    ],
-    []
-  );
+  useEffect(() => {
+    const loadCompletions = async () => {
+      try {
+        const username = authService.getCurrentUser();
+        const res = await koNaWinApi.getCompletions();
+        if (res.success) {
+          const mapped: HistoryRecord[] = (res.completions || []).map((c: KNWCompletion) => ({
+            id: String(c.completion_id),
+            username: username || "User",
+            startDate: c.start_date,
+            endDate: c.end_date,
+          }));
+          setHistoryData(mapped);
+          if (mapped.length > 0) {
+            setSelectedId(mapped[0].id);
+          }
+        } else {
+          setHistoryData([]);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("မှတ်တမ်းများကို ရယူ၍ မရပါ");
+      }
+    };
+    loadCompletions();
+  }, []);
 
   useEffect(() => {
     if (!selectedId && historyData.length > 0) {
@@ -147,9 +170,7 @@ export default function RecordDashboard() {
       ctx.font = "bold 58px 'Noto Sans Myanmar', system-ui, sans-serif";
       ctx.fillStyle = "#1A0E08";
       
-      // Username background highlight
-      const usernameMetrics = ctx.measureText(record.username);
-      const usernameWidth = usernameMetrics.width;
+      // Username position
       const usernameY = logoY + logoSize + 240;
       
     
