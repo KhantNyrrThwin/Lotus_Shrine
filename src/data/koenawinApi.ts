@@ -40,6 +40,14 @@ export interface ApiResponse<T> {
   data?: T;
 }
 
+export interface KNWCompletion {
+  completion_id: number;
+  user_id: number;
+  start_date: string;
+  end_date: string;
+  completed_at?: string;
+}
+
 class KoNaWinApiService {
   private getUserId(): string | null {
     return localStorage.getItem('userId');
@@ -67,15 +75,72 @@ class KoNaWinApiService {
       return response.data;
     } catch (error) {
       console.error(`API Error for ${endpoint}:`, error);
-      if (error.code === 'ECONNREFUSED') {
+      const err = error as any;
+      if (err && err.code === 'ECONNREFUSED') {
         throw new Error('Cannot connect to backend server. Please ensure the PHP server is running.');
-      } else if (error.code === 'ENOTFOUND') {
+      } else if (err && err.code === 'ENOTFOUND') {
         throw new Error('Backend server not found. Please check the server configuration.');
-      } else if (error.response) {
-        throw new Error(`Backend error: ${error.response.status} - ${error.response.data?.message || error.response.statusText}`);
+      } else if (err && err.response) {
+        throw new Error(`Backend error: ${err.response.status} - ${err.response.data?.message || err.response.statusText}`);
       } else {
-        throw error;
+        throw err;
       }
+    }
+  }
+
+  /**
+   * Delete an existing Koe Na Win tracker and its logs
+   */
+  async deleteKoNaWinTracker(trackerId: number): Promise<{
+    success: boolean;
+    message: string;
+    deleted_logs?: number;
+    deleted_tracker?: number;
+  }> {
+    const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found in localStorage');
+    }
+
+    // Backend only needs trackerId, userId check kept for parity with other endpoints
+    const requestData = { trackerId };
+    return this.makeRequest('deleteKNWTracker.php', requestData);
+  }
+
+  /**
+   * Save completion record when vow is completed
+   */
+  async saveKoNaWinCompletion(trackerId: number, startDate?: string): Promise<{
+    success: boolean;
+    message: string;
+    completionId?: number;
+    startDate?: string | null;
+    endDate?: string;
+    totalDays?: number;
+  }> {
+    const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found in localStorage');
+    }
+
+    const requestData: any = { trackerId };
+    if (startDate) requestData.startDate = startDate;
+    try {
+      const response = await axios.post(`${API_BASE_URL}/saveKNWCompletion.php`, requestData, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+        timeout: 10000,
+        validateStatus: () => true // allow us to handle 4xx and 5xx manually
+      });
+      // Always return the JSON body if available
+      if (typeof response.data === 'object') {
+        return response.data;
+      }
+      // Fallback generic
+      return { success: false, message: 'Unexpected response from server.' } as any;
+    } catch (e: any) {
+      // Network error or unexpected failure
+      return { success: false, message: 'Network error while saving completion.' } as any;
     }
   }
 
@@ -98,6 +163,27 @@ class KoNaWinApiService {
     }
 
     return this.makeRequest('checkKoNaWinTracker.php', { userId });
+  }
+
+  /**
+   * Fetch saved completion records for current user
+   */
+  async getCompletions(): Promise<{ success: boolean; completions: KNWCompletion[] }> {
+    const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found in localStorage');
+    }
+    try {
+      const response = await axios.post(`${API_BASE_URL}/getKNWCompletions.php`, { userId }, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+        timeout: 10000,
+      });
+      return response.data;
+    } catch (e) {
+      console.error('Error fetching completions:', e);
+      return { success: false, completions: [] };
+    }
   }
 
   /**

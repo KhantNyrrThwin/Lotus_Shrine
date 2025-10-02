@@ -4,12 +4,10 @@ import {
   Calendar as CalendarIcon,
   AlertTriangle,
   BookOpen,
-  Leaf,
   CheckCircle,
   Clock,
   Heart,
-  Loader2,
-  TrendingUp
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -246,33 +244,100 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
         </Card>
       </motion.div>
 
-      {/* ---------------Connect with Database ------------- */}
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
-          <CardHeader>
-            <h1 className="flex items-center gap-2 text-2xl font-extrabold">
-              <CheckCircle className="w-6 h-6" />
-                သာဓု ၊ သာဓု ၊ သာဓု  သင်၏ ကိုးနဝင်း အဓိဌာန် အောင်မြင်စွာ ပြီးမြောက်သွားပါပြီ ။
-            </h1>
-            <CardDescription className="text-[#e0e0e0]">
-              <Button 
-                className="bg-gradient-to-r mt-4   from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg"
-                size="lg"
-              >
-                <BookOpen className="w-5 h-5 mr-2 " />
-                ကိုးနဝင်း မှတ်တမ်း သိမ်းဆည်းမည်  
-              </Button> 
-            </CardDescription>
-          </CardHeader>
-          
-        </Card>
-      </motion.div>
-      {/* ---------------Connect with Database ------------- */}
+      {/* --------------- Completed State (only when is_completed = 1) ------------- */}
+      {progress?.tracker.isCompleted && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className=""
+        >
+          <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
+            <CardHeader className=" flex flex-col 2xl:flex 2xl:flex-row 2xl:gap-15">
+              <h1 className="flex items-center gap-2 text-2xl font-extrabold">
+                <CheckCircle className="w-6 h-6" />
+                  သာဓု ၊ သာဓု ၊ သာဓု  သင်၏ ကိုးနဝင်း အဓိဌာန် အောင်မြင်စွာ ပြီးမြောက်သွားပါပြီ ။
+              </h1>
+              <CardDescription className="text-[#e0e0e0] flex flex-row gap-5 2xl:flex-col">
+                <Button 
+                  className="bg-gradient-to-r mt-4   from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg"
+                  size="lg"
+                  onClick={async () => {  
+                    if (!progress || updating) return;
+                    try {
+                      setUpdating(true);
+                      const res = await koNaWinApi.saveKoNaWinCompletion(progress.tracker.trackerId, progress.tracker.startDate);
+                      if (res.success) {
+                        toast.success('မှတ်တမ်းကို သိမ်းဆည်းပြီးပါပြီ။');
+                      } else {
+                        const msg = res.message || 'မှတ်တမ်း သိမ်းဆည်းရာတွင် အမှားတစ်ခု ဖြစ်ပွားသည်';
+                        if (msg.includes('Already saved')) {
+                          toast.info('ဤအဓိဌာန်အတွက် မှတ်တမ်းကို ရှိပြီးဖြစ်သည်။');
+                        } else if (msg.includes('Tracker not completed')) {
+                          toast.error('အဓိဌာန် မပြီးသေးသဖြင့် သိမ်းဆည်းမရပါ။');
+                        } else {
+                          toast.error(msg);
+                        }
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+                    } finally {
+                      setUpdating(false);
+                    }
+                  }}
+                  disabled={updating}
+                >
+                  {updating ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <BookOpen className="w-5 h-5 mr-2 " />
+                  )}
+                  {updating ? 'သိမ်းဆည်းနေပါသည်...' : 'ကိုးနဝင်း မှတ်တမ်း သိမ်းဆည်းမည်'}
+                </Button> 
+                <Button 
+                  className="bg-gradient-to-r mt-4   from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold px-6 py-3 rounded-lg"
+                  size="lg"
+                  onClick={async () => {  
+                    if (!progress || updating) return;
+                    try {
+                      setUpdating(true);
+                      const res = await koNaWinApi.saveKoNaWinCompletion(progress.tracker.trackerId, progress.tracker.startDate);
+                      if (res.success) {
+                        toast.success('မှတ်တမ်းကို သိမ်းဆည်းပြီးပါပြီ။');
+                      } else {
+                        const msg = res.message || 'မှတ်တမ်း သိမ်းဆည်းရာတွင် အမှားတစ်ခု ဖြစ်ပွားသည်';
+                        if (msg.includes('Already saved')) {
+                          toast.info('ဤအဓိဌာန်အတွက် မှတ်တမ်းကို ရှိပြီးဖြစ်သည်။');
+                        } else if (msg.includes('Tracker not completed')) {
+                          toast.error('အဓိဌာန် မပြီးသေးသဖြင့် သိမ်းဆည်းမရပါ။');
+                        } else {
+                          toast.error(msg);
+                        }
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      toast.error('ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။');
+                    } finally {
+                      setUpdating(false);
+                    }
+                  }}
+                  disabled={updating}
+                >
+                  {updating ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <BookOpen className="w-5 h-5 mr-2 " />
+                  )}
+                  {updating ? 'သိမ်းဆည်းနေပါသည်...' : 'ကိုးနဝင်း မှတ်တမ်း သိမ်းဆည်းမည်'}
+                </Button> 
+              </CardDescription>
+            </CardHeader>
+            
+          </Card>
+        </motion.div>
+      )}
+      {/* --------------- Completed State ------------- */}
 
 
       <div className="flex flex-row gap-6">
