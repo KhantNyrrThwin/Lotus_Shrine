@@ -174,8 +174,8 @@ export default function PagodaView() {
     );
   }
 
-  // Only allow access to Kuthodaw Pagoda (id: 3)
-  if (pagoda.id !== 3) {
+  // Allow access to Kuthodaw (id: 3), Aung Taw Mu (id: 4), Kyauk Taw Gyi (id: 5)
+  if (pagoda.id !== 3 && pagoda.id !== 4 && pagoda.id !== 5) {
     return (
       <div className="bg-[#FDE9DA] w-full min-h-screen">
         <Navbar />
@@ -197,6 +197,91 @@ export default function PagodaView() {
       </div>
     );
   }
+
+  // For Aung Taw Mu, override camera views as per guide
+  const isAungTawMu = pagoda.id === 4;
+  const aungTawMuViews: CameraView[] = [
+    {
+      id: 1,
+      name: "Maha Lokaran Nhyain ",
+      nameMyanmar: "မဟာလောကရန်နှိမ်အောင်တော်မူ မြတ်စွာဘုရား ",
+      image: "/src/assets/AungTawMu/Main.jpg",
+      description: "Main view of Maha Lokaran Nhyain",
+      descriptionMyanmar: "မဟာလောကရန်နှိမ်အောင်တော်မူ မြင်ကွင်း"
+    },
+    
+    {
+      id: 2,
+      name: "Loka Tan Saung - Side",
+      nameMyanmar: "လောကတန်ဆောင် မြတ်စွာဘုရား ",
+      image: "/src/assets/AungTawMu/Side.jpg",
+      description: "Side view of Loka Tan Saung",
+      descriptionMyanmar: "လောကတန်ဆောင် ဘေးဘက်မြင်ကွင်း"
+    },
+    {
+      id: 3,
+      name: "Zeya Thaddhi Labamuni ",
+      nameMyanmar: "ဇေယျသဒ္ဓိလာဘမုနိ မြတ်စွာဘုရား",
+      image: "/src/assets/AungTawMu/Kyun Nat.jpg",
+      description: "Kyun Nat view",
+      descriptionMyanmar: "ဇေယျသဒ္ဓိလာဘမုနိ မြတ်စွာဘုရား  မြင်ကွင်း"
+    },
+ 
+   
+    {
+      id: 1.1,
+      name: "Maha Lokaran Nhyain - Close View",
+      nameMyanmar: "မဟာလောကရန်နှိမ်အောင်တော်မူ မြတ်စွာဘုရား အနီးကပ်ဖူးမျှော်ခြင်း",
+      image: "/src/assets/AungTawMu/Near Main.jpg",
+      description: "Closer view at the main",
+      descriptionMyanmar: "အနီးကပ် မြင်ကွင်း"
+    },
+    {
+      id: 2.1,
+      name: "Loka Tan Saung ",
+      nameMyanmar: "လောကတန်ဆောင် မြတ်စွာဘုရား အနီးကပ်ဖူးမျှော်ခြင်း",
+      image: "/src/assets/AungTawMu/Near SIde.jpg",
+      description: "Closer side view",
+      descriptionMyanmar: "အနီးကပ် ဘေးဘက်မြင်ကွင်း"
+    },
+  ];
+
+  // For Kyauk Taw Gyi, define the four views from guide
+  const isKyaukTawGyi = pagoda.id === 5;
+  const kyaukTawGyiViews: CameraView[] = [
+    {
+      id: 0,
+      name: "Kyauk Taw Gyi - Main",
+      nameMyanmar: "ကျောက်တော်ကြီးဘုရား",
+      image: "/src/assets/KyaukTawGyi/Main.jpg",
+      description: "Main view of Kyauk Taw Gyi",
+      descriptionMyanmar: "အဓိက မြင်ကွင်း"
+    },
+    {
+      id: 1,
+      name: "Man Kyway Taw Pyae",
+      nameMyanmar: "မာန်ကြွေးတော်ပြေ ဘုရား",
+      image: "/src/assets/KyaukTawGyi/Yan Kyway Taw Pyae.jpg",
+      description: "Man Kyway Taw Pyae view",
+      descriptionMyanmar: "မာန်ကြွေးတော်ပြေ မြင်ကွင်း"
+    },
+    {
+      id: 2,
+      name: "Witt and Yan",
+      nameMyanmar: "ဝဋ်ကြွေးတော်ပြေ၊ ရန်ကြွေးတော်ပြေ ဘုရား",
+      image: "/src/assets/KyaukTawGyi/Witt and Yan.jpg",
+      description: "Witt and Yan view",
+      descriptionMyanmar: "ဝဋ်၊ ရန် ကြွေးတော်ပြေ မြင်ကွင်း"
+    },
+    {
+      id: 3,
+      name: "Lo Ta Ya Tapate",
+      nameMyanmar: "လိုတရ သပိတ်တော်ကြီး",
+      image: "/src/assets/KyaukTawGyi/Lo Ta y Ya Tapate.jpg",
+      description: "Lo Ta Ya Tapate view",
+      descriptionMyanmar: "သပိတ်တော်ကြီး မြင်ကွင်း"
+    }
+  ];
 
   return (
     <div className="bg-[#FDE9DA] w-full min-h-screen">
@@ -229,7 +314,7 @@ export default function PagodaView() {
       {/* CCTV Grid */}
       <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {cameraViews.map((cameraView) => (
+          {(isAungTawMu ? aungTawMuViews : isKyaukTawGyi ? kyaukTawGyiViews : cameraViews).map((cameraView) => (
             <div
               key={cameraView.id}
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer group"
