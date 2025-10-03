@@ -711,7 +711,7 @@ function Meditation() {
                     </span>
                   </div>
                   {poseStatus && (
-                    <div className="text-sm mt-2 text-center font-medium">ယုံကြည်မှု: {(poseConfidence * 100).toFixed(1)}%</div>
+                    <div className="text-sm mt-2 text-center font-medium">တိကျမှု: {(poseConfidence * 100).toFixed(1)}%</div>
                   )}
                 </div>
 
