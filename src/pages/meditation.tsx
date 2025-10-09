@@ -29,6 +29,7 @@ interface PostureOption {
   name: string;
   description: string;
   imageUrl: string;
+  instructions: string;
 }
 
 // -----------------------------
@@ -40,24 +41,28 @@ const postureOptions: PostureOption[] = [
     name: "Burmese Posture",
     description: "Traditional cross-legged sitting with both feet on the ground",
     imageUrl: "/postures/standard.png",
+    instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Chair Posture",
     name: "Chair Posture",
     description: "Sitting on a chair with feet flat on the ground",
     imageUrl: "/postures/chair.png",
+    instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Seiza",
     name: "Seiza Posture",
     description: "Kneeling with buttocks on heels",
     imageUrl: "/postures/seiza.png",
+    instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Yoga Pose",
     name: "Yoga Pose",
     description: "Lotus or half-lotus position",
     imageUrl: "/postures/yoga.png",
+    instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
 ];
 
@@ -509,6 +514,7 @@ function Meditation() {
     setIsPoseDetectionActive(false);
     setIsPostureHeld(false); // Reset hold state
     setCameraOffAfterHold(false); // Reset camera state
+    setShowPostureSelection(false); // Reset posture selection state
     stopPoseDetection();
     setTimer(0);
     setSelectedPosture(null);
@@ -663,135 +669,20 @@ function Meditation() {
               </div>
             )}
 
+
             {/* Active Meditation with Pose Detection */}
             {selectedPosture && !isPostureHeld && (
               <div className="text-center">
-                {/* Status Header */}
-                <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
-                  <h3 className="text-xl font-bold text-purple-800 mb-2">⏳ ပုံစံအတည်ပြုနေသည်</h3>
-                  <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === selectedPosture)?.name}</span></p>
-                </div>
-
-                <div className="mb-4">
-                  <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
-                  <div className="text-6xl font-mono text-[#493016] mb-4">00:00</div>
-
-                  {/* Hold Progress */}
-                  <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
-                    <div
-                      className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${(consecutiveCorrectFrames.current / 60) * 100}%` }}
-                    ></div>
+                {/* Instructions - Always visible during pose detection */}
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto">
+                  <div className="text-3xl font-medium text-blue-700 mb-4 text-center">
+                    <h3>{postureOptions.find((p) => p.id === selectedPosture)?.name} အတွက် ညွှန်ကြားချက်များ</h3>
                   </div>
-                  <p className="text-gray-600">
-                    5 စက္ကန့် ထိန်းထားရန်
-                  </p>
-                </div>
-
-                {/* Pose Status */}
-                <div
-                  className={`mb-4 p-4 rounded-lg border-2 ${
-                    poseStatus === "correct"
-                      ? "bg-green-100 border-green-500 shadow-lg shadow-green-200"
-                      : poseStatus === "incorrect"
-                      ? "bg-red-100 border-red-500 shadow-lg shadow-red-200"
-                      : "bg-blue-100 border-blue-500 shadow-lg shadow-blue-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    {poseStatus === "correct" && <span className="text-green-600 text-2xl">✅</span>}
-                    {poseStatus === "incorrect" && <span className="text-red-600 text-2xl">❌</span>}
-                    {poseStatus === "detecting" && <span className="text-blue-600 text-2xl">🔍</span>}
-                    <span
-                      className={`font-bold text-lg ${
-                        poseStatus === "correct" ? "text-green-700" : poseStatus === "incorrect" ? "text-red-700" : "text-blue-700"
-                      }`}
-                    >
-                      {poseStatus === "correct" ? "ပုံစံမှန် - ဆက်လက်ထိုင်ပါ" : poseStatus === "incorrect" ? "ပုံစံမှား - ပြင်ဆင်ပါ" : "ပုံစံစစ်ဆေးနေသည်..."}
-                    </span>
-                  </div>
-                  {poseStatus && (
-                    <div className="text-sm mt-2 text-center font-medium">တိကျမှု: {(poseConfidence * 100).toFixed(1)}%</div>
-                  )}
-                </div>
-
-                {/* Live Pose Detection Canvas */}
-                <div className="relative inline-block mb-6">
-                  <canvas
-                    ref={canvasRef}
-                    width={400}
-                    height={400}
-                    className={`rounded-lg border-4 bg-gray-100 ${
-                      poseStatus === "correct"
-                        ? "border-green-500 shadow-lg shadow-green-200"
-                        : poseStatus === "incorrect"
-                        ? "border-red-500 shadow-lg shadow-red-200"
-                        : "border-blue-500 shadow-lg shadow-blue-200"
-                    }`}
-                    style={{
-                      minWidth: "400px",
-                      minHeight: "400px",
-                      borderWidth: "6px",
-                      transition: "all 0.3s ease",
-                      boxShadow:
-                        poseStatus === "correct"
-                          ? "0 0 20px rgba(34, 197, 94, 0.3)"
-                          : poseStatus === "incorrect"
-                          ? "0 0 20px rgba(239, 68, 68, 0.3)"
-                          : "0 0 20px rgba(59, 130, 246, 0.3)",
-                    }}
-                  />
-                  {isPoseDetectionActive && (
-                    <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">Camera Active</div>
-                  )}
-                  {/* Pose detection status overlay */}
-                  {isPoseDetectionActive && (
-                    <div
-                      className={`absolute bottom-2 left-2 px-3 py-1 rounded text-sm font-medium ${
-                        poseStatus === "correct" ? "bg-green-600 text-white" : poseStatus === "incorrect" ? "bg-red-600 text-white" : "bg-blue-600 text-white"
-                      }`}
-                    >
-                      {poseStatus === "correct" && "✅ ပုံစံမှန်"}
-                      {poseStatus === "incorrect" && "❌ ပုံစံမှား"}
-                      {poseStatus === "detecting" && "🔍 စစ်ဆေးနေသည်..."}
-                      {!poseStatus && "📷 ကင်မရာ အဆင်သင့်"}
-                    </div>
-                  )}
-                </div>
-
-                {/* Real-time Prediction Labels */}
-                {isPoseDetectionActive && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3 text-center">ပုံစံစစ်ဆေးမှုရလဒ်များ</h4>
-                    <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-center">
-                      <span className="text-blue-800 font-medium">ရွေးချယ်ထားသောပုံစံ: {postureOptions.find((p) => p.id === selectedPosture)?.name}</span>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                      {['Burmese', 'Chair Posture', 'Seiza', 'Yoga Pose', 'Error'].map((className, index) => (
-                        <div
-                          key={className}
-                          className={`text-center p-2 rounded border-2 ${
-                            className === selectedPosture ? 'bg-green-100 border-green-400' : 'bg-white border-gray-200'
-                          }`}
-                        >
-                          <div className="text-sm font-medium text-gray-600">{className}</div>
-                          <div className={`text-lg font-bold ${className === selectedPosture ? 'text-green-700' : 'text-[#493016]'}`}>
-                            {posePredictions[index] ? `${(posePredictions[index] * 100).toFixed(1)}%` : '0.0%'}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Timer Controls */}
-                <div className="flex justify-center space-x-4 mt-6">
-                  <button
-                    onClick={resetTimer}
-                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    ပြန်စတင်မည်
-                  </button>
+                  <ul className="text-black-600 text-xl leading-relaxed text-left space-y-3">
+                    <li>• laptopကို 20 degree စောင်းပါ</li>
+                    <li>• laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ</li>
+                    <li>• သက်တောင့်သက်သာနေပါ</li>
+                  </ul>
                 </div>
               </div>
             )}
@@ -882,16 +773,104 @@ function Meditation() {
             )}
           </div>
 
-          {/* Music Player Section */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 h-[32rem] overflow-y-auto">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              {category === 'tayartaw' && 'တရားတော်များ'}
-              {category === 'paritta' && 'ဂါတာတော်များ'}
-              {category === 'dhamma' && 'ဓမ္မသီချင်းများ'}
-            </h2>
+          {/* Music Player Section / Camera View */}
+          <div className={`bg-white rounded-2xl shadow-lg p-8 ${selectedPosture && !isPostureHeld ? 'h-[48rem] overflow-hidden' : 'h-[32rem] overflow-y-auto'}`}>
+            {/* Show camera view during pose detection */}
+            {selectedPosture && !isPostureHeld && (
+              <div className="text-center">
+                {/* Status Header */}
+                <div className="mb-4">
 
-            {/* Category Buttons */}
-            <div className="flex justify-center mb-6 space-x-2">
+                  {/* Hold Progress */}
+                  <div className="w-full bg-gray-300 rounded-full h-3 mb-1">
+                    <div
+                      className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${(consecutiveCorrectFrames.current / 60) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-gray-600 mb-3">
+                    5 စက္ကန့် ထိန်းထားရန်
+                  </p>
+                </div>
+                {/* Live Pose Detection Canvas */}
+                <div className="relative inline-block mb-6">
+                  <canvas
+                    ref={canvasRef}
+                    width={400}
+                    height={400}
+                    className={`rounded-lg border-4 bg-gray-100 ${
+                      poseStatus === "correct"
+                        ? "border-green-500 shadow-lg shadow-green-200"
+                        : poseStatus === "incorrect"
+                        ? "border-red-500 shadow-lg shadow-red-200"
+                        : "border-blue-500 shadow-lg shadow-blue-200"
+                    }`}
+                    style={{
+                      minWidth: "400px",
+                      minHeight: "400px",
+                      borderWidth: "6px",
+                      transition: "all 0.3s ease",
+                      boxShadow:
+                        poseStatus === "correct"
+                          ? "0 0 20px rgba(34, 197, 94, 0.3)"
+                          : poseStatus === "incorrect"
+                          ? "0 0 20px rgba(239, 68, 68, 0.3)"
+                          : "0 0 20px rgba(59, 130, 246, 0.3)",
+                    }}
+                  />
+                  {isPoseDetectionActive && (
+                    <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">Camera Active</div>
+                  )}
+                  {/* Pose detection status overlay */}
+                  {isPoseDetectionActive && (
+                    <div
+                      className={`absolute bottom-2 left-2 px-3 py-1 rounded text-sm font-small ${
+                        poseStatus === "correct" ? "bg-green-600 text-white" : poseStatus === "incorrect" ? "bg-red-300 text-white" : "bg-blue-300 text-white"
+                      }`}
+                    >
+                      {poseStatus === "correct" && "✅ ပုံစံမှန်"}
+                      {poseStatus === "incorrect" && "❌ ပုံစံမှား"} 
+                      {poseStatus === "detecting" && "🔍 စစ်ဆေးနေသည်..."}
+                      {!poseStatus && "📷 ကင်မရာ အဆင်သင့်"}
+                    </div>
+                  )}
+                </div>
+
+                {/* Real-time Prediction Labels */}
+                {isPoseDetectionActive && (
+                  <div className="mb-1 p-1 bg-gray-50 rounded-lg">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 text-center">ပုံစံစစ်ဆေးမှုရလဒ်များ</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                      {['Burmese', 'Chair Posture', 'Seiza', 'Yoga Pose', 'Error'].map((className, index) => (
+                        <div
+                          key={className}
+                          className={`text-center p-2 rounded border-2 ${
+                            className === selectedPosture ? 'bg-green-100 border-green-400' : 'bg-white border-gray-200'
+                          }`}
+                        >
+                          <div className="text-sm font-medium text-gray-600">{className}</div>
+                          <div className={`text-lg font-bold ${className === selectedPosture ? 'text-green-700' : 'text-[#493016]'}`}>
+                            {posePredictions[index] ? `${(posePredictions[index] * 100).toFixed(1)}%` : '0.0%'}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show Dhamma content when not in pose detection */}
+            {!(selectedPosture && !isPostureHeld) && (
+              <>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+                  {category === 'tayartaw' && 'တရားတော်များ'}
+                  {category === 'paritta' && 'ဂါတာတော်များ'}
+                  {category === 'dhamma' && 'ဓမ္မသီချင်းများ'}
+                </h2>
+
+                {/* Category Buttons */}
+                <div className="flex justify-center mb-6 space-x-2">
               <button
                 onClick={() => setCategory('tayartaw')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${category === 'tayartaw' ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
@@ -994,6 +973,8 @@ function Meditation() {
                   </div>
                 ))}
               </div>
+            )}
+              </>
             )}
           </div>
         </div>
