@@ -161,18 +161,18 @@ const InformationDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
-                <p className="text-sm font-medium text-amber-800">ယနေ့၏ နေ့အမည်</p>
-                <p className="text-lg font-semibold text-amber-700">
-                  {(() => {
-                    const todaysMantra = getMantraForStageAndDay(
-                      progressData.tracker.currentStage, 
-                      progressData.tracker.dayNumberInStage || 1
-                    );
-                    return todaysMantra ? todaysMantra.dayName : 'မသိရပါ';
-                  })()}
-                </p>
-              </div>
+                {/* <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-sm font-medium text-amber-800">ယနေ့၏ နေ့အမည်</p>
+                  <p className="text-lg font-semibold text-amber-700">
+                    {(() => {
+                      const todaysMantra = getMantraForStageAndDay(
+                        progressData.tracker.currentStage, 
+                        progressData.tracker.dayNumberInStage || 1
+                      );
+                      return todaysMantra ? todaysMantra.dayName : 'မသိရပါ';
+                    })()}
+                  </p>
+                </div> */}
             </CardContent>
           </Card>
         </motion.div>
