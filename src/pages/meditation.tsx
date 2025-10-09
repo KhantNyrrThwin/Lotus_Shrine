@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"; 
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { Play, Camera } from "lucide-react";
+import { Play, Camera, Search } from "lucide-react";
 import bell from "../assets/sounds/Meditaion.mp3";
 import meditationAudio from "../assets/sounds/Meditaion.mp3";
 import { useMusicPlayer } from "../components/MusicPlayerContext";
@@ -152,6 +152,25 @@ function Meditation() {
   // UI music / category state
   const [category, setCategory] = useState<"tayartaw" | "paritta" | "dhamma">("tayartaw");
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  
+  // Search functionality
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter data based on search term
+  const filteredDhammaSongs = dhammaSongs.filter(song => 
+    song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredParittaSuttas = parittaSuttas.filter(song => 
+    song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTayartawVideos = tayartawVideos.filter(video => 
+    video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    video.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // This ref mirrors selectedPosture so the animation loop reads a stable value
   const selectedPostureRef = useRef<string | null>(null);
@@ -891,15 +910,34 @@ function Meditation() {
               </button>
             </div>
 
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="relative max-w-md mx-auto">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="ဓမ္မသီချင်းများ၊ တရားတော်များ၊ ဂါတာတော်များ ရှာဖွေရန်..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#4f3016] focus:border-[#4f3016] sm:text-sm"
+                />
+              </div>
+            </div>
+
             {/* Category Content */}
             {category === 'dhamma' && (
               <>
                 <div className="space-y-3">
-                  {dhammaSongs.map((song, index) => (
+                  {filteredDhammaSongs.map((song) => (
                     <div
                       key={song.id}
                       className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                      onClick={() => playSong(song, dhammaSongs, index)}
+                      onClick={() => {
+                        const originalIndex = dhammaSongs.findIndex(s => s.id === song.id);
+                        playSong(song, dhammaSongs, originalIndex);
+                      }}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-[#4f3016] rounded-lg flex items-center justify-center">
@@ -914,12 +952,17 @@ function Meditation() {
                     </div>
                   ))}
                 </div>
+                {filteredDhammaSongs.length === 0 && searchTerm && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>ရှာဖွေမှုနှင့် ကိုက်ညီသော ဓမ္မသီချင်းများ မတွေ့ရှိပါ။</p>
+                  </div>
+                )}
               </>
             )}
 
             {category === 'tayartaw' && (
               <div className="space-y-3">
-                {tayartawVideos.map((video) => (
+                {filteredTayartawVideos.map((video) => (
                   <div
                     key={video.id}
                     className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -949,16 +992,24 @@ function Meditation() {
                     )}
                   </div>
                 ))}
+                {filteredTayartawVideos.length === 0 && searchTerm && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>ရှာဖွေမှုနှင့် ကိုက်ညီသော တရားတော်များ မတွေ့ရှိပါ။</p>
+                  </div>
+                )}
               </div>
             )}
 
             {category === 'paritta' && (
               <div className="space-y-3">
-                {parittaSuttas.map((song, index) => (
+                {filteredParittaSuttas.map((song) => (
                   <div
                     key={song.id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                    onClick={() => playSong(song, parittaSuttas, index)}
+                    onClick={() => {
+                      const originalIndex = parittaSuttas.findIndex(s => s.id === song.id);
+                      playSong(song, parittaSuttas, originalIndex);
+                    }}
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-[#4f3016] rounded-lg flex items-center justify-center">
@@ -972,6 +1023,11 @@ function Meditation() {
                     <span className="text-sm text-gray-500">{song.duration}</span>
                   </div>
                 ))}
+                {filteredParittaSuttas.length === 0 && searchTerm && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>ရှာဖွေမှုနှင့် ကိုက်ညီသော ဂါတာတော်များ မတွေ့ရှိပါ။</p>
+                  </div>
+                )}
               </div>
             )}
               </>
