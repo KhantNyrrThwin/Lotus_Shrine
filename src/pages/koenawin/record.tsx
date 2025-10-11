@@ -5,6 +5,8 @@ import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { koNaWinApi, KNWCompletion } from "../../data/koenawinApi";
 import { authService } from "../../data/authService";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import {
   Award,
   CalendarRange,
@@ -307,15 +309,17 @@ export default function RecordDashboard() {
   };
 
   return (
-    <div className="space-y-6 w-[calc(100vw-312.5px)]">
+    <div className="bg-[#FDE9DA]">
+    <Navbar />
+    <div className="space-y-6 mt-15 bg-[#FDE9DA]">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Card className="bg-gradient-to-r from-[#735240] to-[#4f3016] text-white border-0">
+        <Card className="] text-amber-900 bg-[#FDE9DA] shadow-none    text-center">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="w-6 h-6" />
+            <CardTitle className="flex items-center gap-2 justify-center">
+              <Trophy className="w-6 h-6 text-center" />
               ကိုးနဝင်း မှတ်တမ်း
             </CardTitle>
-            <CardDescription className="text-[#e0e0e0]">ပြီးမြောက်ခဲ့သည့် မှတ်တမ်းများ နှင့် ဒစ်ဂျီတယ် လက်မှတ်</CardDescription>
+            <CardDescription className="text-[#552323]">ပြီးမြောက်ခဲ့သည့် မှတ်တမ်းများ နှင့် ဒစ်ဂျီတယ် လက်မှတ်</CardDescription>
           </CardHeader>
         </Card>
       </motion.div>
@@ -416,6 +420,8 @@ export default function RecordDashboard() {
 
       {/* Hidden canvas element for certificate rendering */}
       <canvas ref={canvasRef} style={{ display: "none" }} />
+    </div>
+    <Footer />
     </div>
   );
 }

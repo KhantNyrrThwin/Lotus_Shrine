@@ -218,7 +218,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     toast.success("အကောင့်မှ ထွက်ပြီးပါပြီ", {
-      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်�ရောက်နိုင်ပါသည်။",
+      description: "ကျေးဇူးတင်ပါသည်။ ပြန်လည်ဝင်ရောက်နိုင်ပါသည်။",
       duration: 3000,
     });
 
@@ -234,7 +234,7 @@ export default function Navbar() {
     <>
       <nav
         className={`flex fixed top-0 left-0 right-0 z-50 bg-[#4f3016] text-white font-bold h-[58px] items-center transition-all duration-1000 shadow-lg
-        ${isFeaturesOpen ? "h-[280px] " : "h-[58px]"}  ${isKoeNaWinOpen ? "h-[200px] " : "h-[58px]"} ${isAboutOpen ? "h-[190px] " : "h-[58px]"} ${!isLogin && isAccountOpen ? "h-[160px] " : "h-[58px]"} 
+        ${isFeaturesOpen ? "h-[280px] " : "h-[58px]"}  ${isKoeNaWinOpen && !isLogin ? "h-[190px] " : "h-[58px]"} ${isKoeNaWinOpen && isLogin ? "h-[230px] " : "h-[58px]"}  ${isAboutOpen ? "h-[190px] " : "h-[58px]"} ${!isLogin && isAccountOpen ? "h-[160px] " : "h-[58px]"} 
         ${isLogin && isAccountOpen ? "h-[190px] " : "h-[58px]"}
         `}
       >
@@ -351,14 +351,24 @@ export default function Navbar() {
                     </Link>
                     {isLogin ? (
                       hasKoeNaWinAccount ? (
-                        <Link
-                          to="/koenawin/dashboard"
-                          onClick={() => setKoeNaWinOpen(false)}
-                          className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
-                        >
-                          <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                          &nbsp; ဒက်ရှ်ဘုတ်ဝင်မည်
-                        </Link>
+                        <>
+                          <Link
+                            to="/koenawin/dashboard"
+                            onClick={() => setKoeNaWinOpen(false)}
+                            className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                          >
+                            <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                            &nbsp; ဒက်ရှ်ဘုတ်ဝင်မည်
+                          </Link>
+                          <Link
+                            to="/koenawin/record"
+                            onClick={() => setKoeNaWinOpen(false)}
+                            className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                          >
+                            <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                            &nbsp; ကိုးနဝင်းမှတ်တမ်း
+                          </Link>
+                        </>
                       ) : (
                         <div
                           onClick={() => {
@@ -503,7 +513,7 @@ export default function Navbar() {
                       className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
                     >
                       <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                      &nbsp; အကောင့်ဖွင့်မည်
+                      &nbsp; အကောင့်ဖွင့်မည်
                     </Link>
                   </motion.div>
                 )}
@@ -541,7 +551,7 @@ export default function Navbar() {
                 }}
                 className="inline-flex h-10 items-center justify-center rounded-md bg-[#4f3016] px-4 text-white hover:bg-[#3a2411]"
               >
-                အကောင့်ဝင်�ရန်
+                အကောင့်ဝင်ရန်
               </button>
               <button
                 onClick={() => {
@@ -569,7 +579,7 @@ export default function Navbar() {
               </Dialog.Close>
             </div>
             <Dialog.Description className="mt-2 text-sm text-gray-600">
-              ကိုးနဝင်းဝင်�မည် လုပ်ဆောင်ချက်ကို mid-term seminar ပြီးဆုံးပြီးနောက် ထည့်သွင်းပေးမည်ဖြစ်ပါသည်။ ကျေးဇူးတင်ပါသည်။
+              ကိုးနဝင်းဝင်မည် လုပ်ဆောင်ချက်ကို mid-term seminar ပြီးဆုံးပြီးနောက် ထည့်သွင်းပေးမည်ဖြစ်ပါသည်။ ကျေးဇူးတင်ပါသည်။
             </Dialog.Description>
             <div className="mt-5 flex justify-end">
               <Dialog.Close asChild>
