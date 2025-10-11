@@ -12,6 +12,7 @@ import completeMBell from "../assets/sounds/completeM.ogg";  // Meditation compl
 import incorrectPostureAudio from "../assets/sounds/alarm.ogg";  // Incorrect posture sound
 
 import * as tmPose from "@teachablemachine/pose";
+import MeditationHistory from "../components/MeditationHistory";
 
 // -----------------------------
 // Types / Interfaces
@@ -244,6 +245,16 @@ function Meditation() {
       setIsTimerRunning(false);
       setIsPoseDetectionActive(false);
       stopPoseDetection();
+      
+      // Save meditation session to history
+      const sessions = JSON.parse(localStorage.getItem('meditationSessions') || '[]');
+      const newSession = {
+        date: new Date().toISOString(),
+        duration: timerDuration
+      };
+      sessions.push(newSession);
+      localStorage.setItem('meditationSessions', JSON.stringify(sessions));
+      
       if (bellRef.current) {
         bellRef.current.play(); 
       }
@@ -600,7 +611,10 @@ function Meditation() {
     <div className="min-h-screen bg-[#FDE9DA]">
       <Navbar />
       <div className="container mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">တရားထိုင်ခြင်း နှင့် ပုံစံစစ်ဆေးခြင်း</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">တရားထိုင်ခြင်း နှင့် ပုံစံစစ်ဆေးခြင်း</h1>
+        <div className="flex justify-end mb-8">
+          <MeditationHistory />
+        </div>
 
         {/* Model Loading Status */}
         {!modelLoaded && (
@@ -1063,6 +1077,8 @@ function Meditation() {
           </div>
         </div>
       </div>
+
+
 
       {/* Hidden audio element for bell sound and posture alerts */}
       <audio ref={audioRef} src={bell} />
