@@ -80,12 +80,18 @@ const LoginForm = () => {
     } catch (err: any) {
       console.error("Full error:", err);
       console.error("Error response:", err.response);
-
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Server connection failed",
-      );
+      // If server returned 429 (locked), show its message clearly
+      if (err.response?.status === 429) {
+        const msg = err.response?.data?.message || 'Too many attempts. Try again later.';
+        setError(msg);
+        toast.error(msg, { duration: 6000 });
+      } else {
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "Server connection failed",
+        );
+      }
     } finally {
       setLoading(false);
     }

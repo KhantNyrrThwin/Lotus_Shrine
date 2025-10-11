@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   Calendar as CalendarIcon,
@@ -39,6 +40,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
   const [error, setError] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProgress = async () => {
@@ -209,12 +211,21 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-red-800 mb-2">အမှားတစ်ခုခု ဖြစ်ပွားပါသည်</h3>
             <p className="text-red-600 mb-4">{error || 'ကိုးနဝင်းတိုးတက်မှုကို ရယူ၍ မရပါ။'}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="bg-red-600 hover:bg-red-700"
-            >
-              ပြန်လည်ကြိုးစားမည်
-            </Button>
+            <div className="flex items-center justify-center gap-3">
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="bg-red-600 hover:bg-red-700"
+              >
+                ပြန်လည်ကြိုးစားမည်
+              </Button>
+              <Button
+                onClick={() => navigate('/koenawin')}
+                variant="outline"
+                className="bg-white text-[#4f3016] border-[#4f3016] hover:bg-[#f3efe9]"
+              >
+                ကိုးနဝင်းအကြောင်း
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
