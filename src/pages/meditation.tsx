@@ -793,7 +793,7 @@ function Meditation() {
           </div>
 
           {/* Music Player Section / Camera View */}
-          <div className={`bg-white rounded-2xl shadow-lg p-8 ${selectedPosture && !isPostureHeld ? 'h-[48rem] overflow-hidden' : 'h-[32rem] overflow-y-auto'}`}>
+          <div className={`bg-white rounded-2xl shadow-lg p-8 ${selectedPosture && !isPostureHeld ? 'h-[42rem] overflow-hidden' : 'h-[32rem] overflow-y-auto'}`}>
             {/* Show camera view during pose detection */}
             {selectedPosture && !isPostureHeld && (
               <div className="text-center">
