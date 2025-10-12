@@ -127,7 +127,7 @@ function Meditation() {
   const [modelLoaded, setModelLoaded] = useState(false);
   // removed unused hold progress state
   const [isPostureHeld, setIsPostureHeld] = useState(false); // Track if posture has been held for 5 seconds
-  const [cameraOffAfterHold, setCameraOffAfterHold] = useState(false); // New state to track if camera should be off after hold
+  const afterCorrectRef = useRef<boolean>(false);
 
   // Raw predictions and per-class probabilities (only keep aggregated posePredictions)
   const [posePredictions, setPosePredictions] = useState<number[]>([0, 0, 0, 0, 0]);
@@ -156,6 +156,9 @@ function Meditation() {
   
   // Search functionality
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Track posture when paused so we can show default content (dhamma) while camera off
+  const [pausedSelectedPosture, setPausedSelectedPosture] = useState<string | null>(null);
 
   // Filter data based on search term
   const filteredDhammaSongs = dhammaSongs.filter(song => 
@@ -241,23 +244,28 @@ function Meditation() {
         setTimer(timer + 1);
       }, 1000);
     } else if (timer >= timerDuration) {
-      // Timer finished: stop everything, play bell, and stop pose detection
+      // Timer finished: stop everything, save session to history, play bell, and reset
       setIsTimerRunning(false);
       setIsPoseDetectionActive(false);
       stopPoseDetection();
-      
-      // Save meditation session to history
-      const sessions = JSON.parse(localStorage.getItem('meditationSessions') || '[]');
-      const newSession = {
-        date: new Date().toISOString(),
-        duration: timerDuration
-      };
-      sessions.push(newSession);
-      localStorage.setItem('meditationSessions', JSON.stringify(sessions));
-      
+
+      // Persist meditation session to localStorage for history
+      try {
+        const sessions = JSON.parse(localStorage.getItem('meditationSessions') || '[]');
+        const newSession = {
+          date: new Date().toISOString(),
+          duration: timerDuration,
+        };
+        sessions.push(newSession);
+        localStorage.setItem('meditationSessions', JSON.stringify(sessions));
+      } catch (e) {
+        console.warn('Could not save meditation session to localStorage', e);
+      }
+
       if (bellRef.current) {
         bellRef.current.play(); 
       }
+      resetTimer();
     }
 
     return () => {
@@ -267,7 +275,7 @@ function Meditation() {
     };
   }, [isTimerRunning, timer, timerDuration]);
 
-  // Stop alarm when posture is held for 5 seconds
+  // Stop alarm when posture is held for 5 seconds (redundant safety for async setState)
   useEffect(() => {
     if (isPostureHeld && incorrectPostureRef.current) {
       incorrectPostureRef.current.pause();
@@ -340,6 +348,14 @@ function Meditation() {
       ) {
         setPoseStatus("correct");
         
+        // FIX: Explicitly disable trigger and pause any ongoing alarm when posture is correct (prevents replays/loops)
+        shouldTriggerAlarmRef.current = false;
+        if (incorrectPostureRef.current && alarmPlayingRef.current) {
+          incorrectPostureRef.current.pause();
+          incorrectPostureRef.current.currentTime = 0;
+          alarmPlayingRef.current = false;
+        }
+        
         // Track consecutive correct frames for 5-second hold
         consecutiveCorrectFrames.current++;
         
@@ -347,9 +363,9 @@ function Meditation() {
         if (consecutiveCorrectFrames.current >= 60 && !isPostureHeld) {
           setIsPostureHeld(true);
           setIsTimerRunning(true);
-          // NEW: Turn off camera after hold is complete
-          stopPoseDetection();
-          setCameraOffAfterHold(true);
+          // mirror value in a ref so the running pose loop (which was
+          // created earlier) can observe the updated value immediately
+          afterCorrectRef.current = true;
         }
       } else {
         // Reset consecutive count if posture is incorrect
@@ -361,9 +377,13 @@ function Meditation() {
           maxConfidence > 0.5
         ) {
           setPoseStatus("incorrect");
+          console.log("isPostureHeld:", isPostureHeld);
+          console.log("afterCorrect (ref):", afterCorrectRef.current);
           
           // ALARM LOGIC: Only trigger if not held and not already playing
-          if (!isPostureHeld && !alarmPlayingRef.current) {
+          // use the ref here so the loop sees the latest value without
+          // relying on a re-created closure that may hold stale state
+          if (!afterCorrectRef.current && !alarmPlayingRef.current) {
             shouldTriggerAlarmRef.current = true;
             if (incorrectPostureRef.current) {
               incorrectPostureRef.current.play();
@@ -458,7 +478,6 @@ function Meditation() {
 
       setIsPoseDetectionActive(true);
       consecutiveCorrectFrames.current = 0; // Reset consecutive frames counter
-      setCameraOffAfterHold(false); // Reset camera off state
       poseDetectionLoop();
     } catch (error) {
       console.error("Error starting pose detection:", error);
@@ -501,19 +520,23 @@ function Meditation() {
     selectedPostureRef.current = postureId;
     setShowPostureSelection(false);
     setIsPostureHeld(false); // Reset hold state
+    // clear after-correct marker when a new posture is chosen
+    afterCorrectRef.current = false;
     startPoseDetection(); // Start detection immediately
   };
 
   const pauseTimer = () => {
+    // Pause the timer but keep the selected posture displayed
     setIsTimerRunning(false);
-    setIsPoseDetectionActive(false);
 
-    // Stop the detection loop but keep webcam available
-    if (poseLoopRef.current) {
-      cancelAnimationFrame(poseLoopRef.current);
-      poseLoopRef.current = null;
+    // Mark that we've paused with a posture selected so the UI can show resume
+    if (selectedPosture) {
+      setPausedSelectedPosture(selectedPosture);
     }
-    
+
+    // Stop pose detection and turn camera off
+    stopPoseDetection();
+
     // Stop any active alarms
     if (incorrectPostureRef.current) {
       incorrectPostureRef.current.pause();
@@ -532,8 +555,8 @@ function Meditation() {
 
     setIsTimerRunning(true);
 
-    // Restart pose detection only if camera is not off after hold
-    if (!isPoseDetectionActive && !cameraOffAfterHold) {
+    // Restart pose detection if not active
+    if (!isPoseDetectionActive) {
       startPoseDetection();
     }
   };
@@ -543,7 +566,6 @@ function Meditation() {
     setIsTimerRunning(false);
     setIsPoseDetectionActive(false);
     setIsPostureHeld(false); // Reset hold state
-    setCameraOffAfterHold(false); // Reset camera state
     setShowPostureSelection(false); // Reset posture selection state
     stopPoseDetection();
     setTimer(0);
@@ -560,6 +582,8 @@ function Meditation() {
     }
     
     // Stop any active alarms
+    alarmPlayingRef.current = false;
+    shouldTriggerAlarmRef.current = false;
     if (incorrectPostureRef.current) {
       incorrectPostureRef.current.pause();
       incorrectPostureRef.current.currentTime = 0;
@@ -611,7 +635,7 @@ function Meditation() {
     <div className="min-h-screen bg-[#FDE9DA]">
       <Navbar />
       <div className="container mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">တရားထိုင်ခြင်း နှင့် ပုံစံစစ်ဆေးခြင်း</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">တရားထိုင်ခြင်း နှင့် ပုံစံစစ်ဆေးခြင်း</h1>
         <div className="flex justify-end mb-8">
           <MeditationHistory />
         </div>
@@ -631,7 +655,7 @@ function Meditation() {
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">တရားထိုင်မည်</h2>
 
-            {!showPostureSelection && !isTimerRunning && (
+            {!showPostureSelection && !isTimerRunning && !selectedPosture && (
               <>
                 <div className="text-center mb-8">
                   <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
@@ -705,10 +729,10 @@ function Meditation() {
 
             {/* Active Meditation with Pose Detection */}
             {selectedPosture && !isPostureHeld && (
-              <div className="text-center">
+              <div className="text-center " >
                 {/* Instructions - Always visible during pose detection */}
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto">
-                  <div className="text-3xl font-medium text-blue-700 mb-4 text-center">
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto flex items-center justify-center">
+                  <div className="text-3xl font-medium text-blue-700 mb-4 text-center ">
                     <h3>{postureOptions.find((p) => p.id === selectedPosture)?.name} အတွက် ညွှန်ကြားချက်များ</h3>
                   </div>
                   <ul className="text-black-600 text-xl leading-relaxed text-left space-y-3">
@@ -716,6 +740,15 @@ function Meditation() {
                     <li>• laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ</li>
                     <li>• သက်တောင့်သက်သာနေပါ</li>
                   </ul>
+                </div>
+                {/* During the 5-second posture check we only show a Restart button (no 'တရားထိုင်မည်') */}
+                <div className="text-center mb-6">
+                  <button
+                    onClick={resetTimer}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    ပြန်စတင်မည်
+                  </button>
                 </div>
               </div>
             )}
@@ -742,16 +775,6 @@ function Meditation() {
                   </div>
                 </div>
 
-                {/* Camera Off Confirmation Message */}
-                <div className="mb-6 p-4 bg-green-100 border border-green-500 rounded-lg">
-                  <div className="flex items-center justify-center space-x-2">
-                    <span className="text-green-600 text-2xl">✅</span>
-                    <span className="font-bold text-lg text-green-700">
-                      ပုံစံမှန်ကြောင်း အတည်ပြုပြီးပါပြီ။ လုံခြုံရေးအတွက် ကင်မရာကို ပိတ်ထားပါသည်။
-                    </span>
-                  </div>
-                </div>
-
                 {/* Timer Controls */}
                 <div className="flex justify-center space-x-4 mt-6">
                   <button
@@ -770,15 +793,57 @@ function Meditation() {
               </div>
             )}
 
-            {/* Add resume button when paused */}
-            {!isTimerRunning && timer > 0 && selectedPosture && isPostureHeld && (
-              <div className="text-center mt-6">
-                <button
-                  onClick={resumeTimer}
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  ဆက်လက်ထိုင်မည်
-                </button>
+            {/* Add resume + restart buttons when paused */}
+            {!isTimerRunning && timer > 0 && (selectedPosture || pausedSelectedPosture) && isPostureHeld && (
+              
+              <div className="text-center mt-6 flex justify-center">
+                
+                {pausedSelectedPosture ? (
+                  <div className="max-w-xl w-full">
+                    {/* Status Header (same as running state) */}
+                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg text-center">
+                      <h3 className="text-xl font-bold text-purple-800 mb-2">🧘 တရားထိုင်ခြင်း လုပ်ဆောင်နေသည်</h3>
+                      <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === selectedPosture)?.name}</span></p>
+                    </div>
+
+                    <div className="mb-4 text-center">
+                      <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
+                      <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
+
+                      {/* Progress bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+                        <div
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${(timer / timerDuration) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <button
+                        onClick={resumeTimer}
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                      >
+                        ဆက်လက်ထိုင်မည်
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={resumeTimer}
+                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      ဆက်လက်ထိုင်မည်
+                    </button>
+                    <button
+                      onClick={resetTimer}
+                      className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      ပြန်စတင်မည်
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -807,24 +872,25 @@ function Meditation() {
           </div>
 
           {/* Music Player Section / Camera View */}
-          <div className={`bg-white rounded-2xl shadow-lg p-8 ${selectedPosture && !isPostureHeld ? 'h-[42rem] overflow-hidden' : 'h-[32rem] overflow-y-auto'}`}>
+          <div className={`bg-white rounded-2xl shadow-lg p-8 ${selectedPosture ? 'h-[42rem] overflow-hidden flex items-center justify-center' : 'h-[32rem] overflow-y-auto'}`}>
             {/* Show camera view during pose detection */}
-            {selectedPosture && !isPostureHeld && (
+            {selectedPosture && (
               <div className="text-center">
-                {/* Status Header */}
-                <div className="mb-4">
-
-                  {/* Hold Progress */}
-                  <div className="w-full bg-gray-300 rounded-full h-3 mb-1">
-                    <div
-                      className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${(consecutiveCorrectFrames.current / 60) * 100}%` }}
-                    ></div>
+                {/* Hold Progress - only before hold */}
+                {!isPostureHeld && (
+                  <div className="mb-4">
+                    {/* Hold Progress */}
+                    <div className="w-full bg-gray-300 rounded-full h-3 mb-1">
+                      <div
+                        className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-300"
+                        style={{ width: `${(consecutiveCorrectFrames.current / 60) * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-gray-600 mb-3">
+                      5 စက္ကန့် ထိန်းထားရန်
+                    </p>
                   </div>
-                  <p className="text-gray-600 mb-3">
-                    5 စက္ကန့် ထိန်းထားရန်
-                  </p>
-                </div>
+                )}
                 {/* Live Pose Detection Canvas */}
                 <div className="relative inline-block mb-6">
                   <canvas
@@ -894,7 +960,7 @@ function Meditation() {
             )}
 
             {/* Show Dhamma content when not in pose detection */}
-            {!(selectedPosture && !isPostureHeld) && (
+            {!selectedPosture && (
               <>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                   {category === 'tayartaw' && 'တရားတော်များ'}
@@ -1077,8 +1143,6 @@ function Meditation() {
           </div>
         </div>
       </div>
-
-
 
       {/* Hidden audio element for bell sound and posture alerts */}
       <audio ref={audioRef} src={bell} />
