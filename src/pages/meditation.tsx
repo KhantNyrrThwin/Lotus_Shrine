@@ -123,7 +123,6 @@ function Meditation() {
   // Pose detection runtime state
   const [isPoseDetectionActive, setIsPoseDetectionActive] = useState(false);
   const [poseStatus, setPoseStatus] = useState<'correct' | 'incorrect' | 'detecting' | null>(null);
-  const [poseConfidence, setPoseConfidence] = useState<number>(0);
   const [modelLoaded, setModelLoaded] = useState(false);
   // removed unused hold progress state
   const [isPostureHeld, setIsPostureHeld] = useState(false); // Track if posture has been held for 5 seconds
@@ -336,7 +335,7 @@ function Meditation() {
         }
       });
 
-      setPoseConfidence(maxConfidence);
+  // poseConfidence state removed — we keep maxConfidence local for debugging if needed
 
       // Use the ref value to avoid stale closure issues in the animation loop
       const currentSelectedPosture = selectedPostureRef.current;
@@ -729,20 +728,20 @@ function Meditation() {
 
             {/* Active Meditation with Pose Detection */}
             {selectedPosture && !isPostureHeld && (
-              <div className="text-center " >
+              <div className="text-center p-10" >
                 {/* Instructions - Always visible during pose detection */}
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto flex items-center justify-center">
-                  <div className="text-3xl font-medium text-blue-700 mb-4 text-center ">
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto text-center">
+                  <div className="text-3xl font-medium text-blue-700 mb-2">
                     <h3>{postureOptions.find((p) => p.id === selectedPosture)?.name} အတွက် ညွှန်ကြားချက်များ</h3>
                   </div>
-                  <ul className="text-black-600 text-xl leading-relaxed text-left space-y-3">
+                  <ul className="text-gray-700 text-lg leading-relaxed text-left indent-2 space-y-3 mt-3">
                     <li>• laptopကို 20 degree စောင်းပါ</li>
                     <li>• laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ</li>
                     <li>• သက်တောင့်သက်သာနေပါ</li>
                   </ul>
                 </div>
                 {/* During the 5-second posture check we only show a Restart button (no 'တရားထိုင်မည်') */}
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 p-10">
                   <button
                     onClick={resetTimer}
                     className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
@@ -765,7 +764,7 @@ function Meditation() {
                 <div className="mb-4">
                   <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
                   <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
-
+                  <div className="text-gray-600 mb-2">တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}</div>
                   {/* Progress bar */}
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
                     <div
@@ -799,15 +798,49 @@ function Meditation() {
               <div className="text-center mt-6 flex justify-center">
                 
                 {pausedSelectedPosture ? (
-                  <div className="max-w-xl w-full">
-                    {/* Status Header (same as running state) */}
-                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg text-center">
+                  <div className="text-center">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
                       <h3 className="text-xl font-bold text-purple-800 mb-2">🧘 တရားထိုင်ခြင်း လုပ်ဆောင်နေသည်</h3>
-                      <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === selectedPosture)?.name}</span></p>
+                      <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === (pausedSelectedPosture || selectedPosture))?.name}</span></p>
                     </div>
 
-                    <div className="mb-4 text-center">
-                      <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === selectedPosture)?.name}</div>
+                    <div className="mb-4">
+                      <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === (pausedSelectedPosture || selectedPosture))?.name}</div>
+                      <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
+                      <div className="text-gray-600 mb-2">တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}</div>
+                      {/* Progress bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+                        <div
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${(timer / timerDuration) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={resumeTimer}
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                      >
+                        ဆက်လက်ထိုင်မည်
+                      </button>
+                      <button
+                        onClick={resetTimer}
+                        className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                      >
+                        ပြန်စတင်မည်
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+                      <h3 className="text-xl font-bold text-purple-800 mb-2">🧘 တရားထိုင်ခြင်း လုပ်ဆောင်နေသည်</h3>
+                      <p className="text-purple-700">ရွေးချယ်ထားသောပုံစံ: <span className="font-semibold">{postureOptions.find((p) => p.id === (pausedSelectedPosture || selectedPosture))?.name}</span></p>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="text-2xl font-semibold text-gray-800 mb-2">{postureOptions.find((p) => p.id === (pausedSelectedPosture || selectedPosture))?.name}</div>
                       <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
 
                       {/* Progress bar */}
@@ -819,29 +852,20 @@ function Meditation() {
                       </div>
                     </div>
 
-                    <div className="flex justify-center">
+                    <div className="flex justify-center space-x-4">
                       <button
                         onClick={resumeTimer}
-                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-10 rounded-lg font-semibold transition-colors"
                       >
                         ဆက်လက်ထိုင်မည်
                       </button>
+                      <button
+                        onClick={resetTimer}
+                        className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                      >
+                        ပြန်စတင်မည်
+                      </button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-center space-x-4">
-                    <button
-                      onClick={resumeTimer}
-                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      ဆက်လက်ထိုင်မည်
-                    </button>
-                    <button
-                      onClick={resetTimer}
-                      className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      ပြန်စတင်မည်
-                    </button>
                   </div>
                 )}
               </div>
