@@ -1,5 +1,5 @@
 @echo off
-title Lotus_Shrine - Start Backend & Frontend
+title Lotus_Shrine - Start
 
 :: Helpful startup script for Windows (cmd/powershell)
 :: - Tries to start backend (PHP built-in if available) inside backend\lotus_shrine
