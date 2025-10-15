@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2025 at 09:16 PM
+-- Generation Time: Oct 15, 2025 at 03:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `lotus_shrine`
---a
+--
 
 -- --------------------------------------------------------
 
@@ -42,7 +42,8 @@ CREATE TABLE `ko_na_win_completions` (
 
 INSERT INTO `ko_na_win_completions` (`completion_id`, `user_id`, `start_date`, `end_date`, `completed_at`, `total_days`) VALUES
 (5, 15, '2025-07-15', '2025-09-17', '2025-09-15 18:59:06', 81),
-(6, 15, '2025-09-15', '2025-09-17', '2025-09-15 19:11:14', 81);
+(6, 15, '2025-09-15', '2025-09-17', '2025-09-15 19:11:14', 81),
+(7, 12, '2025-10-12', '2025-10-12', '2025-10-12 02:19:02', 81);
 
 -- --------------------------------------------------------
 
@@ -90,6 +91,22 @@ CREATE TABLE `ko_na_win_tracker` (
 INSERT INTO `ko_na_win_tracker` (`tracker_id`, `user_id`, `start_date`, `current_day_count`, `current_stage`, `is_completed`) VALUES
 (25, 8, '2025-09-14', 81, 9, 1),
 (29, 15, '2025-09-15', 81, 9, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `login_attempts`
+--
+
+CREATE TABLE `login_attempts` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `attempts` int(11) NOT NULL DEFAULT 1,
+  `last_attempt` datetime NOT NULL,
+  `locked_until` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -143,10 +160,11 @@ CREATE TABLE `rate_limits` (
 --
 
 INSERT INTO `rate_limits` (`id`, `email`, `ip`, `attempts`, `created_at`) VALUES
-(23, 'justicforyang@gmail.com', '::1', 2, '2025-07-08 14:05:49'),
+(23, 'justicforyang@gmail.com', '::1', 3, '2025-10-09 22:38:18'),
 (24, 'nini@gmail.com', '::1', 1, '2025-07-07 21:53:03'),
 (29, 'ttube5020@gmail.com', '::1', 4, '2025-07-09 10:41:05'),
-(34, 'khantsihein2004@gmail.com', '::1', 1, '2025-09-14 21:40:16');
+(34, 'khantsihein2004@gmail.com', '::1', 1, '2025-09-14 21:40:16'),
+(36, 'paiminthway13@gmail.com', '::1', 2, '2025-10-11 07:08:48');
 
 -- --------------------------------------------------------
 
@@ -174,8 +192,8 @@ INSERT INTO `users` (`user_id`, `user_email`, `name`, `dob`, `user_password`, `r
 (9, 'paipai@gmail.com', 'ပိုင်မင်းသွေး', '0000-00-00', '$2y$10$f9fOz.EG2ZTQb5ek/4aCmOiZeY9.N3ZWiVOOFk2QEt2trRMnRboIS', NULL, NULL),
 (10, 'zilong52811@gmail.com', 'Raven', '0000-00-00', '$2y$10$b7HfaY7jarDTY7eVmKJgJufdf/h435gbaviAnSgs06NY.p8d9tKky', '485899', '2025-07-07 17:29:03'),
 (11, 'ravenpai@gmail.com', 'မောင်ပိုင်', '0000-00-00', '$2y$10$q5Tzu9rNA3n3bPszTGEkpuzB2rBZqK.riZIBnVs8XLO61vNHWp2Lq', NULL, NULL),
-(12, 'paiminthway13@gmail.com', 'Raven', '2005-08-18', '$2y$10$ryjyIfTQ5jAmEgFu3mBU6..C5fm9zR0PD6rvipNymve9uAAszbbaW', NULL, NULL),
-(13, 'justicforyang@gmail.com', 'Nyar Nyar', '2005-07-04', '$2y$10$Eau1TtRRm83I0WylAN889.XomXv9PvQTa.CrHeG7cRSdC9/XUWG0K', NULL, NULL),
+(12, 'paiminthway13@gmail.com', 'Raven', '2005-08-18', '$2y$10$J/sTWIc/SxpW3QPLDD8h4ejRNRbm6ayD9CwXVbpsolL.37JReYVSq', NULL, NULL),
+(13, 'justicforyang@gmail.com', 'Nyar Nyar', '2005-07-04', '$2y$10$Eau1TtRRm83I0WylAN889.XomXv9PvQTa.CrHeG7cRSdC9/XUWG0K', '786163', '2025-10-09 18:13:18'),
 (14, 'bhonemyintmaung272@gmail.com', 'Bhone Gyi', '2005-02-27', '$2y$10$ue5GmdzyA6/o8gWPUXnZYeM6Rdmn9DQ/5XwsNDqq4Y7s5gkfxOFZa', NULL, NULL),
 (15, 'khantsihein2004@gmail.com', 'Khant Si Hein', '2004-04-29', '$2y$10$cI8g4C/E5iJ2aGfXlLU0Q.DNi4loGXHOqBgEnhCBRwwHzpVehcCPu', NULL, NULL);
 
@@ -204,6 +222,16 @@ ALTER TABLE `ko_na_win_daily_log`
 ALTER TABLE `ko_na_win_tracker`
   ADD PRIMARY KEY (`tracker_id`),
   ADD UNIQUE KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `login_attempts`
+--
+ALTER TABLE `login_attempts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_email_ip` (`email`,`ip`),
+  ADD KEY `email` (`email`),
+  ADD KEY `ip` (`ip`),
+  ADD KEY `locked_until` (`locked_until`);
 
 --
 -- Indexes for table `quotes`
@@ -235,19 +263,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `ko_na_win_completions`
 --
 ALTER TABLE `ko_na_win_completions`
-  MODIFY `completion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `completion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ko_na_win_daily_log`
 --
 ALTER TABLE `ko_na_win_daily_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `ko_na_win_tracker`
 --
 ALTER TABLE `ko_na_win_tracker`
-  MODIFY `tracker_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `tracker_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `login_attempts`
+--
+ALTER TABLE `login_attempts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `quotes`
@@ -259,7 +293,7 @@ ALTER TABLE `quotes`
 -- AUTO_INCREMENT for table `rate_limits`
 --
 ALTER TABLE `rate_limits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -293,18 +327,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-CREATE TABLE `login_attempts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) NOT NULL,
-  `ip` varchar(45) NOT NULL,
-  `attempts` int(11) NOT NULL DEFAULT 1,
-  `last_attempt` datetime NOT NULL,
-  `locked_until` datetime DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_email_ip` (`email`,`ip`),
-  KEY `email` (`email`),
-  KEY `ip` (`ip`),
-  KEY `locked_until` (`locked_until`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
