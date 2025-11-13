@@ -6,7 +6,8 @@ import {
   Info, 
   User, 
   LogOut,
-  Trophy
+  Trophy,
+  Award
 } from "lucide-react";
 
 import Navbar from "../../components/navbar";
@@ -28,6 +29,7 @@ import {
 // Dashboard Components
 import HomeDashboard from "./HomeDashboard";
 import InformationDashboard from "./InformationDashboard";
+import RecordDashboard from "./record";
 
 const KoeNaWinDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -108,6 +110,17 @@ const KoeNaWinDashboard: React.FC = () => {
                 
                 <SidebarMenuItem>
                   <SidebarMenuButton 
+                    onClick={() => handleNavigation("record")}
+                    isActive={currentView === "record"}
+                    tooltip="ကိုးနဝင်းမှတ်တမ်း"
+                  >
+                    <Award className="w-4 h-4" />
+                    <span>ကိုးနဝင်းမှတ်တမ်း</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
                     onClick={() => navigate("/")}
                     tooltip="ထွက်ရန်"
                   >
@@ -125,7 +138,7 @@ const KoeNaWinDashboard: React.FC = () => {
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="md:hidden" />
                 <h1 className="text-2xl font-bold text-[#4f3016]">
-                  {currentView === "home" ? "ပင်မစာမျက်နှာ" :"ကိုးနဝင်း အချက်အလက်" }
+                  {currentView === "home" ? "ပင်မစာမျက်နှာ" : currentView === "info" ? "ကိုးနဝင်း အချက်အလက်" : "ကိုးနဝင်းမှတ်တမ်း"}
                 </h1>
               </div>
               
@@ -140,6 +153,7 @@ const KoeNaWinDashboard: React.FC = () => {
             >
               {currentView === "home" && <HomeDashboard username={username} />}
               {currentView === "info" && <InformationDashboard />}
+              {currentView === "record" && <RecordDashboard />}
             </motion.div>
           </div>
         </div>
