@@ -39,29 +39,29 @@ interface PostureOption {
 const postureOptions: PostureOption[] = [
   {
     id: "Burmese",
-    name: "Burmese Posture",
-    description: "Traditional cross-legged sitting with both feet on the ground",
+    name: "Standard Posture",
+    description: "တင်ပလ္လင်ခွေထိုင်နည်း",
     imageUrl: "/postures/standard.png",
     instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Chair Posture",
     name: "Chair Posture",
-    description: "Sitting on a chair with feet flat on the ground",
+    description: "ကုလားထိုင်ပေါ်ထိုင်ပြီး ခြေဖဝါးများကို မြေပြင်ပေါ်ပြားချထားခြင်း",
     imageUrl: "/postures/chair.png",
     instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Seiza",
     name: "Seiza Posture",
-    description: "Kneeling with buttocks on heels",
+    description: "ဒူးထောက်ကာ ဖနောင့်ပေါ်သို့ တင်ပါးချထိုင်ခြင်း",
     imageUrl: "/postures/seiza.png",
     instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
   {
     id: "Yoga Pose",
     name: "Yoga Pose",
-    description: "Lotus or half-lotus position",
+    description: "ပဒုမ္မာသန သို့မဟုတ် တစ်ဝက်ပဒုမ္မာသန ပုံစံ",
     imageUrl: "/postures/yoga.png",
     instructions: "laptopကို 20 degree စောင်းပါ၊ laptopနှင့် 1 meterအကွာတွင် နေရာယူပါ၊ သက်တောင့်သက်သာနေပါ",
   },
@@ -115,6 +115,8 @@ function Meditation() {
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerDuration, setTimerDuration] = useState(10 * 60); // 10 minutes default (seconds)
+  const [showCustomTimer, setShowCustomTimer] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState("");
 
   // Posture / pose detection UI state
   const [showPostureSelection, setShowPostureSelection] = useState(false);
@@ -658,7 +660,7 @@ function Meditation() {
               <>
                 <div className="text-center mb-8">
                   <div className="text-6xl font-mono text-[#493016] mb-4">{formatTime(timer)}</div>
-                  <div className="text-gray-600 mb-4">တရားထိုင်ချိန်: {formatTimerDuration(timerDuration)}</div>
+                  <div className="text-gray-600 mb-4">တရားထိုင်ချိန်: <span className="font-bold text-2xl">{ formatTimerDuration(timerDuration)}</span></div>
 
                   {/* Progress bar */}
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
@@ -875,22 +877,64 @@ function Meditation() {
             {!showPostureSelection && !isTimerRunning && !selectedPosture && (
               <div className="text-center">
                 <label className="block text-gray-700 font-medium mb-2">တရားထိုင်ချိန် သတ်မှတ်ပါ :</label>
-                <div className="flex justify-center space-x-2">
-                  {[5, 10, 15, 20, 30].map((minutes) => (
+                <div className="flex justify-center space-x-2 flex-wrap gap-2">
+                  {[10, 15, 20, 30].map((minutes) => (
                     <button
                       key={minutes}
                       onClick={() => {
                         setTimerDuration(minutes * 60);
+                        setShowCustomTimer(false);
                         resetTimer();
                       }}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        timerDuration === minutes * 60 ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        timerDuration === minutes * 60 && !showCustomTimer ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       }`}
                     >
                       {minutes} မိနစ်
                     </button>
                   ))}
+                  <button
+                    onClick={() => setShowCustomTimer(!showCustomTimer)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      showCustomTimer ? 'bg-[#4f3016] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Customize Timer
+                  </button>
                 </div>
+                
+                {/* Custom Timer Input */}
+                {showCustomTimer && (
+                  <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                    <label className="block text-gray-700 font-medium mb-2">မိနစ် ထည့်သွင်းပါ :</label>
+                    <div className="flex items-center justify-center space-x-3">
+                      <input
+                        type="number"
+                        min="1"
+                        max="120"
+                        value={customMinutes}
+                        onChange={(e) => setCustomMinutes(e.target.value)}
+                        placeholder="မိနစ်"
+                        className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-center"
+                      />
+                      <button
+                        onClick={() => {
+                          const minutes = parseInt(customMinutes);
+                          if (minutes && minutes > 0 && minutes <= 120) {
+                            setTimerDuration(minutes * 60);
+                            resetTimer();
+                          } else {
+                            alert('ကျေးဇူးပြု၍ 1 မှ 120 အတွင်းရှိ မိနစ်တစ်ခု ရွေးချယ်ပါ');
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                      >
+                        သတ်မှတ်မည်
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">* အများဆုံး 120 မိနစ် (2 နာရီ)</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -5,8 +5,6 @@ import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { koNaWinApi, KNWCompletion } from "../../data/koenawinApi";
 import { authService } from "../../data/authService";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
 import {
   Award,
   CalendarRange,
@@ -309,11 +307,9 @@ export default function RecordDashboard() {
   };
 
   return (
-    <div className="bg-[#FDE9DA]">
-    <Navbar />
-    <div className="space-y-6 mt-15 bg-[#FDE9DA]">
+    <div className="space-y-6 w-[calc(100vw-312.5px)]">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Card className="] text-amber-900 bg-[#FDE9DA] shadow-none    text-center">
+        <Card className="text-amber-900 bg-[#FDE9DA] shadow-none text-center">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 justify-center">
               <Trophy className="w-6 h-6 text-center" />
@@ -420,8 +416,6 @@ export default function RecordDashboard() {
 
       {/* Hidden canvas element for certificate rendering */}
       <canvas ref={canvasRef} style={{ display: "none" }} />
-    </div>
-    <Footer />
     </div>
   );
 }
