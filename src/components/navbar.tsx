@@ -392,14 +392,16 @@ export default function Navbar() {
                         &nbsp; ကိုးနဝင်းဝင်မည်
                       </div>
                     )}
-                    <Link
-                        to="/koenawin/record"
-                        onClick={() => setKoeNaWinOpen(false)}
-                        className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
-                      >
-                        <img src={link_logo} alt="LOGO" className="size-[28px]" />
-                        &nbsp; ကိုးနဝင်းမှတ်တမ်း
-                    </Link>
+                    {isLogin && (
+                      <Link
+                          to="/koenawin/record"
+                          onClick={() => setKoeNaWinOpen(false)}
+                          className="flex items-center mx-100 px-4 py-2 text-white hover:text-amber-300 font-extrabold"
+                        >
+                          <img src={link_logo} alt="LOGO" className="size-[28px]" />
+                          &nbsp; ကိုးနဝင်းမှတ်တမ်း
+                      </Link>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
