@@ -376,7 +376,7 @@ function AboutUs() {
                   <p className="text-gray-700 text-lg leading-relaxed text-center max-w-4xl mx-auto mb-6">
                     <b>Lotus Shrine</b> သည် တရားထိုင်ခြင်း၊ ဆုတောင်းခြင်းနှင့်
                     ဘာသာရေးဆိုင်ရာအတွေးအခေါ်များကို ခေတ်မီနည်းပညာဖြင့်
-                    ပေါင်းစည်းဖန်တီးထားသော အွန်လိုင်းပလက်ဖောင်း (web-based
+                    ပေါင်းစည်းဖန်တီးထားသော ဒစ်ဂျစ်တယ်ဘုရားခန်း (web-based
                     platform) တစ်ခုဖြစ်သည်။
                   </p>
                   <div className="w-32 h-0.5 bg-gradient-to-r from-[#4f3016] to-[#8B4513] mx-auto"></div>
