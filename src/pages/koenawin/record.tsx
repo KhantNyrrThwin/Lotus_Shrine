@@ -15,6 +15,7 @@ import {
   Send,
   Trophy
 } from "lucide-react";
+import Navbar from "@/components/navbar";
 
 type HistoryRecord = {
   id: string;
@@ -307,115 +308,121 @@ export default function RecordDashboard() {
   };
 
   return (
-    <div className="space-y-6 w-[calc(100vw-312.5px)]">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Card className="text-amber-900 bg-[#FDE9DA] shadow-none text-center">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 justify-center">
-              <Trophy className="w-6 h-6 text-center" />
-              ကိုးနဝင်း မှတ်တမ်း
-            </CardTitle>
-            <CardDescription className="text-[#552323]">ပြီးမြောက်ခဲ့သည့် မှတ်တမ်းများ နှင့် ဒစ်ဂျီတယ် လက်မှတ်</CardDescription>
-          </CardHeader>
-        </Card>
-      </motion.div>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      {/* Add padding top to account for fixed navbar */}
+      <div className="pt-[58px] flex-grow flex flex-col items-center">
+        <div className="w-full max-w-6xl px-4 py-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <Card className="text-amber-900 bg-[#FDE9DA] shadow-none text-center">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 justify-center">
+                  <Trophy className="w-6 h-6 text-center" />
+                  ကိုးနဝင်း မှတ်တမ်း
+                </CardTitle>
+                <CardDescription className="text-[#552323]">ပြီးမြောက်ခဲ့သည့် မှတ်တမ်းများ နှင့် ဒစ်ဂျီတယ် လက်မှတ်</CardDescription>
+              </CardHeader>
+            </Card>
+          </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* History List */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
-                <CalendarRange className="w-5 h-5" />
-                ပြီးမြောက်မှတ်တမ်းများ
-              </h2>
-              <CardDescription className="text-[#735240]">Username၊ စတင်နေ့စွဲ နှင့် ပြီးဆုံးနေ့စွဲ</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {historyData.map((item) => (
-                <div key={item.id} className={`p-4 rounded-lg border flex items-center justify-between gap-4 ${selectedId === item.id ? "bg-amber-50 border-amber-200" : "bg-[#FDE9DA] border-[#e2c8b5]"}`}>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 text-[#4f3016] font-semibold">
-                      <User className="w-4 h-4" />
-                      <span>{item.username}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {/* History List */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+              <Card className="bg-white border-[#4f3016]">
+                <CardHeader>
+                  <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
+                    <CalendarRange className="w-5 h-5" />
+                    ပြီးမြောက်မှတ်တမ်းများ
+                  </h2>
+                  <CardDescription className="text-[#735240]">Username၊ စတင်နေ့စွဲ နှင့် ပြီးဆုံးနေ့စွဲ</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {historyData.map((item) => (
+                    <div key={item.id} className={`p-4 rounded-lg border flex items-center justify-between gap-4 ${selectedId === item.id ? "bg-amber-50 border-amber-200" : "bg-[#FDE9DA] border-[#e2c8b5]"}`}>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 text-[#4f3016] font-semibold">
+                          <User className="w-4 h-4" />
+                          <span>{item.username}</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm text-[#735240]">
+                          <div>စတင်နေ့စွဲ: {formatDate(item.startDate)}</div>
+                          <div>ပြီးဆုံးနေ့စွဲ: {formatDate(item.endDate)}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          className="bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer"
+                          onClick={() => {
+                            setSelectedId(item.id);
+                            generateCertificate(item);
+                          }}
+                        >
+                          <Award className="w-4 h-4" />
+                          လက်မှတ် ထုတ်ယူမည်
+                        </Button>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm text-[#735240]">
-                      <div>စတင်နေ့စွဲ: {formatDate(item.startDate)}</div>
-                      <div>ပြီးဆုံးနေ့စွဲ: {formatDate(item.endDate)}</div>
-                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Certificate Preview & Actions */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+              <Card className="bg-white border-[#4f3016]">
+                <CardHeader>
+                  <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    ဒစ်ဂျီတယ် လက်မှတ်
+                  </h2>
+                  <CardDescription className="text-[#735240]">ဒေါင်းလုတ် ပြုလုပ်မည်၊ သို့မဟုတ် မျှဝေမည်</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="aspect-[14/9] w-full bg-[#FDE9DA] border border-[#e2c8b5] rounded-lg flex items-center justify-center overflow-hidden">
+                    {certificateUrl ? (
+                      <img src={certificateUrl} alt="Certificate Preview" className="w-full h-full object-contain" />
+                    ) : (
+                      <div className="text-[#735240] text-center px-6">
+                        <p>လက်မှတ် မရှိသေးပါ။ ကိုယ်လိုချင်သော မှတ်တမ်းတွင် "လက်မှတ် ထုတ်ယူမည်" ကို နှိပ်ပါ။</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button
                       className="bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer"
-                      onClick={() => {
-                        setSelectedId(item.id);
-                        generateCertificate(item);
-                      }}
+                      onClick={() => selectedRecord && generateCertificate(selectedRecord)}
                     >
-                      <Award className="w-4 h-4" />
-                      လက်မှတ် ထုတ်ယူမည်
+                      <Award className="w-4 h-4" /> လက်မှတ် ပြန်ထုတ်မည်
                     </Button>
+                    <Button
+                      variant="outline"
+                      className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
+                      onClick={handleDownload}
+                      disabled={!certificateUrl}
+                    >
+                      <Download className="w-4 h-4" /> ဒေါင်းလုတ်လုပ်မည်
+                    </Button>
+                    <div className="flex items-center gap-2 ml-auto">
+                      <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("facebook")}> 
+                        <Facebook className="w-4 h-4" /> Facebook
+                      </Button>
+                      <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("instagram")}>
+                        <Instagram className="w-4 h-4" /> Instagram
+                      </Button>
+                      <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("telegram")}>
+                        <Send className="w-4 h-4" /> Telegram
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
 
-        {/* Certificate Preview & Actions */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-          <Card className="bg-white border-[#4f3016]">
-            <CardHeader>
-              <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                ဒစ်ဂျီတယ် လက်မှတ်
-              </h2>
-              <CardDescription className="text-[#735240]">ဒေါင်းလုတ် ပြုလုပ်မည်၊ သို့မဟုတ် မျှဝေမည်</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="aspect-[14/9] w-full bg-[#FDE9DA] border border-[#e2c8b5] rounded-lg flex items-center justify-center overflow-hidden">
-                {certificateUrl ? (
-                  <img src={certificateUrl} alt="Certificate Preview" className="w-full h-full object-contain" />
-                ) : (
-                  <div className="text-[#735240] text-center px-6">
-                    <p>လက်မှတ် မရှိသေးပါ။ ကိုယ်လိုချင်သော မှတ်တမ်းတွင် "လက်မှတ် ထုတ်ယူမည်" ကို နှိပ်ပါ။</p>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  className="bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white border-0 cursor-pointer"
-                  onClick={() => selectedRecord && generateCertificate(selectedRecord)}
-                >
-                  <Award className="w-4 h-4" /> လက်မှတ် ပြန်ထုတ်မည်
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white"
-                  onClick={handleDownload}
-                  disabled={!certificateUrl}
-                >
-                  <Download className="w-4 h-4" /> ဒေါင်းလုတ်လုပ်မည်
-                </Button>
-                <div className="flex items-center gap-2 ml-auto">
-                  <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("facebook")}> 
-                    <Facebook className="w-4 h-4" /> Facebook
-                  </Button>
-                  <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("instagram")}>
-                    <Instagram className="w-4 h-4" /> Instagram
-                  </Button>
-                  <Button variant="outline" className="border-[#4f3016] text-[#4f3016] hover:bg-[#4f3016] hover:text-white" onClick={() => shareTo("telegram")}>
-                    <Send className="w-4 h-4" /> Telegram
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+          {/* Hidden canvas element for certificate rendering */}
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
       </div>
-
-      {/* Hidden canvas element for certificate rendering */}
-      <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
   );
 }
