@@ -1,0 +1,25 @@
+{
+  "short_name": "Lotus Shrine",
+  "name": "Lotus Shrine Meditation App",
+  "icons": [
+    {
+      "src": "/src/assets/logo1.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/src/assets/logo1.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/src/assets/logo1.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4f3016",
+  "background_color": "#fde9da"
+}

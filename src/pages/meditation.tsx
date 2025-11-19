@@ -12,6 +12,9 @@ import completeMBell from "../assets/sounds/completeM.ogg";  // Meditation compl
 import incorrectPostureAudio from "../assets/sounds/alarm.ogg";  // Incorrect posture sound
 
 import * as tmPose from "@teachablemachine/pose";
+import * as tf from "@tensorflow/tfjs";
+import "@tensorflow/tfjs-backend-webgl";
+import "@tensorflow/tfjs-backend-cpu";
 import MeditationHistory from "../components/MeditationHistory";
 
 // -----------------------------
@@ -126,6 +129,7 @@ function Meditation() {
   const [isPoseDetectionActive, setIsPoseDetectionActive] = useState(false);
   const [poseStatus, setPoseStatus] = useState<'correct' | 'incorrect' | 'detecting' | null>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   // removed unused hold progress state
   const [isPostureHeld, setIsPostureHeld] = useState(false); // Track if posture has been held for 5 seconds
   const afterCorrectRef = useRef<boolean>(false);
@@ -208,6 +212,23 @@ function Meditation() {
     };
   }, []);
 
+  // Detect online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Initial check
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   // -----------------------------
   // Load teachable machine pose model once on mount
   // -----------------------------
@@ -219,6 +240,11 @@ function Meditation() {
         const metadataURL = "/pose_model/metadata.json";
 
         console.log("Loading pose model from:", modelURL);
+        
+        // Ensure TensorFlow backends are ready for offline use
+        await tf.ready();
+        
+        // Load model with proper error handling for offline mode
         modelRef.current = await tmPose.load(modelURL, metadataURL);
         maxPredictionsRef.current = modelRef.current.getTotalClasses();
         console.log("Pose model loaded successfully");
@@ -228,7 +254,34 @@ function Meditation() {
         setModelLoaded(true);
       } catch (error) {
         console.error("Error loading pose model:", error);
-        alert("Failed to load pose model. Please check your model URL and try again.");
+        
+        // Try to initialize TensorFlow backends explicitly for offline mode
+        try {
+          // Set backend preference for offline use
+          await tf.setBackend('webgl');
+        } catch (backendError) {
+          try {
+            // Fallback to CPU backend
+            await tf.setBackend('cpu');
+          } catch (cpuError) {
+            console.warn("Could not set TensorFlow backend:", cpuError);
+          }
+        }
+        
+        // Retry model loading
+        try {
+          const modelURL = "/pose_model/model.json";
+          const metadataURL = "/pose_model/metadata.json";
+          
+          modelRef.current = await tmPose.load(modelURL, metadataURL);
+          maxPredictionsRef.current = modelRef.current.getTotalClasses();
+          setModelLoaded(true);
+          
+          console.log("Pose model loaded successfully in offline mode");
+        } catch (retryError) {
+          console.error("Retry loading pose model failed:", retryError);
+          alert("Failed to load pose model. Please ensure all model files are available locally. You may need an internet connection for the first use.");
+        }
       }
     };
 
@@ -646,8 +699,15 @@ function Meditation() {
           <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6 text-center">
             <div className="flex items-center justify-center space-x-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
-              <span>ပုံစံစစ်ဆေးမှု မော်ဒယ် ဖွင့်နေသည်...</span>
+              <span>
+                {isOffline 
+                  ? "Offline mode: Loading cached model..." 
+                  : "ပုံစံစစ်ဆေးမှု မော်ဒယ် ဖွင့်နေသည်..."}
+              </span>
             </div>
+            {isOffline && (
+              <p className="text-sm mt-2">Using cached model files for offline posture detection</p>
+            )}
           </div>
         )}
 
