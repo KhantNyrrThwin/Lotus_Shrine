@@ -308,7 +308,7 @@ export default function RecordDashboard() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#FDE9DA]">
       <Navbar />
       {/* Add padding top to account for fixed navbar */}
       <div className="pt-[58px] flex-grow flex flex-col items-center">
@@ -328,7 +328,7 @@ export default function RecordDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             {/* History List */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-              <Card className="bg-white border-[#4f3016]">
+              <Card className="bg-[#FDE9DA] border-[#4f3016]">
                 <CardHeader>
                   <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
                     <CalendarRange className="w-5 h-5" />
@@ -369,7 +369,7 @@ export default function RecordDashboard() {
 
             {/* Certificate Preview & Actions */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-              <Card className="bg-white border-[#4f3016]">
+              <Card className="bg-[#FDE9DA] border-[#4f3016]">
                 <CardHeader>
                   <h2 className="text-2xl font-extrabold text-[#4f3016] flex items-center gap-2">
                     <Award className="w-5 h-5" />
