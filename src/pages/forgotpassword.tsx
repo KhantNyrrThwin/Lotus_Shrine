@@ -9,6 +9,7 @@ import {
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from 'axios';
+import { ArrowLeft } from "lucide-react";
 
 export default function ForgotPassword() {
     const [otp, setValue] = React.useState("")
@@ -111,6 +112,11 @@ export default function ForgotPassword() {
             transition={{ duration: 1 }}
         >
             <div className="flex bg-[url('./assets/forgot_password.png')] w-full h-screen items-center justify-center bg-cover ">
+                <div className="absolute top-[20px] left-[20px]">
+                    <Link to="/" className="p-2 rounded-full hover:bg-black/10 transition-colors">
+                        <ArrowLeft className="size-[40px] text-white" />
+                    </Link>
+                </div>
                 <div className="w-[489px] h-[446px] bg-[#E2E2E2B3] rounded-2xl flex flex-col justify-center">
                     <h2 className="ml-5 mt-5 text-[20px] font-extrabold text-[#40320D]">စကားဝှက်မေ့သွားပါသည်</h2>
                     <p className="ml-5 mt-5 text-[18px] font-bold text-[#40320D]">
