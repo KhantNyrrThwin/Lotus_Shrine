@@ -1,10 +1,11 @@
 
-import { Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion"
+import { ArrowLeft } from "lucide-react";
 
 type FormData = {
     password: string;
@@ -127,6 +128,11 @@ const ChangePassword = () => {
             transition={{ duration: 1 }}
         >
             <div className="flex bg-[url('./assets/forgot_password.png')] w-full h-screen items-center justify-center bg-cover ">
+                <div className="absolute top-[20px] left-[20px]">
+                    <Link to="/" className="p-2 rounded-full hover:bg-black/10 transition-colors">
+                        <ArrowLeft className="size-[40px] text-white" />
+                    </Link>
+                </div>
                 <div className="w-[489px] h-[446px] bg-[#E2E2E2B3] rounded-2xl flex flex-col justify-center">
                     <h2 className="ml-5 mt-5 text-[20px] font-extrabold text-[#40320D]">စကားဝှက် ပြန်လည်သတ်မှတ်မည်</h2>
                     

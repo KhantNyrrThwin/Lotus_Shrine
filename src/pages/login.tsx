@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import "../App.css";
 import GoogleAuth from "../components/GoogleAuth";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 export default function LoginPage() {
   return (
     <>
@@ -15,11 +17,16 @@ export default function LoginPage() {
         >
           <div className="w-full h-screen bg-black flex items-center justify-center">
             <div className="w-full h-full bg-[url('./assets/home.jpg')] bg-cover bg-center ">
-              <img
-                src={logo}
-                alt="logo"
-                className="ml-[10px] mt-[10px] size-[90px] 2xl:size-[120px]"
-              />
+              <div className="flex items-center ml-[10px] mt-[10px]">
+                <Link to="/" className="p-2 rounded-full hover:bg-black/10 transition-colors">
+                  <ArrowLeft className="size-[40px] text-white" />
+                </Link>
+                <img
+                  src={logo}
+                  alt="logo"
+                  className="ml-[10px] size-[90px] 2xl:size-[120px]"
+                />
+              </div>
               <div className="w-[539px] ml-[695px] 2xl:ml-[995px] mt-[10px] 2xl:mt-[70px] bg-[#E2E2E2B3] bg-opacity-75 rounded-2xl flex flex-col">
                 <div className="flex flex-rol mt-[44px] ml-[44px] items-center">
                   <h1 className="text-[27px] font-extrabold text-[#40320D] 2xl:text-4xl">

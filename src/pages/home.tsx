@@ -35,15 +35,16 @@ function HomePage() {
         <Navbar />
         <div className="bg-[#4f3016] mt-[58px] ">
           <div className="flex bg-[url('./assets/home.jpg')] bg-cover  h-[741px]   justify-end rounded-t-2xl 2xl:h-[1000px]">
-            <div className="flex flex-col w-[640px] 2xl:w-[800px] mr-[50px] 2xl:mr-[30px] mt-[70px] gap-2 items-center">
+            <div className="flex flex-col w-[640px] 2xl:w-[800px] mr-[50px] 2xl:mr-[30px] mt-[70px] gap-6 items-center justify-center">
               <img
                 src={things}
                 alt="Profile_Picture"
-                className="size-[230px] 2xl:size-[350px] "
+                className="size-[230px] 2xl:size-[350px]"
               />
-              <br />
-              <p className="text-[27px] 2xl:text-[34px] font-bold text-[#402916]">“{quoto}”</p>
-              <p className="text-[22px] 2xl:text-[29px] font-bold text-[#402916]">({auth})</p>
+              <div className="text-center px-4">
+                <p className="text-[27px] 2xl:text-[34px] font-bold text-[#402916] leading-relaxed">“{quoto}”</p>
+                <p className="text-[22px] 2xl:text-[29px] font-bold text-[#402916] mt-4">({auth})</p>
+              </div>
               <a href="/pagodas">
                 <button className="bg-[#4f3016] text-[16.2px] 2xl:text-[20px] w-[200px] h-[50px] 2xl:w-[300px] 2xl:h-[70px] text-white rounded-md my-[25px] active:bg-amber-950 cursor-pointer hover:bg-amber-900">
                   ဝင်ရောက်မည်
