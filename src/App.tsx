@@ -29,12 +29,15 @@ import PagodaPray from "./pages/pagoda-pray";
 import Test from "./pages/test";
 import ProfilePage from "./pages/profile";
 import EditProfilePage from "./pages/edit-profile";
+import VerificationPage from "./pages/verification";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <MusicPlayerProvider>
       <AnimatePresence mode="wait">
         <Router>
+          <ScrollToTop />
           <Routes>
           <Route path="/test" element={<Test />} />
             <Route path="/changepassword" element={<ChangePassword />} />
@@ -55,6 +58,7 @@ function App() {
             <Route path="/books" element={<BooksPage />} />
             <Route path="/mantra/:id" element={<MantraDetail />} />
             <Route path="/signin" element={<SigninPage />} />
+            <Route path="/verification" element={<VerificationPage />} />
             <Route path="/contactus" element={<ContactUs />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/edit-profile" element={<EditProfilePage />} />

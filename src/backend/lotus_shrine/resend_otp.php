@@ -8,61 +8,50 @@ header("Access-Control-Allow-Credentials: true");
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
-require_once __DIR__ . '/vendor/autoload.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once __DIR__ . '/vendor/autoload.php';
 use Libs\Database\MySQL;
 use Libs\Database\UsersTable;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
     // Validate input
-    if (empty($data['name']) || empty($data['email']) || empty($data['password']) || empty($data['dob'])) {
-        throw new Exception('အချက်အလက်များ လိုအပ်နေပါသည်');
+    if (empty($data['email'])) {
+        throw new Exception('အီးမေးလ်လိုအပ်ပါသည်');
     }
 
-    // Sanitize inputs
-    $name = filter_var($data['name'], FILTER_SANITIZE_STRING);
     $email = strtolower(filter_var($data['email'], FILTER_SANITIZE_EMAIL));
-    $dob = filter_var($data['dob'], FILTER_SANITIZE_STRING);
-    $password = $data['password'];
-
-    // Validate DOB - calculate age from DOB
-    $dobDate = new DateTime($dob);
-    $today = new DateTime();
-    $age = $today->diff($dobDate)->y;
-    
-    if ($age < 10 || $age > 120) {
-        throw new Exception('မှားယွင်းသော မွေးသက္ကရာဇ်');
-    }
-
-    // Hash password
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     $table = new UsersTable(new MySQL());
 
-    // Check if email exists
-    if ($table->findByEmail($email)) {
-        throw new Exception('ဤအီးမေးလ်ဖြင့် အကောင့်ရှိပြီးသားဖြစ်ပါသည်');
+    // Check if user exists in temporary table
+    $tempUser = $table->findTempUserByEmail($email);
+    
+    if (!$tempUser) {
+        throw new Exception('အကောင့်မတွေ့ရပါ');
     }
 
-    // Generate OTP code
-    $otp = rand(100000, 999999);
+    // Check if last OTP was sent less than 30 seconds ago
+    $createdAt = new DateTime($tempUser['created_at']);
+    $now = new DateTime();
+    $interval = $createdAt->diff($now);
+    $seconds = $interval->s + ($interval->i * 60) + ($interval->h * 3600) + ($interval->days * 24 * 3600);
     
-    // Store user data temporarily with OTP, refreshing any existing pending signup
-    $tempUserId = $table->upsertTempUser([
-        'name' => $name,
-        'email' => $email,
-        'dob' => $dob,
-        'password' => $hashedPassword,
-        'otp' => $otp,
-        'created_at' => date('Y-m-d H:i:s')
-    ]);
+    if ($seconds < 30) {
+        throw new Exception('OTP ကုဒ်ကို ၃၀ စက္ကန့်အတွင်း ထပ်တူပေးပို့၍ မရပါ');
+    }
 
-    if ($tempUserId) {
-        // Send OTP email
+    // Generate new OTP
+    $newOtp = rand(100000, 999999);
+    
+    // Update OTP in database
+    $updated = $table->updateTempUserOtp($tempUser['id'], $newOtp);
+    
+    if ($updated) {
+        // Send new OTP email
         $mail = new PHPMailer(true);
         try {
             // Server settings
@@ -76,12 +65,12 @@ try {
 
             // Recipients
             $mail->setFrom('lotusshrinemm@gmail.com', 'Lotus Shrine');
-            $mail->addAddress($email, $name);
+            $mail->addAddress($email, $tempUser['name']);
 
             // Content
             $mail->isHTML(true);
             $mail->CharSet = 'UTF-8';
-            $mail->Subject = 'Lotus Shrine - အကောင့်အတည်ပြုခြင်း OTP ကုဒ်';
+            $mail->Subject = 'Lotus Shrine - အကောင့်အတည်ပြုခြင်း OTP ကုဒ် (ပြန်ပေးပို့ခြင်း)';
 
             $mail->Body = <<<HTML
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -89,7 +78,7 @@ try {
                     <p>သင့်အကောင့်ကို ဖွင့်လှစ်ပေးပို့ပါသည်။ အကောင့်ကို အတည်ပြုရန် အောက်ပါ OTP ကုဒ်ကို သုံးပါ။</p>
                     <div style="background-color: #f8f8f8; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
                         <h3 style="margin: 0; color: #4f3016;">OTP ကုဒ်</h3>
-                        <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">$otp</p>
+                        <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">$newOtp</p>
                         <p style="margin: 0; color: #666;">ဤကုဒ်သည် ၃ မိနစ်အတွင်းသာ သက်တမ်းရှိမည်ဖြစ်ပါသည်။</p>
                     </div>
                     <p style="color: #888; font-size: 12px; margin-top: 20px;">
@@ -101,7 +90,7 @@ try {
 
             $mail->AltBody = "Lotus Shrine မှ ကြိုဆိုပါသည်\n\n"
                            . "သင့်အကောင့်ကို ဖွင့်လှစ်ပေးပို့ပါသည်။ အကောင့်ကို အတည်ပြုရန် အောက်ပါ OTP ကုဒ်ကို သုံးပါ။\n\n"
-                           . "OTP ကုဒ်: $otp\n\n"
+                           . "OTP ကုဒ်: $newOtp\n\n"
                            . "ဤကုဒ်သည် ၃ မိနစ်အတွင်းသာ သက်တမ်းရှိမည်ဖြစ်ပါသည်။\n\n"
                            . "ဤအီးမေးလ်သည် Lotus Shrine မှ အလိုအလျောက်ပေးပို့ခြင်းဖြစ်ပါသည်။";
 
@@ -109,21 +98,19 @@ try {
             
             echo json_encode([
                 'success' => true,
-                'message' => 'OTP ကုဒ်ကို သင့်အီးမေးလ်သို့ ပေးပို့ပြီးပါပြီ',
-                'email' => $email
+                'message' => 'OTP ကုဒ်အသစ်ကို သင့်အီးမေးလ်သို့ ပေးပို့ပြီးပါပြီ'
             ]);
         } catch (Exception $e) {
-            // Log the error but don't fail the registration
-            error_log("Email sending failed: " . $e->getMessage());
+            // Log the error but don't fail the resend
+            error_log("OTP resend failed: " . $e->getMessage());
             
             echo json_encode([
                 'success' => true,
-                'message' => 'OTP ကုဒ်ကို သင့်အီးမေးလ်သို့ ပေးပို့ရာတွင် အမှားအယွင်းရှိပါသည်။ သို့ရာတွင် အကောင့်ဖွင့်ခြင်း ဆက်လုပ်နိုင်ပါသည်။',
-                'email' => $email
+                'message' => 'OTP ကုဒ်အသစ်ကို သင့်အီးမေးလ်သို့ ပေးပို့ရာတွင် အမှားအယွင်းရှိပါသည်။ သို့ရာတွင် အကောင့်ဖွင့်ခြင်း ဆက်လုပ်နိုင်ပါသည်။'
             ]);
         }
     } else {
-        throw new Exception('အကောင့်ဖွင့်ရာတွင် အမှားအယွင်းရှိပါသည်');
+        throw new Exception('OTP ကုဒ်ပြန်ပေးပို့ရာတွင် အမှားအယွင်းရှိပါသည်');
     }
 } catch (Exception $e) {
     http_response_code(400);

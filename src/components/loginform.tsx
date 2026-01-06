@@ -160,7 +160,6 @@ const LoginForm = () => {
         </div>
       )}
 
-      <DevTool control={control} />
     </div>
   );
 };

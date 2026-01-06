@@ -256,7 +256,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
       </motion.div>
 
       {/* --------------- Completed State (only when is_completed = 1) ------------- */}
-      {progress?.tracker.isCompleted && (
+      {progress?.tracker.isCompleted ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -267,7 +267,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             <CardHeader className=" flex flex-col 2xl:flex 2xl:flex-row 2xl:gap-15">
               <h1 className="flex items-center gap-2 text-2xl font-extrabold">
                 <CheckCircle className="w-6 h-6" />
-                  သာဓု ၊ သာဓု ၊ သာဓု  သင်၏ ကိုးနဝင်း အဓိဌာန် အောင်မြင်စွာ ပြီးမြောက်သွားပါပြီ ။
+                  သာဓု ၊ သာဓု ၊ သာဓု  သင်၏ ကိုးနဝင်း အဓိဋ္ဌာန် အောင်မြင်စွာ ပြီးမြောက်သွားပါပြီ ။
               </h1>
               <CardDescription className="text-[#e0e0e0]">
                 <Button 
@@ -311,7 +311,7 @@ const HomeDashboard: React.FC<HomeDashboardProps> = ({ username }) => {
             
           </Card>
         </motion.div>
-      )}
+      ): null}
       {/* --------------- Completed State ------------- */}
 
 

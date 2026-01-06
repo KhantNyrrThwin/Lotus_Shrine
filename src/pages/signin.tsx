@@ -17,7 +17,7 @@ export default function SigninPage() {
         >
           <div className="w-full h-screen bg-black flex items-center justify-center">
             <div className="w-full h-full bg-[url('./assets/signin.jpg')] bg-cover bg-center ">
-              <div className="flex items-center ml-[10px] mt-[10px]">
+              <div className="flex items-center ml-[10px] mt-[30px]">
                 <Link to="/" className="p-2 rounded-full hover:bg-black/10 transition-colors">
                   <ArrowLeft className="size-[40px] text-white" />
                 </Link>

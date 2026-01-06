@@ -170,7 +170,6 @@ function ContactUs() {
         </div>
       </motion.div>
       <Footer />
-      <DevTool control={control} />
     </>
   );
 }

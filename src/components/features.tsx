@@ -20,14 +20,14 @@ function Grid_Features() {
               <a href="/pagodas">
               <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/PagodasHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Pagodas.jpg')]">
                 <h3 className="text-lg font-bold">ဘုရားများ</h3>
-                <p>ဘုရားများကို ကြည့်ရှုရန်</p>
+                <p>ဘုရားများကို ဖူးမြော်ရန်</p>
               </div>
               </a>
 
               <a href="/dhamma">
               <div className="p-8 m-5 rounded-lg bg-[url('./assets/features/DhammaHover.jpg')] bg-cover w-[300px] h-[200px] cursor-pointer transition-all duration-1000 hover:scale-105 hover:shadow-lg hover:bg-[url('./assets/features/Dhamma.jpg')]">
                 <h3 className="text-lg font-bold">ဓမ္မတရားတော်များ</h3>
-                <p>တရားတော်များကို နားထောင်ရန်</p>
+                <p>တရားတော်များကို နာကြားရန်</p>
               </div>
               </a>
 

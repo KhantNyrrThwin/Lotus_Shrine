@@ -1,73 +1,61 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
-type FormData = {
-  name: string;
+interface FormData {
   email: string;
+  name: string;
   dob: string;
   password: string;
   confirm_password: string;
-};
+}
 
-type PasswordStrength = "very-weak" | "weak" | "medium" | "strong" | "";
-
-const signinForm = () => {
-  const form = useForm<FormData>({ mode: "onBlur" });
+export default function SigninForm() {
   const {
     register,
-    control,
     handleSubmit,
     formState: { errors },
     watch,
-  } = form;
+  } = useForm<FormData>();
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [passwordStrength, setPasswordStrength] =
-    useState<PasswordStrength>("");
-  const [strengthMessage, setStrengthMessage] = useState("");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const password = watch("password", "");
+  const navigate = useNavigate();
 
-  // Watch password changes
-  const password = watch("password");
-
-  useEffect(() => {
-    if (!password) {
-      setPasswordStrength("");
-      setStrengthMessage("");
-      return;
-    }
-
-    // Check password strength
-    const hasLower = /[a-z]/.test(password);
-    const hasUpper = /[A-Z]/.test(password);
-    const hasDigit = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    const length = password.length;
-
-    let strength: PasswordStrength = "very-weak";
-    let message = "";
-
-    if (length < 8) {
-      message = "အားနည်းလွန်းနေပါသည် (အနည်းဆုံး ၈ လုံးလိုအပ်ပါသည်)";
-      strength = "very-weak";
-    } else if (!(hasLower && hasUpper && hasDigit && hasSpecial)) {
-      message =
-        "အားနည်းနေပါသေးသည် - အင်္ဂလိပ်အက္ခရာကြီး၊ အက္ခရာသေး၊ ဂဏန်းနှင့် သင်္ကေတများ ပေါင်းစပ်ထည့်သွင်းပါ";
-      strength = "weak";
+  // Password strength calculation
+  const calculatePasswordStrength = (password: string) => {
+    if (password.length === 0) return { strength: "none", message: "" };
+    
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    const requirements = [
+      password.length >= 8,
+      hasUpperCase,
+      hasLowerCase,
+      hasNumbers,
+      hasSpecialChar,
+    ];
+    
+    const fulfilledCount = requirements.filter(Boolean).length;
+    
+    if (fulfilledCount <= 2) {
+      return { strength: "very-weak", message: "စကားဝှက် အားနည်းပါသည်" };
+    } else if (fulfilledCount <= 3) {
+      return { strength: "weak", message: "စကားဝှက် အလယ်အလတ် ဖြစ်ပါသည်" };
     } else {
-      message = "စကားဝှက်အားကောင်းပါသည်";
-      strength = "strong";
+      return { strength: "strong", message: "စကားဝှက် အားကောင်းပါသည်" };
     }
+  };
 
-    setPasswordStrength(strength);
-    setStrengthMessage(message);
-  }, [password]);
+  const { strength: passwordStrength, message: strengthMessage } =
+    calculatePasswordStrength(password);
 
   const onSubmit = async (data: FormData) => {
     setPasswordError("");
@@ -93,8 +81,10 @@ const signinForm = () => {
       );
 
       if (response.data.success) {
-        // Redirect to login page on success
-        navigate("/login", { state: { fromSignup: true } });
+        const verifiedEmail = response.data.email || userData.email;
+        // Persist so refresh doesn't lose pending verification email
+        localStorage.setItem("pendingVerificationEmail", verifiedEmail);
+        navigate("/verification", { state: { email: verifiedEmail } });
       } else {
         setPasswordError(
           response.data.message || "မှတ်ပုံတင်ရာတွင် အမှားအယွင်းရှိပါသည်",
@@ -106,6 +96,7 @@ const signinForm = () => {
       setLoading(false);
     }
   };
+  
   const getStrengthColor = () => {
     switch (passwordStrength) {
       case "very-weak":
@@ -310,16 +301,13 @@ const signinForm = () => {
             loading ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
-          {loading ? "လုပ်ဆောင်နေသည်..." : "အကောင့်ဖွင့်မည်"}
+          {loading ? "လုပ်ဆောင်နေသည်..." : "အကောင့်ဖွင့်မည်"}
         </button>
 
         <a href="/login" className="mt-2 hover:underline cursor-pointer">
-          အကောင့်ဝင်ရန်
+          အကောင့်ဝင်ရန်
         </a>
       </form>
-      <DevTool control={control} />
     </div>
   );
 };
-
-export default signinForm;
